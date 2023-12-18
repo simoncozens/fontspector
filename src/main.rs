@@ -1,6 +1,8 @@
 //! Quality control for OpenType fonts
-use crate::check::{CheckResult, StatusCode};
-use crate::font::FontCollection;
+use crate::{
+    check::{CheckResult, StatusCode},
+    font::FontCollection,
+};
 use clap::Parser;
 use itertools::iproduct;
 // use rayon::prelude::*;
@@ -25,7 +27,7 @@ struct Args {
     verbose: usize,
 
     /// Log level
-    #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Pass)]
+    #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Warn)]
     loglevel: StatusCode,
 
     /// Input files
