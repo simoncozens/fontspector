@@ -1,7 +1,10 @@
 [package]
 name = "fontspector"
 version = "0.1.0"
-authors = ["Simon Cozens <simon@simon-cozens.org>"]
+authors = [
+    "Simon Cozens <simon@simon-cozens.org>",
+    "Felipe Sanches <juca@members.fsf.org>",
+]
 edition = "2021"
 description = "Quality control for OpenType fonts"
 repository = "https://github.com/simoncozens/fontspector"

@@ -10,6 +10,7 @@ use itertools::iproduct;
 mod check;
 mod checks;
 mod constants;
+mod conditions;
 mod font;
 mod universal;
 
