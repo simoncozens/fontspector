@@ -55,6 +55,12 @@ impl Status {
             code: StatusCode::Pass,
         }
     }
+    pub fn info(s: &str) -> Self {
+        Self {
+            message: Some(s.to_string()),
+            code: StatusCode::Info,
+        }
+    }
     pub fn fail(s: &str) -> Self {
         Self {
             message: Some(s.to_string()),
