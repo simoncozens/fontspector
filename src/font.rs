@@ -3,6 +3,7 @@ use read_fonts::{tables::os2::SelectionFlags, TableProvider};
 use skrifa::{
     font::FontRef,
     string::{LocalizedStrings, StringId},
+    Tag,
     MetadataProvider,
 };
 use std::error::Error;
@@ -22,9 +23,11 @@ impl TestFont {
             font_data,
         })
     }
+
     pub fn font(&self) -> FontRef {
         FontRef::new(&self.font_data).expect("Can't parse font")
     }
+
     pub fn style(&self) -> Option<&str> {
         Some("Regular")
     }
@@ -33,8 +36,13 @@ impl TestFont {
         let os2 = self.font().os2()?;
         Ok(os2.fs_selection())
     }
+
     pub fn get_name_entry_strings(&self, name_id: StringId) -> LocalizedStrings {
         self.font().localized_strings(name_id)
+    }
+
+    pub fn is_variable_font(&self) -> bool {
+        self.font().table_data(Tag::new(b"fvar")).is_some()
     }
 }
 

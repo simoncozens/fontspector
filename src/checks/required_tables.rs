@@ -1,7 +1,6 @@
 use crate::{
     check::{return_result, Status, StatusList},
     Check, TestFont,
-    conditions::is_variable_font,
 };
 
 use skrifa::Tag;
@@ -18,7 +17,7 @@ fn required_tables(f: &TestFont) -> StatusList {
         Tag::new(b"post"),
     ];
 
-    if is_variable_font(f) {
+    if f.is_variable_font() {
         // According to https://github.com/fonttools/fontbakery/issues/1671
         // STAT table is required on WebKit on MacOS 10.12 for variable fonts.
         required_table_tags.push(Tag::new(b"STAT"));
