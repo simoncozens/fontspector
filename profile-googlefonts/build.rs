@@ -1,8 +1,7 @@
 fn main() {
     println!("Building protos");
     protobuf_codegen::Codegen::new()
-        // Use `protoc` parser, optional.
-        .protoc()
+        .pure()
         // All inputs and imports from the inputs must reside in `includes` directories.
         .includes(&["src/protos"])
         .input("src/protos/fonts_public.proto")
