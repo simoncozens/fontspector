@@ -41,24 +41,10 @@ pub const VALIDATE_TOML: Check = Check {
 
 impl fontspector_checkapi::Plugin for Test {
     fn register(&self, cr: &mut Registry) {
-        cr.register_check(SAY_HELLO);
-        cr.register_check(VALIDATE_TOML);
         let toml = FileType::new("*.toml");
         cr.register_filetype("TOML", toml);
 
-        cr.register_profile(
-            "test",
-            Profile::from_toml(
-                r#"
-[sections]
-"A test profile" = [
-    "com.google.fonts/check/test/say_hello",
-    "com.google.fonts/check/test/validate_toml"
-]
-"#,
-            )
-            .expect("Couldn't parse profile"),
-        )
+        cr.register_simple_profile("test", vec![VALIDATE_TOML, SAY_HELLO]);
     }
 }
 pluginator::plugin_implementation!(fontspector_checkapi::Plugin, Test);

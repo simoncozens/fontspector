@@ -10,7 +10,7 @@ pub struct Override {
     reason: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct Profile {
     pub sections: HashMap<CheckId, Vec<String>>,
     #[serde(default)]

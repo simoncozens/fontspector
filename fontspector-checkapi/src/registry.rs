@@ -42,4 +42,16 @@ impl<'a> Registry<'a> {
     pub fn register_check(&mut self, check: Check<'a>) {
         self.checks.insert(check.id.to_string(), check);
     }
+
+    pub fn register_simple_profile(&mut self, name: &str, checks: Vec<Check<'a>>) {
+        let mut profile = Profile::default();
+        profile.sections.insert(
+            name.to_string(),
+            checks.iter().map(|c| c.id.to_string()).collect(),
+        );
+        self.register_profile(name, profile);
+        for check in checks {
+            self.register_check(check);
+        }
+    }
 }
