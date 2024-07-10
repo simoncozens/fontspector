@@ -5,8 +5,8 @@ edition = "2021"
 
 [dependencies]
 # Font-related deps
-skrifa = "0.15.0"
-read-fonts = "0.15.0"
+read-fonts = "0.19.3"
+skrifa = "0.19.3"
 
 # Filetype
 glob-match = "0.2.1"
