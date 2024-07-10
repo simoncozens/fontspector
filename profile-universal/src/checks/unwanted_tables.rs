@@ -19,11 +19,11 @@ fn unwanted_tables(t: &Testable) -> StatusList {
     let mut reasons = vec![];
     for (table, reason) in UNWANTED_TABLES.iter() {
         if f.font().table_data(*table).is_some() {
-            reasons.push(format!("Table: {} Reason: {}", table, reason));
+            reasons.push(format!("Table: `{}` Reason: {}\n", table, reason));
         }
     }
     if !reasons.is_empty() {
-        Status::just_one_fail(&format!("Unwanted tables found: {}", reasons.join("\n")))
+        Status::just_one_fail(&format!("Unwanted tables found:\n {}", reasons.join("\n")))
     } else {
         Status::just_one_pass()
     }
