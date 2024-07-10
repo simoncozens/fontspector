@@ -1,8 +1,8 @@
-use fontspector_checkapi::{Check, Status, StatusList, TestFont};
-
+use fontspector_checkapi::{Check, Status, StatusList, Testable, FileTypeConvert, TTF};
 use skrifa::Tag;
 
-fn unwanted_tables(f: &TestFont) -> StatusList {
+fn unwanted_tables(t: &Testable) -> StatusList {
+    let f = TTF.from_testable(t).expect("Not a TTF file");
     const UNWANTED_TABLES: [(Tag, &str); 8] = [
         (Tag::new(b"FFTM"), "Table contains redundant FontForge timestamp info"),
         (Tag::new(b"TTFA"), "Redundant TTFAutohint table"),
@@ -32,5 +32,6 @@ pub const UNWANTED_TABLES_CHECK: Check = Check {
     rationale: Some("Some font editors store source data in their own SFNT tables, and these can sometimes sneak into final release files, which should only have OpenType spec tables."),
     proposal: Some("legacy:check/053"),
     check_one: Some(&unwanted_tables),
-    check_all: None
+    check_all: None,
+    applies_to: "TTF",
 };

@@ -1,4 +1,4 @@
-use crate::{font::FontCollection, Status, StatusList, TestFont};
+use crate::{font::FontCollection, Registry, Status, StatusList, Testable};
 
 pub type CheckId = String;
 
@@ -8,8 +8,9 @@ pub struct Check<'a> {
     pub title: &'a str,
     pub rationale: Option<&'a str>,
     pub proposal: Option<&'a str>,
-    pub check_one: Option<&'a dyn Fn(&TestFont) -> StatusList>,
+    pub check_one: Option<&'a dyn Fn(&Testable) -> StatusList>,
     pub check_all: Option<&'a dyn Fn(&FontCollection) -> StatusList>,
+    pub applies_to: &'a str,
 }
 
 pub struct CheckResult {
@@ -21,7 +22,14 @@ pub struct CheckResult {
 }
 
 impl<'a> Check<'a> {
-    pub fn run_one(&'a self, f: &'a TestFont) -> Box<dyn Iterator<Item = CheckResult> + 'a> {
+    pub fn applies(&self, f: &'a Testable, registry: &Registry) -> bool {
+        registry
+            .filetypes
+            .get(self.applies_to)
+            .map_or(false, |ft| ft.applies(f))
+    }
+
+    pub fn run_one(&'a self, f: &'a Testable) -> Box<dyn Iterator<Item = CheckResult> + 'a> {
         if let Some(check_one) = self.check_one {
             return Box::new(check_one(f).map(|r| CheckResult {
                 status: r,

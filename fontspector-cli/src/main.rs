@@ -2,9 +2,7 @@
 use std::collections::HashMap;
 
 use clap::Parser;
-use fontspector_checkapi::{
-    Check, CheckResult, FontCollection, Plugin, Registry, StatusCode, TestFont,
-};
+use fontspector_checkapi::{Check, CheckResult, Plugin, Registry, StatusCode, Testable};
 use itertools::iproduct;
 // use rayon::prelude::*;
 
@@ -55,22 +53,17 @@ fn main() {
     }
 
     // Load the relevant profile
-    let profile = registry
-        .get_profile(&args.profile)
-        .expect("Could not load profile");
+    let profile = registry.get_profile(&args.profile).unwrap_or_else(|| {
+        log::error!("Could not find profile {:}", args.profile);
+        std::process::exit(1);
+    });
     if let Err(fail) = profile.validate(&registry) {
-        println!("Profile validation failed: {:}", fail);
+        log::error!("Profile validation failed: {:}", fail);
         std::process::exit(1);
     }
 
-    let testables: Vec<TestFont> = args
-        .inputs
-        .iter()
-        .filter(|x| x.ends_with(".ttf"))
-        .map(|x| TestFont::new(x).unwrap_or_else(|_| panic!("Could not load font {:}", x)))
-        .collect();
-    let thing: Vec<&TestFont> = testables.iter().collect();
-    let collection = FontCollection(thing);
+    let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
+    // let collection = FontCollection(thing);
     let checkmap: HashMap<&str, &Check<'_>> = registry.checks.iter().map(|c| (c.id, c)).collect();
 
     for (sectionname, checknames) in profile.sections.iter() {
@@ -83,14 +76,15 @@ fn main() {
             })
             .collect();
 
-        let results_all: Vec<CheckResult> = checks
-            .iter()
-            .flat_map(|check| check.run_all(&collection))
-            .collect();
+        let results_all = [];
+        // let results_all: Vec<CheckResult> = checks
+        //     .iter()
+        //     .flat_map(|check| check.run_all(&collection))
+        //     .collect();
 
         let results_one: Vec<CheckResult> = iproduct!(checks.iter(), testables.iter())
-            .map(|(check, file)| check.run_one(file))
-            .flatten()
+            .filter(|(check, file)| check.applies(file, &registry))
+            .flat_map(|(check, file)| check.run_one(file))
             .collect();
 
         for result in results_all

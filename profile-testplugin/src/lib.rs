@@ -1,8 +1,8 @@
-use fontspector_checkapi::{return_result, Check, Profile, Registry, StatusList, TestFont};
+use fontspector_checkapi::{return_result, Check, Profile, Registry, StatusList, Testable};
 
 struct Test;
 
-fn say_hello(_c: &TestFont) -> StatusList {
+fn say_hello(_c: &Testable) -> StatusList {
     println!("Hello from the test plugin!");
     return_result(vec![])
 }
@@ -14,6 +14,7 @@ pub const SAY_HELLO: Check = Check {
     proposal: None,
     check_all: None,
     check_one: Some(&say_hello),
+    applies_to: "TTF",
 };
 
 impl fontspector_checkapi::Plugin for Test {

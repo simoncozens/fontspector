@@ -1,16 +1,19 @@
 use std::collections::HashMap;
 
-use crate::{Check, Profile};
+use crate::{Check, FileType, Profile, TTF};
 
 #[derive(Default)]
 pub struct Registry<'a> {
     pub checks: Vec<Check<'a>>,
     profiles: HashMap<String, Profile>,
+    pub(crate) filetypes: HashMap<String, FileType<'a>>,
 }
 
-impl Registry<'_> {
+impl<'a> Registry<'a> {
     pub fn new() -> Registry<'static> {
-        Registry::default()
+        let mut reg = Registry::default();
+        reg.register_filetype("TTF", TTF);
+        reg
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Check> {
@@ -18,7 +21,7 @@ impl Registry<'_> {
     }
 
     pub fn load_plugin(&mut self, plugin_path: &str) {
-        let plugin = unsafe { crate::load_plugin(&plugin_path) }.unwrap_or_else(|e| {
+        let plugin = unsafe { crate::load_plugin(plugin_path) }.unwrap_or_else(|e| {
             panic!("Could not load plugin {:?}: {:?}", plugin_path, e);
         });
         plugin.register(self);
@@ -30,5 +33,9 @@ impl Registry<'_> {
 
     pub fn get_profile(&self, name: &str) -> Option<&Profile> {
         self.profiles.get(name)
+    }
+
+    pub fn register_filetype(&mut self, name: &str, filetype: FileType<'a>) {
+        self.filetypes.insert(name.to_string(), filetype);
     }
 }

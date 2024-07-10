@@ -40,8 +40,16 @@ impl Profile {
                 }
             }
         }
-        if missing_checks.len() > 0 {
+        if !missing_checks.is_empty() {
             return Err(format!("Missing checks: {}", missing_checks.join(", ")));
+        }
+        for check in registry.checks.iter() {
+            if !registry.filetypes.contains_key(check.applies_to) {
+                return Err(format!(
+                    "Check {} applies to unknown filetype {}",
+                    check.id, check.applies_to
+                ));
+            }
         }
         Ok(())
     }

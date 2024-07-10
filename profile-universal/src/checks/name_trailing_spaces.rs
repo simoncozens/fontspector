@@ -1,10 +1,10 @@
-use fontspector_checkapi::{return_result, Check, Status, StatusList, TestFont};
+use fontspector_checkapi::{return_result, Check, Status, StatusList, Testable, FileTypeConvert, TTF};
 use read_fonts::TableProvider;
 
-fn name_trailing_spaces(f: &TestFont) -> StatusList {
+fn name_trailing_spaces(f: &Testable) -> StatusList {
     let mut problems: Vec<Status> = vec![];
 
-    if let Some(name_table) = f.font().name().ok() {
+    if let Ok(name_table) = TTF.from_testable(f).unwrap().font().name() {
         for name_record in name_table.name_record().iter() {
             if name_record
                 .string(name_table.string_data())
@@ -18,7 +18,7 @@ fn name_trailing_spaces(f: &TestFont) -> StatusList {
                     name_record.encoding_id,
                     name_record.language_id,
                     name_record.name_id,
-                    name_record.string(name_table.string_data()).unwrap().to_string(),
+                    name_record.string(name_table.string_data()).unwrap(),
                 )))
             }
         }
@@ -33,4 +33,5 @@ pub const NAME_TRAILING_SPACES_CHECK: Check = Check {
     proposal: Some("https://github.com/googlefonts/fontbakery/issues/2417"),
     check_one: Some(&name_trailing_spaces),
     check_all: None,
+    applies_to: "TTF",
 };

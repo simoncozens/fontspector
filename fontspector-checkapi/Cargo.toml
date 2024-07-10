@@ -8,6 +8,9 @@ edition = "2021"
 skrifa = "0.15.0"
 read-fonts = "0.15.0"
 
+# Filetype
+glob-match = "0.2.1"
+
 # Needed so that we can refer to status codes on the command line
 clap = {version = "3.2.5", features = ["derive"]}
 

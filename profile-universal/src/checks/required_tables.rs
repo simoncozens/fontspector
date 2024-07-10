@@ -1,8 +1,9 @@
-use fontspector_checkapi::{return_result, Check, Status, StatusList, TestFont};
+use fontspector_checkapi::{return_result, Check, Status, StatusList, Testable, FileTypeConvert, TTF};
 
 use skrifa::Tag;
 
-fn required_tables(f: &TestFont) -> StatusList {
+fn required_tables(t: &Testable) -> StatusList {
+    let f = TTF.from_testable(t).expect("Not a TTF file");
     let mut required_table_tags: Vec<Tag> = vec![
         Tag::new(b"cmap"),
         Tag::new(b"head"),
@@ -70,7 +71,7 @@ fn required_tables(f: &TestFont) -> StatusList {
 
     let mut missing = vec![];
     for tag in required_table_tags.iter() {
-        if !f.font().table_data(*tag).is_some() {
+        if f.font().table_data(*tag).is_none() {
             missing.push(format!("{}", *tag));
         }
     }
@@ -80,20 +81,18 @@ fn required_tables(f: &TestFont) -> StatusList {
     // for sfntVersion. OpenType fonts containing CFF data (version 1 or 2) should use
     // 0x4F54544F ('OTTO', when re-interpreted as a Tag) for sfntVersion.
     if f.font().table_directory.sfnt_version() == 0x4F54544F
-        && (!f.font().table_data(Tag::new(b"CFF ")).is_some()
-            && !f.font().table_data(Tag::new(b"CFF2")).is_some())
+        && (f.font().table_data(Tag::new(b"CFF ")).is_none()
+            && f.font().table_data(Tag::new(b"CFF2")).is_none())
     {
         if f.font().table_data(Tag::new(b"fvar")).is_some() {
             missing.push("CFF2".to_string());
         } else {
             missing.push("CFF ".to_string());
         }
-    } else {
-        if f.font().table_directory.sfnt_version() == 0x00010000
-            && !f.font().table_data(Tag::new(b"glyf")).is_some()
-        {
-            missing.push("glyf".to_string());
-        }
+    } else if f.font().table_directory.sfnt_version() == 0x00010000
+        && f.font().table_data(Tag::new(b"glyf")).is_none()
+    {
+        missing.push("glyf".to_string());
     }
 
     if !missing.is_empty() {
@@ -148,4 +147,5 @@ pub const REQUIRED_TABLES_CHECK: Check = Check {
     proposal: Some("legacy:check/052"),
     check_one: Some(&required_tables),
     check_all: None,
+    applies_to: "TTF",
 };

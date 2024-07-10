@@ -1,4 +1,4 @@
-use crate::constants::RIBBI_STYLE_NAMES;
+use crate::{constants::RIBBI_STYLE_NAMES, filetype::FileTypeConvert, FileType, Testable};
 use read_fonts::{tables::os2::SelectionFlags, TableProvider};
 use skrifa::{
     font::FontRef,
@@ -8,21 +8,23 @@ use skrifa::{
 use std::error::Error;
 
 pub struct TestFont {
-    pub filename: String,
-    // pub font: FontRef<'a>,
     font_data: Vec<u8>,
 }
 
-impl TestFont {
-    pub fn new(filename: &str) -> Result<Self, Box<dyn Error>> {
-        let font_data = std::fs::read(filename).expect("Couldn't open file");
-        Ok(Self {
-            filename: filename.to_owned(),
-            // font: FontRef::new(&font_data)?,
-            font_data,
-        })
-    }
+pub const TTF: FileType = FileType { pattern: "*.ttf" };
 
+impl<'a> FileTypeConvert<TestFont> for FileType<'a> {
+    fn from_testable(&self, t: &Testable) -> Option<TestFont> {
+        if self.applies(t) {
+            let font_data = std::fs::read(&t.filename).expect("Couldn't open file");
+            Some(TestFont { font_data })
+        } else {
+            None
+        }
+    }
+}
+
+impl TestFont {
     pub fn font(&self) -> FontRef {
         FontRef::new(&self.font_data).expect("Can't parse font")
     }
