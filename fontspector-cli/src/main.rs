@@ -1,6 +1,4 @@
 //! Quality control for OpenType fonts
-use std::collections::HashMap;
-
 use clap::Parser;
 use fontspector_checkapi::{Check, CheckResult, Plugin, Registry, StatusCode, Testable};
 use itertools::iproduct;
@@ -64,15 +62,14 @@ fn main() {
 
     let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
     // let collection = FontCollection(thing);
-    let checkmap: HashMap<&str, &Check<'_>> = registry.checks.iter().map(|c| (c.id, c)).collect();
 
     for (sectionname, checknames) in profile.sections.iter() {
         println!("Checking section {:}", sectionname);
-        let checks: Vec<&&Check> = checknames
+        let checks: Vec<&Check> = checknames
             .iter()
             .map(|name| {
                 let n: &str = name;
-                checkmap.get(n).unwrap()
+                registry.checks.get(n).unwrap()
             })
             .collect();
 

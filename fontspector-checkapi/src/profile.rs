@@ -35,7 +35,7 @@ impl Profile {
         let mut missing_checks = vec![];
         for section in self.sections.values() {
             for check_id in section {
-                if !registry.checks.iter().any(|c| c.id == *check_id) {
+                if !registry.checks.contains_key(check_id) {
                     missing_checks.push(check_id.clone());
                 }
             }
@@ -43,7 +43,7 @@ impl Profile {
         if !missing_checks.is_empty() {
             return Err(format!("Missing checks: {}", missing_checks.join(", ")));
         }
-        for check in registry.checks.iter() {
+        for check in registry.checks.values() {
             if !registry.filetypes.contains_key(check.applies_to) {
                 return Err(format!(
                     "Check {} applies to unknown filetype {}",

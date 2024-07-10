@@ -37,8 +37,8 @@ pub const VALIDATE_TOML: Check = Check {
 
 impl fontspector_checkapi::Plugin for Test {
     fn register(&self, cr: &mut Registry) {
-        cr.checks.push(SAY_HELLO);
-        cr.checks.push(VALIDATE_TOML);
+        cr.register_check(SAY_HELLO);
+        cr.register_check(VALIDATE_TOML);
         let toml = FileType::new("*.toml");
         cr.register_filetype("TOML", toml);
 
