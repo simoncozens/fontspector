@@ -14,6 +14,10 @@ struct Args {
     #[clap(short, long, parse(from_occurrences))]
     verbose: usize,
 
+    /// Hotfix
+    #[clap(short, long)]
+    hotfix: bool,
+
     /// Log level
     #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Warn)]
     loglevel: StatusCode,
@@ -94,14 +98,35 @@ fn main() {
             .filter(|c| c.status.code >= args.loglevel)
         {
             println!(">> {:}", result.check_id);
-            println!("   {:}", result.check_name);
+            if args.verbose > 1 {
+                println!("   {:}", result.check_name);
+            }
             if let Some(filename) = &result.filename {
                 println!("   with {:}\n", filename);
             }
             if let Some(rationale) = &result.check_rationale {
-                termimad::print_inline(&format!("Rationale:\n\n```\n{}\n```\n", rationale));
+                if args.verbose > 1 {
+                    termimad::print_inline(&format!("Rationale:\n\n```\n{}\n```\n", rationale));
+                }
             }
             termimad::print_inline(&format!("Result: **{:}**\n\n", result.status));
+            if result.status.code != StatusCode::Fail {
+                continue;
+            }
+            let check = registry.checks.get(&result.check_id).unwrap();
+            if let Some(fix) = check.hotfix {
+                if args.hotfix {
+                    if fix(&Testable::new(result.filename.as_ref().unwrap())) {
+                        // XXX
+                        println!("   Hotfix applied");
+                    } else {
+                        println!("   Hotfix failed");
+                    }
+                } else {
+                    termimad::print_inline("  This issue can be fixed automatically. Run with `--hotfix` to apply the fix.\n")
+                }
+            }
+            println!("\n");
         }
     }
 }
