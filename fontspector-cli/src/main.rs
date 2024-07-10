@@ -1,7 +1,7 @@
 //! Quality control for OpenType fonts
 use clap::Parser;
 use fontspector_checkapi::{
-    Check, CheckRegistry, CheckResult, FontCollection, Plugin, StatusCode, TestFont,
+    Check, Registry, CheckResult, FontCollection, Plugin, StatusCode, TestFont,
 };
 use itertools::iproduct;
 // use rayon::prelude::*;
@@ -43,8 +43,8 @@ fn main() {
     ));
 
     // Set up the check registry
-    let mut registry = CheckRegistry::new();
-    Universal.provide_checks(&mut registry);
+    let mut registry = Registry::new();
+    Universal.register(&mut registry);
     for plugin_path in args.plugins {
         registry.load_plugin(&plugin_path);
     }

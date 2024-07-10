@@ -1,4 +1,4 @@
-use fontspector_checkapi::{return_result, Check, CheckRegistry, StatusList, TestFont};
+use fontspector_checkapi::{return_result, Check, Registry, StatusList, TestFont};
 
 struct Test;
 
@@ -17,7 +17,7 @@ pub const SAY_HELLO: Check = Check {
 };
 
 impl fontspector_checkapi::Plugin for Test {
-    fn provide_checks(&self, cr: &mut CheckRegistry) {
+    fn register(&self, cr: &mut Registry) {
         cr.checks.push(SAY_HELLO)
     }
 }
