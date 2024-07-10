@@ -1,4 +1,4 @@
-use fontspector_checkapi::{return_result, Check, Status, StatusList, Testable, FileTypeConvert, TTF};
+use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use read_fonts::TableProvider;
 
 fn name_trailing_spaces(f: &Testable) -> StatusList {

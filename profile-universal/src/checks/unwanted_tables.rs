@@ -1,4 +1,4 @@
-use fontspector_checkapi::{Check, Status, StatusList, Testable, FileTypeConvert, TTF};
+use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use skrifa::Tag;
 
 fn unwanted_tables(t: &Testable) -> StatusList {

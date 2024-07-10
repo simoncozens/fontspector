@@ -1,4 +1,6 @@
-use fontspector_checkapi::{return_result, Check, Status, StatusList, Testable, FileTypeConvert, TTF};
+use fontspector_checkapi::{
+    return_result, Check, FileTypeConvert, Status, StatusList, Testable, TTF,
+};
 
 use skrifa::Tag;
 

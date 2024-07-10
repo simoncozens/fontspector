@@ -14,6 +14,11 @@ pub use registry::Registry;
 pub use status::{Status, StatusCode, StatusList};
 pub use testable::Testable;
 
+pub mod prelude {
+    pub use crate::{
+        return_result, Check, FileType, Profile, Registry, Status, StatusList, Testable, TTF,
+    };
+}
 pub trait Plugin {
     fn register(&self, cr: &mut Registry);
 }
