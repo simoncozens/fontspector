@@ -17,4 +17,13 @@ impl Testable {
             source: Some(source.to_owned()),
         }
     }
+
+    pub fn basename(&self) -> String {
+        std::path::Path::new(&self.filename)
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
+    }
 }

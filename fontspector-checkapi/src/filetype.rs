@@ -9,7 +9,7 @@ impl FileType<'_> {
     }
 
     pub fn applies(&self, file: &Testable) -> bool {
-        glob_match(self.pattern, &file.filename)
+        glob_match(self.pattern, &file.basename())
     }
 }
 
