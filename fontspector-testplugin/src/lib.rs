@@ -1,4 +1,4 @@
-use fontspector_checkapi::{return_result, Check, Registry, StatusList, TestFont};
+use fontspector_checkapi::{return_result, Check, Profile, Registry, StatusList, TestFont};
 
 struct Test;
 
@@ -18,7 +18,19 @@ pub const SAY_HELLO: Check = Check {
 
 impl fontspector_checkapi::Plugin for Test {
     fn register(&self, cr: &mut Registry) {
-        cr.checks.push(SAY_HELLO)
+        cr.checks.push(SAY_HELLO);
+        cr.register_profile(
+            "test",
+            Profile::from_toml(
+                r#"
+[sections]
+"A test profile" = [
+    "com.google.fonts/check/test/say_hello"
+]
+"#,
+            )
+            .expect("Couldn't parse profile"),
+        )
     }
 }
 pluginator::plugin_implementation!(fontspector_checkapi::Plugin, Test);
