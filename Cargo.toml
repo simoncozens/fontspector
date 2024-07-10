@@ -4,5 +4,5 @@ resolver = "2"
 members = [
     "fontspector-cli",
     "fontspector-checkapi",
-    "fontspector-universal", "fontspector-testplugin",
+    "profile-universal", "profile-testplugin",
 ]

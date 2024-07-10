@@ -8,7 +8,7 @@ use fontspector_checkapi::{
 use itertools::iproduct;
 // use rayon::prelude::*;
 
-use fontspector_universal::Universal;
+use profile_universal::Universal;
 
 /// Quality control for OpenType fonts
 #[derive(Parser, Debug)]

@@ -10,7 +10,7 @@ license = "Apache-2.0"
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 # This profile is baked-in
-fontspector-universal = { path = "../fontspector-universal" }
+profile-universal = { path = "../profile-universal" }
 # skrifa = "0.15.0"
 # read-fonts = "0.15.0"
 pluginator = "1.0.1"
