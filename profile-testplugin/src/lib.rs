@@ -23,6 +23,8 @@ pub const SAY_HELLO: Check = Check {
     check_all: None,
     check_one: Some(&say_hello),
     applies_to: "TTF",
+    hotfix: None,
+    fix_source: None,
 };
 
 pub const VALIDATE_TOML: Check = Check {
@@ -33,6 +35,8 @@ pub const VALIDATE_TOML: Check = Check {
     check_all: None,
     check_one: Some(&validate_toml),
     applies_to: "TOML",
+    hotfix: None,
+    fix_source: None,
 };
 
 impl fontspector_checkapi::Plugin for Test {

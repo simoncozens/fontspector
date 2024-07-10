@@ -10,6 +10,8 @@ pub struct Check<'a> {
     pub proposal: Option<&'a str>,
     pub check_one: Option<&'a dyn Fn(&Testable) -> StatusList>,
     pub check_all: Option<&'a dyn Fn(&FontCollection) -> StatusList>,
+    pub hotfix: Option<&'a dyn Fn(&Testable) -> bool>,
+    pub fix_source: Option<&'a dyn Fn(&Testable) -> bool>,
     pub applies_to: &'a str,
 }
 

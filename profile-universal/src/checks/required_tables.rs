@@ -1,8 +1,7 @@
+use font_types::Tag;
 use fontspector_checkapi::{
     return_result, Check, FileTypeConvert, Status, StatusList, Testable, TTF,
 };
-
-use skrifa::Tag;
 
 fn required_tables(t: &Testable) -> StatusList {
     let f = TTF.from_testable(t).expect("Not a TTF file");
@@ -150,4 +149,6 @@ pub const REQUIRED_TABLES_CHECK: Check = Check {
     check_one: Some(&required_tables),
     check_all: None,
     applies_to: "TTF",
+    hotfix: None,
+    fix_source: None,
 };

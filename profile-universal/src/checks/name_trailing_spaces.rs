@@ -26,6 +26,10 @@ fn name_trailing_spaces(f: &Testable) -> StatusList {
     return_result(problems)
 }
 
+fn fix_trailing_spaces(_f: &Testable) -> bool {
+    false
+}
+
 pub const NAME_TRAILING_SPACES_CHECK: Check = Check {
     id: "com.google.fonts/check/name/trailing_spaces",
     title: "Name table records must not have trailing spaces.",
@@ -34,4 +38,6 @@ pub const NAME_TRAILING_SPACES_CHECK: Check = Check {
     check_one: Some(&name_trailing_spaces),
     check_all: None,
     applies_to: "TTF",
+    hotfix: Some(&fix_trailing_spaces),
+    fix_source: None,
 };
