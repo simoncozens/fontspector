@@ -7,7 +7,7 @@ use itertools::iproduct;
 // use rayon::prelude::*;
 
 use profile_universal::Universal;
-
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 /// Quality control for OpenType fonts
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -81,10 +81,14 @@ fn main() {
         //     .iter()
         //     .flat_map(|check| check.run_all(&collection))
         //     .collect();
-
-        let results_one: Vec<CheckResult> = iproduct!(checks.iter(), testables.iter())
+        let all_checks: Vec<_> = iproduct!(checks.iter(), testables.iter())
             .filter(|(check, file)| check.applies(file, &registry))
-            .flat_map(|(check, file)| check.run_one(file))
+            .collect();
+
+        let results_one: Vec<CheckResult> = all_checks
+            .par_iter()
+            .map(|(check, file)| check.run_one(file))
+            .flatten()
             .collect();
 
         for result in results_all

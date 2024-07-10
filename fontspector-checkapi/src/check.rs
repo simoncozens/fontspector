@@ -13,6 +13,9 @@ pub struct Check<'a> {
     pub applies_to: &'a str,
 }
 
+// Are we? Really? I don't know. Let's find out...
+unsafe impl Sync for Check<'_> {}
+
 pub struct CheckResult {
     pub status: Status,
     pub check_id: CheckId,
@@ -29,30 +32,35 @@ impl<'a> Check<'a> {
             .map_or(false, |ft| ft.applies(f))
     }
 
-    pub fn run_one(&'a self, f: &'a Testable) -> Box<dyn Iterator<Item = CheckResult> + 'a> {
+    pub fn run_one(&'a self, f: &'a Testable) -> Vec<CheckResult> {
         if let Some(check_one) = self.check_one {
-            return Box::new(check_one(f).map(|r| CheckResult {
-                status: r,
-                check_id: self.id.to_string(),
-                check_name: self.title.to_string(),
-                check_rationale: self.rationale.map(|x| x.to_string()),
-                filename: Some(f.filename.clone()),
-            }));
+            return check_one(f)
+                .map(|r| CheckResult {
+                    status: r,
+                    check_id: self.id.to_string(),
+                    check_name: self.title.to_string(),
+                    check_rationale: self.rationale.map(|x| x.to_string()),
+                    filename: Some(f.filename.clone()),
+                })
+                .collect();
         }
-        Box::new(std::iter::empty())
+        vec![]
     }
 
-    pub fn run_all(&'a self, f: &'a FontCollection) -> Box<dyn Iterator<Item = CheckResult> + 'a> {
+    pub fn run_all(&'a self, f: &'a FontCollection) -> Vec<CheckResult> {
         if let Some(check_all) = self.check_all {
-            return Box::new(check_all(f).map(|r| CheckResult {
-                status: r,
-                check_id: self.id.to_string(),
-                check_name: self.title.to_string(),
-                check_rationale: self.rationale.map(|x| x.to_string()),
-                filename: None,
-            }));
+            check_all(f)
+                .map(|r| CheckResult {
+                    status: r,
+                    check_id: self.id.to_string(),
+                    check_name: self.title.to_string(),
+                    check_rationale: self.rationale.map(|x| x.to_string()),
+                    filename: None,
+                })
+                .collect()
+        } else {
+            vec![]
         }
-        Box::new(std::iter::empty())
     }
 }
 
