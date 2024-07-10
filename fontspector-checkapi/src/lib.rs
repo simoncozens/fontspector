@@ -1,4 +1,5 @@
 mod check;
+mod constants;
 mod font;
 mod profile;
 mod registry;

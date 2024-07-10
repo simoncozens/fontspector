@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{Check, Plugin, Profile};
+use crate::{Check, Profile};
 
 #[derive(Default)]
 pub struct Registry<'a> {

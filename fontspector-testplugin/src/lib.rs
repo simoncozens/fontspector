@@ -2,7 +2,7 @@ use fontspector_checkapi::{return_result, Check, Profile, Registry, StatusList, 
 
 struct Test;
 
-fn say_hello(c: &TestFont) -> StatusList {
+fn say_hello(_c: &TestFont) -> StatusList {
     println!("Hello from the test plugin!");
     return_result(vec![])
 }

@@ -8,7 +8,6 @@ use fontspector_checkapi::{
 use itertools::iproduct;
 // use rayon::prelude::*;
 
-mod constants;
 use fontspector_universal::Universal;
 
 /// Quality control for OpenType fonts
@@ -72,8 +71,7 @@ fn main() {
         .collect();
     let thing: Vec<&TestFont> = testables.iter().collect();
     let collection = FontCollection(thing);
-    let checkmap: HashMap<&str, &Check<'_>> =
-        registry.checks.iter().map(|c| (c.id.clone(), c)).collect();
+    let checkmap: HashMap<&str, &Check<'_>> = registry.checks.iter().map(|c| (c.id, c)).collect();
 
     for (sectionname, checknames) in profile.sections.iter() {
         println!("Checking section {:}", sectionname);

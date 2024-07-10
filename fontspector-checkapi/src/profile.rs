@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{CheckId, Registry, StatusCode};
-use std::{collections::HashMap, error::Error};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 pub struct Override {

@@ -8,6 +8,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.checks.push(checks::BOLD_ITALIC_UNIQUE_CHECK);
         cr.checks.push(checks::NAME_TRAILING_SPACES_CHECK);
         cr.checks.push(checks::UNWANTED_TABLES_CHECK);
+        cr.checks.push(checks::REQUIRED_TABLES_CHECK);
         cr.register_profile(
             "universal",
             Profile::from_toml(
@@ -18,7 +19,8 @@ impl fontspector_checkapi::Plugin for Universal {
 ]
 "Universal Profile Checks" = [
     "com.google.fonts/check/name/trailing_spaces",
-    "com.google.fonts/check/unwanted_tables"
+    "com.google.fonts/check/unwanted_tables",
+    "com.google.fonts/check/required_tables",
 ]
 "#,
             )
