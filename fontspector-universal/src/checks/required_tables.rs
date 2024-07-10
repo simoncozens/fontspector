@@ -1,7 +1,4 @@
-use crate::{
-    check::{return_result, Status, StatusList},
-    Check, TestFont,
-};
+use fontspector_checkapi::{return_result, Check, Status, StatusList, TestFont};
 
 use skrifa::Tag;
 
@@ -65,7 +62,10 @@ fn required_tables(f: &TestFont) -> StatusList {
         }
     }
     if !optional.is_empty() {
-        problems.push(Status::info(&format!("This font contains the following optional tables:\n\n{}", optional.join("\n"))))
+        problems.push(Status::info(&format!(
+            "This font contains the following optional tables:\n\n{}",
+            optional.join("\n")
+        )))
     }
 
     let mut missing = vec![];
@@ -79,23 +79,28 @@ fn required_tables(f: &TestFont) -> StatusList {
     // OpenType fonts that contain TrueType outlines should use the value of 0x00010000
     // for sfntVersion. OpenType fonts containing CFF data (version 1 or 2) should use
     // 0x4F54544F ('OTTO', when re-interpreted as a Tag) for sfntVersion.
-    if f.font().table_directory.sfnt_version() == 0x4F54544F && (
-        !f.font().table_data(Tag::new(b"CFF ")).is_some() &&
-        !f.font().table_data(Tag::new(b"CFF2")).is_some()
-    ) {
+    if f.font().table_directory.sfnt_version() == 0x4F54544F
+        && (!f.font().table_data(Tag::new(b"CFF ")).is_some()
+            && !f.font().table_data(Tag::new(b"CFF2")).is_some())
+    {
         if f.font().table_data(Tag::new(b"fvar")).is_some() {
             missing.push("CFF2".to_string());
         } else {
             missing.push("CFF ".to_string());
         }
     } else {
-        if f.font().table_directory.sfnt_version() == 0x00010000 && !f.font().table_data(Tag::new(b"glyf")).is_some() {
+        if f.font().table_directory.sfnt_version() == 0x00010000
+            && !f.font().table_data(Tag::new(b"glyf")).is_some()
+        {
             missing.push("glyf".to_string());
         }
     }
 
     if !missing.is_empty() {
-        problems.push(Status::fail(&format!("This font is missing the following required tables:\n\n{}", missing.join("\n"))))
+        problems.push(Status::fail(&format!(
+            "This font is missing the following required tables:\n\n{}",
+            missing.join("\n")
+        )))
     }
 
     if problems.is_empty() {
@@ -108,7 +113,8 @@ fn required_tables(f: &TestFont) -> StatusList {
 pub const REQUIRED_TABLES_CHECK: Check = Check {
     id: "com.google.fonts/check/required_tables",
     title: "Font contains all required tables?",
-    rationale: Some("
+    rationale: Some(
+        "
         According to the OpenType spec
         https://docs.microsoft.com/en-us/typography/opentype/spec/otff#required-tables
 
@@ -137,8 +143,9 @@ pub const REQUIRED_TABLES_CHECK: Check = Check {
         - Non-monospaced Latin fonts should have a kern table.⏎
         - A gasp table is necessary if a designer wants to influence the sizes
           at which grayscaling is used under Windows. Etc.
-    "),
+    ",
+    ),
     proposal: Some("legacy:check/052"),
     check_one: Some(&required_tables),
-    check_all: None
+    check_all: None,
 };

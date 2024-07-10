@@ -1,0 +1,10 @@
+[package]
+name = "fontspector-checkapi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+skrifa = "0.15.0"
+read-fonts = "0.15.0"
+clap = {version = "3.2.5", features = ["derive"]}
+pluginator = "1.0.1"

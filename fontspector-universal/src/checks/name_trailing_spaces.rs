@@ -1,7 +1,4 @@
-use crate::{
-    check::{return_result, Status, StatusList},
-    Check, TestFont,
-};
+use fontspector_checkapi::{return_result, Check, Status, StatusList, TestFont};
 use read_fonts::TableProvider;
 
 fn name_trailing_spaces(f: &TestFont) -> StatusList {

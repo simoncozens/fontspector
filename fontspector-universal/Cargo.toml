@@ -1,0 +1,14 @@
+[package]
+name = "fontspector-universal"
+version = "0.1.0"
+edition = "2021"
+authors =  [
+    "Simon Cozens <simon@simon-cozens.org>",
+    "Felipe Sanches <juca@members.fsf.org>",
+]
+
+[dependencies]
+fontspector-checkapi = { path = "../fontspector-checkapi" }
+skrifa = "0.15.0"
+read-fonts = "0.15.0"
+pluginator = "1.0.1"

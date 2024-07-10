@@ -1,7 +1,4 @@
-use crate::{
-    check::{Status, StatusList},
-    Check, TestFont,
-};
+use fontspector_checkapi::{Check, Status, StatusList, TestFont};
 
 use skrifa::Tag;
 

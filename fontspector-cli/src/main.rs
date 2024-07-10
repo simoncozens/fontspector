@@ -1,22 +1,13 @@
 //! Quality control for OpenType fonts
-use crate::{
-    check::{CheckResult, StatusCode},
-    font::FontCollection,
-};
 use clap::Parser;
+use fontspector_checkapi::{
+    Check, CheckRegistry, CheckResult, FontCollection, Plugin, StatusCode, TestFont,
+};
 use itertools::iproduct;
 // use rayon::prelude::*;
 
-mod check;
-mod checks;
 mod constants;
-mod font;
-mod universal;
-
-use universal::UNIVERSAL_PROFILE;
-
-use check::Check;
-use font::TestFont;
+use fontspector_universal::Universal;
 
 /// Quality control for OpenType fonts
 #[derive(Parser, Debug)]
@@ -29,6 +20,10 @@ struct Args {
     /// Log level
     #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Warn)]
     loglevel: StatusCode,
+
+    /// Plugins to load
+    #[clap(long, value_delimiter = ',')]
+    plugins: Vec<String>,
 
     /// Input files
     inputs: Vec<String>,
@@ -47,6 +42,13 @@ fn main() {
         },
     ));
 
+    // Set up the check registry
+    let mut registry = CheckRegistry::new();
+    Universal.provide_checks(&mut registry);
+    for plugin_path in args.plugins {
+        registry.load_plugin(&plugin_path);
+    }
+
     let testables: Vec<TestFont> = args
         .inputs
         .iter()
@@ -56,12 +58,12 @@ fn main() {
     let thing: Vec<&TestFont> = testables.iter().collect();
     let collection = FontCollection(thing);
 
-    let results_all: Vec<CheckResult> = UNIVERSAL_PROFILE
+    let results_all: Vec<CheckResult> = registry
         .iter()
         .flat_map(|check| check.run_all(&collection))
         .collect();
 
-    let results_one: Vec<CheckResult> = iproduct!(UNIVERSAL_PROFILE.iter(), testables.iter())
+    let results_one: Vec<CheckResult> = iproduct!(registry.iter(), testables.iter())
         .map(|(check, file)| check.run_one(file))
         .flatten()
         .collect();

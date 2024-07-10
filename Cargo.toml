@@ -1,27 +1,8 @@
-[package]
-name = "fontspector"
-version = "0.1.0"
-authors = [
-    "Simon Cozens <simon@simon-cozens.org>",
-    "Felipe Sanches <juca@members.fsf.org>",
-]
-edition = "2021"
-description = "Quality control for OpenType fonts"
-repository = "https://github.com/simoncozens/fontspector"
-license = "Apache-2.0"
+[workspace]
+resolver = "2"
 
-[dependencies]
-skrifa = "0.15.0"
-read-fonts = "0.15.0"
-clap = {version = "3.2.5", features = ["derive"]}
-itertools = "0.10.0"
-log = "0.4.14"
-env_logger = "0.8"
-rayon = "1.0.1"
-kurbo = { version = "0.8.1" }
-indicatif = {version = "0", features = ["rayon"]}
-simple_logger = "1.13.0"
-regex = "1.5.4"
-serde_json = "1.0"
-serde =  {version = "1.0.130", features=["derive"] }
-termimad = "0.14"
+members = [
+    "fontspector-cli",
+    "fontspector-checkapi",
+    "fontspector-universal", "fontspector-testplugin",
+]

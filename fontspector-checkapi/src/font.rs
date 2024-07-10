@@ -1,4 +1,4 @@
-use crate::constants::RIBBI_STYLE_NAMES;
+// use crate::constants::RIBBI_STYLE_NAMES;
 use read_fonts::{tables::os2::SelectionFlags, TableProvider};
 use skrifa::{
     font::FontRef,
@@ -49,15 +49,15 @@ impl TestFont {
 pub struct FontCollection<'a>(pub Vec<&'a TestFont>);
 
 impl FontCollection<'_> {
-    pub fn ribbi_fonts(&self) -> FontCollection {
-        let filtered: Vec<&TestFont> = self
-            .0
-            .iter()
-            .copied()
-            .filter(|x| RIBBI_STYLE_NAMES.contains(&x.style().unwrap_or("None")))
-            .collect();
-        FontCollection(filtered)
-    }
+    // pub fn ribbi_fonts(&self) -> FontCollection {
+    //     let filtered: Vec<&TestFont> = self
+    //         .0
+    //         .iter()
+    //         .copied()
+    //         .filter(|x| RIBBI_STYLE_NAMES.contains(&x.style().unwrap_or("None")))
+    //         .collect();
+    //     FontCollection(filtered)
+    // }
     pub fn iter(&self) -> std::slice::Iter<'_, &TestFont> {
         self.0.iter()
     }
