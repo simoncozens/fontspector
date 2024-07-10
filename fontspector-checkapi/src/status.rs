@@ -1,6 +1,7 @@
 use clap::ArgEnum;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone, ArgEnum)]
+#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone, ArgEnum, Serialize, Deserialize)]
 pub enum StatusCode {
     Skip,
     Info,

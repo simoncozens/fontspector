@@ -4,7 +4,16 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# Font-related deps
 skrifa = "0.15.0"
 read-fonts = "0.15.0"
+
+# Needed so that we can refer to status codes on the command line
 clap = {version = "3.2.5", features = ["derive"]}
+
+# Plugin architecture
 pluginator = "1.0.1"
+
+# Serializing and deserializing profiles
+toml = "0.8.14"
+serde = { version = "1.0", features = ["derive"] }

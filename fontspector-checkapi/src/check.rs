@@ -1,5 +1,7 @@
 use crate::{font::FontCollection, Status, StatusList, TestFont};
 
+pub type CheckId = String;
+
 #[derive(Clone)]
 pub struct Check<'a> {
     pub id: &'a str,
@@ -12,7 +14,7 @@ pub struct Check<'a> {
 
 pub struct CheckResult {
     pub status: Status,
-    pub check_id: String,
+    pub check_id: CheckId,
     pub check_name: String,
     pub check_rationale: Option<String>,
     pub filename: Option<String>,
