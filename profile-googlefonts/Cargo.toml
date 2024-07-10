@@ -1,0 +1,14 @@
+[package]
+name = "profile-googlefonts"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type=["dylib"]
+
+[dependencies]
+fontspector-checkapi = { path = "../fontspector-checkapi" }
+protobuf = "3.5.0"
+pluginator = "1.0.1"
+[build-dependencies]
+protobuf-codegen = "3.5.0"
