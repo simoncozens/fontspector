@@ -28,8 +28,25 @@ impl Profile {
         toml::from_str(toml)
     }
 
-    pub fn validate(&self, registry: &Registry) -> Result<(), String> {
+    pub fn validate(&mut self, registry: &Registry) -> Result<(), String> {
         // Resolve "include_profiles" and "exclude_checks" here
+        for included_profile_str in self.include_profiles.iter() {
+            if let Some(profile) = registry.profiles.get(included_profile_str) {
+                for (section, checks) in &profile.sections {
+                    if !self.sections.contains_key(section) {
+                        self.sections.insert(section.clone(), checks.clone());
+                    } else {
+                        for check in checks {
+                            if !self.sections[section].contains(check) {
+                                self.sections.get_mut(section).unwrap().push(check.clone());
+                            }
+                        }
+                    }
+                }
+            } else {
+                return Err(format!("Unknown profile: {}", included_profile_str));
+            }
+        }
 
         // Ensure we have all the checks we need
         let mut missing_checks = vec![];

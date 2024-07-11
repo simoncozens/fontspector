@@ -4,7 +4,7 @@ use fontspector_checkapi::{Profile, Registry};
 pub struct Universal;
 
 impl fontspector_checkapi::Plugin for Universal {
-    fn register(&self, cr: &mut Registry) {
+    fn register(&self, cr: &mut Registry) -> Result<(), String> {
         cr.register_check(checks::NAME_TRAILING_SPACES_CHECK);
         cr.register_check(checks::UNWANTED_TABLES_CHECK);
         cr.register_check(checks::REQUIRED_TABLES_CHECK);

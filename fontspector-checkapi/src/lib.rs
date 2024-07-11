@@ -20,7 +20,7 @@ pub mod prelude {
     };
 }
 pub trait Plugin {
-    fn register(&self, cr: &mut Registry);
+    fn register(&self, cr: &mut Registry) -> Result<(), String>;
 }
 
 pluginator::plugin_trait!(Plugin);

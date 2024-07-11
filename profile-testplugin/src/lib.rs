@@ -40,11 +40,11 @@ pub const VALIDATE_TOML: Check = Check {
 };
 
 impl fontspector_checkapi::Plugin for Test {
-    fn register(&self, cr: &mut Registry) {
+    fn register(&self, cr: &mut Registry) -> Result<(), String> {
         let toml = FileType::new("*.toml");
         cr.register_filetype("TOML", toml);
 
-        cr.register_simple_profile("test", vec![VALIDATE_TOML, SAY_HELLO]);
+        cr.register_simple_profile("test", vec![VALIDATE_TOML, SAY_HELLO])
     }
 }
 pluginator::plugin_implementation!(fontspector_checkapi::Plugin, Test);

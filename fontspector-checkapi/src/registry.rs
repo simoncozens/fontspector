@@ -5,7 +5,7 @@ use crate::{Check, CheckId, FileType, Profile, TTF};
 #[derive(Default)]
 pub struct Registry<'a> {
     pub checks: HashMap<CheckId, Check<'a>>,
-    profiles: HashMap<String, Profile>,
+    pub(crate) profiles: HashMap<String, Profile>,
     pub(crate) filetypes: HashMap<String, FileType<'a>>,
 }
 
@@ -20,15 +20,17 @@ impl<'a> Registry<'a> {
         self.checks.values()
     }
 
-    pub fn load_plugin(&mut self, plugin_path: &str) {
+    pub fn load_plugin(&mut self, plugin_path: &str) -> Result<(), String> {
         let plugin = unsafe { crate::load_plugin(plugin_path) }.unwrap_or_else(|e| {
             panic!("Could not load plugin {:?}: {:?}", plugin_path, e);
         });
-        plugin.register(self);
+        plugin.register(self)
     }
 
-    pub fn register_profile(&mut self, name: &str, profile: Profile) {
+    pub fn register_profile(&mut self, name: &str, mut profile: Profile) -> Result<(), String> {
+        profile.validate(self)?;
         self.profiles.insert(name.to_string(), profile);
+        Ok(())
     }
 
     pub fn get_profile(&self, name: &str) -> Option<&Profile> {
@@ -43,15 +45,19 @@ impl<'a> Registry<'a> {
         self.checks.insert(check.id.to_string(), check);
     }
 
-    pub fn register_simple_profile(&mut self, name: &str, checks: Vec<Check<'a>>) {
+    pub fn register_simple_profile(
+        &mut self,
+        name: &str,
+        checks: Vec<Check<'a>>,
+    ) -> Result<(), String> {
         let mut profile = Profile::default();
         profile.sections.insert(
             name.to_string(),
             checks.iter().map(|c| c.id.to_string()).collect(),
         );
-        self.register_profile(name, profile);
         for check in checks {
             self.register_check(check);
         }
+        self.register_profile(name, profile)
     }
 }

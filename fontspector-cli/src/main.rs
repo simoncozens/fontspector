@@ -49,9 +49,13 @@ fn main() {
 
     // Set up the check registry
     let mut registry = Registry::new();
-    Universal.register(&mut registry);
+    Universal
+        .register(&mut registry)
+        .expect("Couldn't register universal profile, fontspector bug");
     for plugin_path in args.plugins {
-        registry.load_plugin(&plugin_path);
+        if let Err(err) = registry.load_plugin(&plugin_path) {
+            log::error!("Could not load plugin {:}: {:}", plugin_path, err);
+        }
     }
 
     // Load the relevant profile
@@ -59,11 +63,6 @@ fn main() {
         log::error!("Could not find profile {:}", args.profile);
         std::process::exit(1);
     });
-    if let Err(fail) = profile.validate(&registry) {
-        log::error!("Profile validation failed: {:}", fail);
-        std::process::exit(1);
-    }
-
     let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
     // let collection = FontCollection(thing);
 
