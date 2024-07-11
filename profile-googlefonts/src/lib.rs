@@ -30,4 +30,3 @@ include_profiles = ["universal"]
         )
     }
 }
-pluginator::plugin_implementation!(fontspector_checkapi::Plugin, GoogleFonts);

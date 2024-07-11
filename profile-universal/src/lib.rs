@@ -24,4 +24,3 @@ impl fontspector_checkapi::Plugin for Universal {
         )
     }
 }
-pluginator::plugin_implementation!(fontspector_checkapi::Plugin, Universal);
