@@ -33,6 +33,10 @@ impl TestFont {
         Some("Regular")
     }
 
+    pub fn has_table(&self, table: &[u8; 4]) -> bool {
+        self.font().table_data(Tag::new(table)).is_some()
+    }
+
     pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, Box<dyn Error>> {
         let os2 = self.font().os2()?;
         Ok(os2.fs_selection())
@@ -43,7 +47,8 @@ impl TestFont {
     }
 
     pub fn is_variable_font(&self) -> bool {
-        self.font().table_data(Tag::new(b"fvar")).is_some()
+        self.has_table(b"fvar")
+    }
     }
 }
 

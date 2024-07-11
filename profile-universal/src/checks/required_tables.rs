@@ -1,49 +1,23 @@
-use font_types::Tag;
 use fontspector_checkapi::{
     return_result, Check, FileTypeConvert, Status, StatusList, Testable, TTF,
 };
 
+const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
+    b"cvt ", b"fpgm", b"loca", b"prep", b"VORG", b"EBDT", b"EBLC", b"EBSC", b"BASE", b"GPOS",
+    b"GSUB", b"JSTF", b"gasp", b"hdmx", b"LTSH", b"PCLT", b"VDMX", b"vhea", b"vmtx", b"kern",
+];
+
 fn required_tables(t: &Testable) -> StatusList {
     let f = TTF.from_testable(t).expect("Not a TTF file");
-    let mut required_table_tags: Vec<Tag> = vec![
-        Tag::new(b"cmap"),
-        Tag::new(b"head"),
-        Tag::new(b"hhea"),
-        Tag::new(b"hmtx"),
-        Tag::new(b"maxp"),
-        Tag::new(b"name"),
-        Tag::new(b"OS/2"),
-        Tag::new(b"post"),
+    let mut required_table_tags: Vec<_> = vec![
+        b"cmap", b"head", b"hhea", b"hmtx", b"maxp", b"name", b"OS/2", b"post",
     ];
 
     if f.is_variable_font() {
         // According to https://github.com/fonttools/fontbakery/issues/1671
         // STAT table is required on WebKit on MacOS 10.12 for variable fonts.
-        required_table_tags.push(Tag::new(b"STAT"));
+        required_table_tags.push(b"STAT");
     }
-
-    const OPTIONAL_TABLE_TAGS: [Tag; 20] = [
-        Tag::new(b"cvt "),
-        Tag::new(b"fpgm"),
-        Tag::new(b"loca"),
-        Tag::new(b"prep"),
-        Tag::new(b"VORG"),
-        Tag::new(b"EBDT"),
-        Tag::new(b"EBLC"),
-        Tag::new(b"EBSC"),
-        Tag::new(b"BASE"),
-        Tag::new(b"GPOS"),
-        Tag::new(b"GSUB"),
-        Tag::new(b"JSTF"),
-        Tag::new(b"gasp"),
-        Tag::new(b"hdmx"),
-        Tag::new(b"LTSH"),
-        Tag::new(b"PCLT"),
-        Tag::new(b"VDMX"),
-        Tag::new(b"vhea"),
-        Tag::new(b"vmtx"),
-        Tag::new(b"kern"),
-    ];
 
     // See https://github.com/fonttools/fontbakery/issues/617
     //
@@ -56,11 +30,11 @@ fn required_tables(t: &Testable) -> StatusList {
     // the rationale behind it.
 
     let mut problems: Vec<Status> = vec![];
+    let mut optional: Vec<String> = vec![];
 
-    let mut optional = vec![];
-    for tag in OPTIONAL_TABLE_TAGS.iter() {
-        if f.font().table_data(*tag).is_some() {
-            optional.push(format!("{}", *tag));
+    for tag in OPTIONAL_TABLE_TAGS {
+        if f.has_table(tag) {
+            optional.push(String::from_utf8(tag.to_vec()).unwrap());
         }
     }
     if !optional.is_empty() {
@@ -71,9 +45,9 @@ fn required_tables(t: &Testable) -> StatusList {
     }
 
     let mut missing = vec![];
-    for tag in required_table_tags.iter() {
-        if f.font().table_data(*tag).is_none() {
-            missing.push(format!("{}", *tag));
+    for tag in required_table_tags {
+        if !f.has_table(tag) {
+            missing.push(String::from_utf8(tag.to_vec()).unwrap());
         }
     }
 
@@ -81,18 +55,14 @@ fn required_tables(t: &Testable) -> StatusList {
     // OpenType fonts that contain TrueType outlines should use the value of 0x00010000
     // for sfntVersion. OpenType fonts containing CFF data (version 1 or 2) should use
     // 0x4F54544F ('OTTO', when re-interpreted as a Tag) for sfntVersion.
-    if f.font().table_directory.sfnt_version() == 0x4F54544F
-        && (f.font().table_data(Tag::new(b"CFF ")).is_none()
-            && f.font().table_data(Tag::new(b"CFF2")).is_none())
-    {
-        if f.font().table_data(Tag::new(b"fvar")).is_some() {
+    let version = f.font().table_directory.sfnt_version();
+    if version == 0x4F54544F && (!f.has_table(b"CFF ") && !f.has_table(b"CFF2")) {
+        if f.has_table(b"fvar") {
             missing.push("CFF2".to_string());
         } else {
             missing.push("CFF ".to_string());
         }
-    } else if f.font().table_directory.sfnt_version() == 0x00010000
-        && f.font().table_data(Tag::new(b"glyf")).is_none()
-    {
+    } else if version == 0x00010000 && !f.has_table(b"glyf") {
         missing.push("glyf".to_string());
     }
 
@@ -103,11 +73,7 @@ fn required_tables(t: &Testable) -> StatusList {
         )))
     }
 
-    if problems.is_empty() {
-        Status::just_one_pass()
-    } else {
-        return_result(problems)
-    }
+    return_result(problems)
 }
 
 pub const REQUIRED_TABLES_CHECK: Check = Check {
