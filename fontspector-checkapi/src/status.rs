@@ -60,6 +60,12 @@ impl Status {
             code: StatusCode::Fail,
         }
     }
+    pub fn skip(s: &str) -> Self {
+        Self {
+            message: Some(s.to_string()),
+            code: StatusCode::Skip,
+        }
+    }
     pub fn info(s: &str) -> Self {
         Self {
             message: Some(s.to_string()),
