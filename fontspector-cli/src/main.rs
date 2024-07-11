@@ -1,7 +1,10 @@
 //! Quality control for OpenType fonts
+use std::collections::HashMap;
+
 use clap::Parser;
 use fontspector_checkapi::{Check, CheckResult, Plugin, Registry, StatusCode, Testable};
-use itertools::iproduct;
+use indicatif::ParallelProgressIterator;
+use itertools::Itertools;
 // use rayon::prelude::*;
 
 use profile_googlefonts::GoogleFonts;
@@ -70,66 +73,83 @@ fn main() {
     let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
     // let collection = FontCollection(thing);
 
-    for (sectionname, checknames) in profile.sections.iter() {
-        println!("Checking section {:}", sectionname);
-        let checks: Vec<&Check> = checknames
-            .iter()
-            .map(|name| {
-                let n: &str = name;
-                registry.checks.get(n).unwrap()
-            })
-            .collect();
+    // Establish a check order
+    let checkorder: Vec<(String, &Testable, &Check)> = profile
+        .sections
+        .iter()
+        .flat_map(|(sectionname, checknames)| {
+            checknames
+                .iter()
+                .map(|checkname| (sectionname.clone(), registry.checks.get(checkname).unwrap()))
+        })
+        .flat_map(|(sectionname, check)| {
+            testables
+                .iter()
+                .filter(|testable| check.applies(testable, &registry))
+                .map(move |testable| (sectionname.clone(), testable, check))
+        })
+        .collect();
 
-        let results_all = [];
-        // let results_all: Vec<CheckResult> = checks
-        //     .iter()
-        //     .flat_map(|check| check.run_all(&collection))
-        //     .collect();
-        let all_checks: Vec<_> = iproduct!(checks.iter(), testables.iter())
-            .filter(|(check, file)| check.applies(file, &registry))
-            .collect();
+    println!("Testing...");
+    let results: Vec<_> = checkorder
+        .par_iter()
+        .progress()
+        .map(|(sectionname, testable, check)| (sectionname, testable, check.run_one(testable)))
+        .collect();
 
-        let results_one: Vec<CheckResult> = all_checks
-            .par_iter()
-            .map(|(check, file)| check.run_one(file))
-            .flatten()
-            .collect();
+    // Organise results by testable and sectionname
+    let mut organised_results: HashMap<&Testable, HashMap<String, Vec<CheckResult>>> =
+        HashMap::new();
+    for (sectionname, testable, checkresults) in results {
+        // let filename = testable.filename.clone();
+        let section = organised_results.entry(testable).or_default();
+        let results = section.entry(sectionname.clone()).or_default();
+        results.extend(checkresults);
+    }
 
-        for result in results_all
-            .iter()
-            .chain(results_one.iter())
-            .filter(|c| c.status.code >= args.loglevel)
-        {
-            println!(">> {:}", result.check_id);
-            if args.verbose > 1 {
-                println!("   {:}", result.check_name);
-            }
-            if let Some(filename) = &result.filename {
-                println!("   with {:}\n", filename);
-            }
-            if let Some(rationale) = &result.check_rationale {
+    for (testable, sectionresults) in organised_results
+        .iter()
+        .sorted_by_key(|(t, _s)| &t.filename)
+    {
+        let mut fileheading_done = false;
+        for (sectionname, results) in sectionresults.iter() {
+            let mut sectionheading_done = false;
+            for result in results.iter().filter(|c| c.status.code >= args.loglevel) {
+                if !fileheading_done {
+                    println!("Testing: {:}", testable.filename);
+                    fileheading_done = true;
+                }
+                if !sectionheading_done {
+                    println!("  Section: {:}\n", sectionname);
+                    sectionheading_done = true;
+                }
+                println!(">> {:}", result.check_id);
                 if args.verbose > 1 {
-                    termimad::print_inline(&format!("Rationale:\n\n```\n{}\n```\n", rationale));
+                    println!("   {:}", result.check_name);
                 }
-            }
-            termimad::print_inline(&format!("Result: **{:}**\n\n", result.status));
-            if result.status.code != StatusCode::Fail {
-                continue;
-            }
-            let check = registry.checks.get(&result.check_id).unwrap();
-            if let Some(fix) = check.hotfix {
-                if args.hotfix {
-                    if fix(&Testable::new(result.filename.as_ref().unwrap())) {
-                        // XXX
-                        println!("   Hotfix applied");
-                    } else {
-                        println!("   Hotfix failed");
+                if let Some(rationale) = &result.check_rationale {
+                    if args.verbose > 1 {
+                        termimad::print_inline(&format!("Rationale:\n\n```\n{}\n```\n", rationale));
                     }
-                } else {
-                    termimad::print_inline("  This issue can be fixed automatically. Run with `--hotfix` to apply the fix.\n")
                 }
+                termimad::print_inline(&format!("**{:}**", result.status));
+                if result.status.code != StatusCode::Fail {
+                    continue;
+                }
+                let check = registry.checks.get(&result.check_id).unwrap();
+                if let Some(fix) = check.hotfix {
+                    if args.hotfix {
+                        if fix(testable) {
+                            println!("   Hotfix applied");
+                        } else {
+                            println!("   Hotfix failed");
+                        }
+                    } else {
+                        termimad::print_inline("  This issue can be fixed automatically. Run with `--hotfix` to apply the fix.\n")
+                    }
+                }
+                println!("\n");
             }
-            println!("\n");
         }
     }
 }
