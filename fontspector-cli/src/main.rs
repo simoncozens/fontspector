@@ -4,6 +4,7 @@ use fontspector_checkapi::{Check, CheckResult, Plugin, Registry, StatusCode, Tes
 use itertools::iproduct;
 // use rayon::prelude::*;
 
+use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 /// Quality control for OpenType fonts
@@ -52,6 +53,9 @@ fn main() {
     Universal
         .register(&mut registry)
         .expect("Couldn't register universal profile, fontspector bug");
+    GoogleFonts
+        .register(&mut registry)
+        .expect("Couldn't register googlefonts profile, fontspector bug");
     for plugin_path in args.plugins {
         if let Err(err) = registry.load_plugin(&plugin_path) {
             log::error!("Could not load plugin {:}: {:}", plugin_path, err);

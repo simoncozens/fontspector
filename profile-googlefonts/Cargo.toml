@@ -3,9 +3,6 @@ name = "profile-googlefonts"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-crate-type=["dylib"]
-
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 protobuf = "3.5.0"

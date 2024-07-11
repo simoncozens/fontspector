@@ -9,8 +9,9 @@ license = "Apache-2.0"
 
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
-# This profile is baked-in
+# These profiles are baked-in
 profile-universal = { path = "../profile-universal" }
+profile-googlefonts = { path = "../profile-googlefonts" }
 # skrifa = "0.15.0"
 # read-fonts = "0.15.0"
 pluginator = "1.0.1"

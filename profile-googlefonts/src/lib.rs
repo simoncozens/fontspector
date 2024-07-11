@@ -2,7 +2,7 @@ mod metadata;
 use fontspector_checkapi::prelude::*;
 use metadata::VALIDATE_METADATA_PB;
 
-struct GoogleFonts;
+pub struct GoogleFonts;
 impl fontspector_checkapi::Plugin for GoogleFonts {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         let mdpb = FileType::new("METADATA.pb");
