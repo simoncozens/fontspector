@@ -1,4 +1,6 @@
+mod family;
 mod metadata;
+use family::EQUAL_CODEPOINT_COVERAGE_CHECK;
 use fontspector_checkapi::prelude::*;
 use metadata::VALIDATE_METADATA_PB;
 
@@ -7,6 +9,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         let mdpb = FileType::new("METADATA.pb");
         cr.register_filetype("MDPB", mdpb);
+        cr.register_check(EQUAL_CODEPOINT_COVERAGE_CHECK);
         cr.register_check(VALIDATE_METADATA_PB);
 
         cr.register_profile(
@@ -17,6 +20,9 @@ include_profiles = ["universal"]
 [sections]
 "Metadata Checks" = [
     "com.google.fonts/check/metadata/parses",
+]
+"Family Checks" = [
+    "com.google.fonts/check/family/equal_codepoint_coverage"
 ]
 "#,
             )
