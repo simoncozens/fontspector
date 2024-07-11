@@ -1,3 +1,4 @@
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct Testable {
     pub filename: String,
     pub source: Option<String>,

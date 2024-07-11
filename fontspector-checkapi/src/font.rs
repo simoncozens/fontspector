@@ -1,30 +1,56 @@
 use crate::{constants::RIBBI_STYLE_NAMES, filetype::FileTypeConvert, FileType, Testable};
 use read_fonts::{tables::os2::SelectionFlags, TableProvider};
 use skrifa::{
+    charmap::Charmap,
     font::FontRef,
     string::{LocalizedStrings, StringId},
     MetadataProvider, Tag,
 };
-use std::error::Error;
+use std::{collections::HashSet, error::Error, path::Path};
 
 pub struct TestFont {
+    filename: String,
     font_data: Vec<u8>,
+    _codepoints: HashSet<u32>,
+    _sibling_filenames: Vec<String>,
 }
 
 pub const TTF: FileType = FileType { pattern: "*.ttf" };
 
 impl<'a> FileTypeConvert<TestFont> for FileType<'a> {
     fn from_testable(&self, t: &Testable) -> Option<TestFont> {
-        if self.applies(t) {
-            let font_data = std::fs::read(&t.filename).expect("Couldn't open file");
-            Some(TestFont { font_data })
-        } else {
-            None
-        }
+        self.applies(t).then(|| TestFont::new(&t.filename))
     }
 }
 
 impl TestFont {
+    pub fn new(filename: &str) -> TestFont {
+        let font_data = std::fs::read(filename).expect("Couldn't open file");
+        let mut fnt = TestFont {
+            filename: filename.to_string(),
+            font_data,
+            _codepoints: HashSet::default(),
+            _sibling_filenames: vec![],
+        };
+        // Cache some stuff
+
+        fnt._codepoints = Charmap::new(&fnt.font())
+            .mappings()
+            .map(|(u, _gid)| u)
+            .collect();
+        fnt._sibling_filenames = {
+            // All other TTF files in same directory
+            let directory = Path::new(&fnt.filename).parent().expect("Can't get parent");
+            let paths = std::fs::read_dir(directory).expect("Can't read directory");
+            paths
+                .flatten()
+                .filter(|x| x.path().extension().map_or(false, |ext| ext == "ttf"))
+                .filter(|x| x.path().to_string_lossy() != fnt.filename)
+                .map(|x| x.path().to_string_lossy().to_string())
+                .collect()
+        };
+        fnt
+    }
     pub fn font(&self) -> FontRef {
         FontRef::new(&self.font_data).expect("Can't parse font")
     }
@@ -49,6 +75,16 @@ impl TestFont {
     pub fn is_variable_font(&self) -> bool {
         self.has_table(b"fvar")
     }
+
+    pub fn siblings(&self) -> Vec<TestFont> {
+        self._sibling_filenames
+            .iter()
+            .map(|x| TestFont::new(x))
+            .collect()
+    }
+
+    pub fn codepoints(&self) -> &HashSet<u32> {
+        &self._codepoints
     }
 }
 
