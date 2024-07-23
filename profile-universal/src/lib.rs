@@ -6,6 +6,7 @@ pub struct Universal;
 
 impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
+        cr.register_check(checks::CHECK_ARABIC_SPACING_SYMBOLS);
         cr.register_check(checks::CHECK_NAME_TRAILING_SPACES);
         cr.register_check(checks::CHECK_UNWANTED_TABLES);
         cr.register_check(checks::CHECK_REQUIRED_TABLES);
@@ -13,6 +14,7 @@ impl fontspector_checkapi::Plugin for Universal {
             r#"
 [sections]
 "Universal Profile Checks" = [
+"com.google.fonts/check/arabic_spacing_symbols",
 "com.google.fonts/check/name/trailing_spaces",
 "com.google.fonts/check/unwanted_tables",
 "com.google.fonts/check/required_tables",

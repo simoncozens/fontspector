@@ -1,5 +1,10 @@
 use crate::{constants::RIBBI_STYLE_NAMES, filetype::FileTypeConvert, FileType, Testable};
-use read_fonts::{tables::os2::SelectionFlags, TableProvider};
+use read_fonts::{
+    tables::cmap::Cmap,
+    tables::gdef::ClassDef,
+    tables::os2::SelectionFlags,
+    TableProvider,
+};
 use skrifa::{
     charmap::Charmap,
     font::FontRef,
@@ -82,6 +87,16 @@ impl TestFont {
     pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, Box<dyn Error>> {
         let os2 = self.font().os2()?;
         Ok(os2.fs_selection())
+    }
+
+    pub fn get_gdef_glyph_class_def(&self) -> Result<ClassDef, Box<dyn Error>> {
+        let gdef = self.font().gdef()?;
+        Ok(gdef.glyph_class_def().unwrap()?)
+    }
+
+    pub fn get_cmap(&self) -> Result<Cmap, Box<dyn Error>> {
+        let cmap = self.font().cmap()?;
+        Ok(cmap)
     }
 
     pub fn get_name_entry_strings(&self, name_id: StringId) -> LocalizedStrings {
