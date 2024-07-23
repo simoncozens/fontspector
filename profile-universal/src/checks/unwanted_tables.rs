@@ -48,11 +48,11 @@ fn delete_unwanted_tables(t: &Testable) -> bool {
     true
 }
 
-pub const UNWANTED_TABLES_CHECK: Check = Check {
+pub const CHECK_UNWANTED_TABLES: Check = Check {
     id: "com.google.fonts/check/unwanted_tables",
     title: "Are there unwanted tables?",
-    rationale: Some("Some font editors store source data in their own SFNT tables, and these can sometimes sneak into final release files, which should only have OpenType spec tables."),
-    proposal: Some("legacy:check/053"),
+    rationale: "Some font editors store source data in their own SFNT tables, and these can sometimes sneak into final release files, which should only have OpenType spec tables.",
+    proposal: "legacy:check/053",
     check_one: Some(&unwanted_tables),
     check_all: None,
     applies_to: "TTF",

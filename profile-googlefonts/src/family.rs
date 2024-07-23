@@ -40,17 +40,15 @@ fn family_equal_codepoint_coverage(c: &Testable) -> StatusList {
     return_result(problems)
 }
 
-pub const EQUAL_CODEPOINT_COVERAGE_CHECK: Check = Check {
+pub const CHECK_FAMILY_EQUAL_CODEPOINT_COVERAGE: Check = Check {
     id: "com.google.fonts/check/family/equal_codepoint_coverage",
     title: "Fonts have equal codepoint coverage?",
-    rationale: Some(
-        "For a given family, all fonts must have the same codepoint coverage.
-        This is because we want to avoid the situation where, for example,
-        a character is present in a regular font but missing in the italic style;
-        turning on italic would cause the character to be rendered either as a
-        fake italic (auto-slanted) or to show tofu.",
-    ),
-    proposal: Some("https://github.com/fonttools/fontbakery/issues/4180"),
+    rationale: "For a given family, all fonts must have the same codepoint coverage.
+                This is because we want to avoid the situation where, for example,
+                a character is present in a regular font but missing in the italic
+                style; turning on italic would cause the character to be rendered
+                either as a fake italic (auto-slanted) or to show tofu.",
+    proposal: "https://github.com/fonttools/fontbakery/issues/4180",
     check_one: Some(&family_equal_codepoint_coverage),
     check_all: None,
     applies_to: "TTF",

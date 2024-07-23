@@ -127,10 +127,8 @@ fn main() {
                 if args.verbose > 1 {
                     println!("   {:}", result.check_name);
                 }
-                if let Some(rationale) = &result.check_rationale {
-                    if args.verbose > 1 {
-                        termimad::print_inline(&format!("Rationale:\n\n```\n{}\n```\n", rationale));
-                    }
+                if args.verbose > 1 {
+                    termimad::print_inline(&format!("Rationale:\n\n```\n{}\n```\n", result.check_rationale));
                 }
                 termimad::print_inline(&format!("**{:}**", result.status));
                 if result.status.code != StatusCode::Fail {

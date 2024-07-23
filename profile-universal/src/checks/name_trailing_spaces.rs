@@ -30,11 +30,14 @@ fn fix_trailing_spaces(_f: &Testable) -> bool {
     false
 }
 
-pub const NAME_TRAILING_SPACES_CHECK: Check = Check {
+pub const CHECK_NAME_TRAILING_SPACES: Check = Check {
     id: "com.google.fonts/check/name/trailing_spaces",
     title: "Name table records must not have trailing spaces.",
-    rationale: None,
-    proposal: Some("https://github.com/googlefonts/fontbakery/issues/2417"),
+    rationale: "This check ensures that no entries in the name table end in spaces;
+                trailing spaces, particularly in font names, can be confusing to users.
+                In most cases this can be fixed by removing trailing spaces from the
+                metadata fields in the font editor.",
+    proposal: "https://github.com/googlefonts/fontbakery/issues/2417",
     check_one: Some(&name_trailing_spaces),
     check_all: None,
     applies_to: "TTF",

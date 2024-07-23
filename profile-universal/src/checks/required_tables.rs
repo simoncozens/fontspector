@@ -76,11 +76,10 @@ fn required_tables(t: &Testable) -> StatusList {
     return_result(problems)
 }
 
-pub const REQUIRED_TABLES_CHECK: Check = Check {
+pub const CHECK_REQUIRED_TABLES: Check = Check {
     id: "com.google.fonts/check/required_tables",
     title: "Font contains all required tables?",
-    rationale: Some(
-        "
+    rationale: "
         According to the OpenType spec
         https://docs.microsoft.com/en-us/typography/opentype/spec/otff#required-tables
 
@@ -110,8 +109,7 @@ pub const REQUIRED_TABLES_CHECK: Check = Check {
         - A gasp table is necessary if a designer wants to influence the sizes
           at which grayscaling is used under Windows. Etc.
     ",
-    ),
-    proposal: Some("legacy:check/052"),
+    proposal: "legacy:check/052",
     check_one: Some(&required_tables),
     check_all: None,
     applies_to: "TTF",
