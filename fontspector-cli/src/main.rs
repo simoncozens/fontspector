@@ -136,6 +136,7 @@ fn main() {
                 }
                 termimad::print_inline(&format!("**{:}**", result.status));
                 if result.status.code != StatusCode::Fail {
+                    println!("\n");
                     continue;
                 }
                 #[allow(clippy::unwrap_used)]
