@@ -20,22 +20,48 @@ const ARABIC_SPACING_SYMBOLS: [u16; 17] = [
     0xFBC2,  // Wasla Above
 ];
 
-fn arabic_spacing_symbols(t: &Testable) -> StatusList {
+fn arabic_spacing_symbols(t: &Testable) -> CheckFnResult {
     let mut problems: Vec<Status> = vec![];
-    let f = TTF.from_testable(t).expect("Not a TTF file");
-    let cmap = f.get_cmap().unwrap();
-    let class_def = f.get_gdef_glyph_class_def().unwrap();
+    let f = TTF.from_testable(t).ok_or("Not a TTF file")?;
+    let cmap = match f.get_cmap() {
+        Err(_) => {
+            problems.push(Status::fail("Font lacks a cmap table"));
+            return return_result(problems);
+        },
+        Ok(c) => c
+    };
+
+    let gdef = match f.get_gdef() {
+        Err(_) => {
+            problems.push(Status::fail("Font lacks a gdef table"));
+            return return_result(problems);
+        },
+        Ok(g) => g
+    };
+
+    let class_def = match gdef.glyph_class_def() {
+        None => return return_result(problems),
+        Some(d) => d
+    };
+
+    let class_def = match class_def {
+        Err(e) => {
+            problems.push(Status::error(&format!("Some classDef error: {}", e)));
+            return return_result(problems);
+        },
+        Ok(d) => d
+    };
 
     for codepoint in ARABIC_SPACING_SYMBOLS {
         let gid = cmap.map_codepoint(codepoint);
-        if gid.is_some() && class_def.get(gid.unwrap()) == 3 {
+        if gid.is_some() && class_def.get(gid.ok_or("Failed to read gid")?) == 3 {
             problems.push(Status::fail(&format!(
                 "U+{:04X} is defined in GDEF as a mark (class 3).", codepoint)));
         }
     }
 
     if problems.is_empty() {
-        Status::just_one_pass()
+        Ok(Status::just_one_pass())
     } else {
         return_result(problems)
     }
