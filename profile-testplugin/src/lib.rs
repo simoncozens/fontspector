@@ -19,8 +19,8 @@ fn validate_toml(c: &Testable) -> CheckFnResult {
 pub const SAY_HELLO: Check = Check {
     id: "com.google.fonts/check/test/say_hello",
     title: "Check that the plugin protocol is working",
-    rationale: None,
-    proposal: None,
+    rationale: "This check is part of the example of how to create plugins.",
+    proposal: "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
     check_all: None,
     check_one: Some(&say_hello),
     applies_to: "TTF",
@@ -31,8 +31,8 @@ pub const SAY_HELLO: Check = Check {
 pub const VALIDATE_TOML: Check = Check {
     id: "com.google.fonts/check/test/validate_toml",
     title: "Check that the filetype plugin protocol is working",
-    rationale: None,
-    proposal: None,
+    rationale: "This check is part of the example of how to create plugins.",
+    proposal: "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
     check_all: None,
     check_one: Some(&validate_toml),
     applies_to: "TOML",

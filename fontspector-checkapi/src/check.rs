@@ -8,8 +8,8 @@ pub type CheckId = String;
 pub struct Check<'a> {
     pub id: &'a str,
     pub title: &'a str,
-    pub rationale: Option<&'a str>,
-    pub proposal: Option<&'a str>,
+    pub rationale: &'a str,
+    pub proposal: &'a str,
     pub check_one: Option<&'a dyn Fn(&Testable) -> CheckFnResult>,
     pub check_all: Option<&'a dyn Fn(&FontCollection) -> CheckFnResult>,
     pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
@@ -24,7 +24,7 @@ pub struct CheckResult {
     pub status: Status,
     pub check_id: CheckId,
     pub check_name: String,
-    pub check_rationale: Option<String>,
+    pub check_rationale: String,
     pub filename: Option<String>,
 }
 
@@ -41,7 +41,7 @@ impl<'a> Check<'a> {
             status,
             check_id: self.id.to_string(),
             check_name: self.title.to_string(),
-            check_rationale: self.rationale.map(|x| x.to_string()),
+            check_rationale: self.rationale.to_string(),
             filename: file.map(|x| x.filename.clone()),
         }
     }

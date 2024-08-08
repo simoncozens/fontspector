@@ -43,11 +43,14 @@ fn validate_metadatapb(c: &Testable) -> CheckFnResult {
     }
 }
 
-pub const VALIDATE_METADATA_PB: Check = Check {
+pub const CHECK_METADATA_PARSES: Check = Check {
     id: "com.google.fonts/check/metadata/parses",
-    title: "Check METADATA.pb parse correctly",
-    rationale: None,
-    proposal: None,
+    title: "Check METADATA.pb parses correctly",
+    rationale: "
+        The purpose of this check is to ensure that the METADATA.pb file is not
+        malformed.
+    ",
+    proposal: "https://github.com/fonttools/fontbakery/issues/2248",
     check_all: None,
     check_one: Some(&validate_metadatapb),
     applies_to: "MDPB",

@@ -6,9 +6,9 @@ pub struct Universal;
 
 impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
-        cr.register_check(checks::NAME_TRAILING_SPACES_CHECK);
-        cr.register_check(checks::UNWANTED_TABLES_CHECK);
-        cr.register_check(checks::REQUIRED_TABLES_CHECK);
+        cr.register_check(checks::CHECK_NAME_TRAILING_SPACES);
+        cr.register_check(checks::CHECK_UNWANTED_TABLES);
+        cr.register_check(checks::CHECK_REQUIRED_TABLES);
         let profile = Profile::from_toml(
             r#"
 [sections]
