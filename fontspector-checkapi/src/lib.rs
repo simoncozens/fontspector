@@ -1,3 +1,4 @@
+#![deny(clippy::unwrap_used, clippy::expect_used)]
 mod check;
 mod constants;
 mod filetype;
@@ -11,12 +12,14 @@ pub use filetype::{FileType, FileTypeConvert};
 pub use font::{FontCollection, TestFont, TTF};
 pub use profile::{Override, Profile};
 pub use registry::Registry;
-pub use status::{Status, StatusCode, StatusList};
+pub use status::{CheckFnResult, Status, StatusCode, StatusList};
 pub use testable::Testable;
 
 pub mod prelude {
+    pub type FixFnResult = Result<bool, String>;
     pub use crate::{
-        return_result, Check, FileType, Profile, Registry, Status, StatusList, Testable, TTF,
+        return_result, Check, CheckFnResult, FileType, Profile, Registry, Status, StatusList,
+        Testable, TTF,
     };
 }
 pub trait Plugin {

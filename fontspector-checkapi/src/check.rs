@@ -1,4 +1,6 @@
-use crate::{font::FontCollection, Registry, Status, StatusList, Testable};
+use crate::{
+    font::FontCollection, prelude::FixFnResult, status::CheckFnResult, Registry, Status, Testable,
+};
 
 pub type CheckId = String;
 
@@ -8,10 +10,10 @@ pub struct Check<'a> {
     pub title: &'a str,
     pub rationale: Option<&'a str>,
     pub proposal: Option<&'a str>,
-    pub check_one: Option<&'a dyn Fn(&Testable) -> StatusList>,
-    pub check_all: Option<&'a dyn Fn(&FontCollection) -> StatusList>,
-    pub hotfix: Option<&'a dyn Fn(&Testable) -> bool>,
-    pub fix_source: Option<&'a dyn Fn(&Testable) -> bool>,
+    pub check_one: Option<&'a dyn Fn(&Testable) -> CheckFnResult>,
+    pub check_all: Option<&'a dyn Fn(&FontCollection) -> CheckFnResult>,
+    pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
+    pub fix_source: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub applies_to: &'a str,
 }
 
@@ -34,42 +36,47 @@ impl<'a> Check<'a> {
             .map_or(false, |ft| ft.applies(f))
     }
 
+    fn status_to_result(&'a self, status: Status, file: Option<&'a Testable>) -> CheckResult {
+        CheckResult {
+            status,
+            check_id: self.id.to_string(),
+            check_name: self.title.to_string(),
+            check_rationale: self.rationale.map(|x| x.to_string()),
+            filename: file.map(|x| x.filename.clone()),
+        }
+    }
+
     pub fn run_one(&'a self, f: &'a Testable) -> Vec<CheckResult> {
         if let Some(check_one) = self.check_one {
-            return check_one(f)
-                .map(|r| CheckResult {
-                    status: r,
-                    check_id: self.id.to_string(),
-                    check_name: self.title.to_string(),
-                    check_rationale: self.rationale.map(|x| x.to_string()),
-                    filename: Some(f.filename.clone()),
-                })
-                .collect();
+            match check_one(f) {
+                Ok(results) => results.map(|r| self.status_to_result(r, Some(f))).collect(),
+                Err(e) => {
+                    vec![self.status_to_result(Status::error(&format!("Error: {}", e)), Some(f))]
+                }
+            }
+        } else {
+            vec![]
         }
-        vec![]
     }
 
     pub fn run_all(&'a self, f: &'a FontCollection) -> Vec<CheckResult> {
         if let Some(check_all) = self.check_all {
-            check_all(f)
-                .map(|r| CheckResult {
-                    status: r,
-                    check_id: self.id.to_string(),
-                    check_name: self.title.to_string(),
-                    check_rationale: self.rationale.map(|x| x.to_string()),
-                    filename: None,
-                })
-                .collect()
+            match check_all(f) {
+                Ok(results) => results.map(|r| self.status_to_result(r, None)).collect(),
+                Err(e) => {
+                    vec![self.status_to_result(Status::error(&format!("Error: {}", e)), None)]
+                }
+            }
         } else {
             vec![]
         }
     }
 }
 
-pub fn return_result(problems: Vec<Status>) -> Box<dyn Iterator<Item = Status>> {
+pub fn return_result(problems: Vec<Status>) -> CheckFnResult {
     if problems.is_empty() {
-        Status::just_one_pass()
+        Ok(Status::just_one_pass())
     } else {
-        Box::new(problems.into_iter())
+        Ok(Box::new(problems.into_iter()))
     }
 }

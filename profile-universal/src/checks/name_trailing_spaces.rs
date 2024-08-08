@@ -1,10 +1,10 @@
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use read_fonts::TableProvider;
 
-fn name_trailing_spaces(f: &Testable) -> StatusList {
+fn name_trailing_spaces(f: &Testable) -> CheckFnResult {
     let mut problems: Vec<Status> = vec![];
 
-    if let Ok(name_table) = TTF.from_testable(f).unwrap().font().name() {
+    if let Ok(name_table) = TTF.from_testable(f).ok_or("Not a TTF file")?.font().name() {
         for name_record in name_table.name_record().iter() {
             if name_record
                 .string(name_table.string_data())
@@ -18,7 +18,7 @@ fn name_trailing_spaces(f: &Testable) -> StatusList {
                     name_record.encoding_id,
                     name_record.language_id,
                     name_record.name_id,
-                    name_record.string(name_table.string_data()).unwrap(),
+                    name_record.string(name_table.string_data()).map_err(|_| "Error reading string".to_string())?,
                 )))
             }
         }
@@ -26,8 +26,8 @@ fn name_trailing_spaces(f: &Testable) -> StatusList {
     return_result(problems)
 }
 
-fn fix_trailing_spaces(_f: &Testable) -> bool {
-    false
+fn fix_trailing_spaces(_f: &Testable) -> FixFnResult {
+    Ok(false)
 }
 
 pub const NAME_TRAILING_SPACES_CHECK: Check = Check {

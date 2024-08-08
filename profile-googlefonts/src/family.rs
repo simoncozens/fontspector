@@ -3,8 +3,8 @@ use std::collections::HashSet;
 
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 
-fn family_equal_codepoint_coverage(c: &Testable) -> StatusList {
-    let f = TTF.from_testable(c).expect("Not a TTF file");
+fn family_equal_codepoint_coverage(c: &Testable) -> CheckFnResult {
+    let f = TTF.from_testable(c).ok_or("Not a TTF file")?;
     let siblings = f.siblings();
     if siblings.is_empty() {
         return return_result(vec![Status::skip("No sibling fonts found")]);
@@ -15,8 +15,8 @@ fn family_equal_codepoint_coverage(c: &Testable) -> StatusList {
     let my_codepoints = f.codepoints();
     for sibling in siblings {
         let their_codepoints = sibling.codepoints();
-        we_have_they_dont.extend(my_codepoints.difference(&their_codepoints));
-        they_have_we_dont.extend(their_codepoints.difference(&my_codepoints));
+        we_have_they_dont.extend(my_codepoints.difference(their_codepoints));
+        they_have_we_dont.extend(their_codepoints.difference(my_codepoints));
     }
 
     if !we_have_they_dont.is_empty() {
