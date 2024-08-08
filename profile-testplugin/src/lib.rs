@@ -1,19 +1,20 @@
+#![deny(clippy::unwrap_used, clippy::expect_used)]
 use fontspector_checkapi::prelude::*;
 
 struct Test;
 
-fn say_hello(_c: &Testable) -> StatusList {
+fn say_hello(_c: &Testable) -> CheckFnResult {
     println!("Hello from the test plugin!");
     return_result(vec![])
 }
 
-fn validate_toml(c: &Testable) -> StatusList {
-    let toml = std::fs::read_to_string(&c.filename).expect("Couldn't open file");
-    if toml::from_str::<toml::Value>(&toml).is_ok() {
+fn validate_toml(c: &Testable) -> CheckFnResult {
+    let toml = std::fs::read_to_string(&c.filename).map_err(|_| "Couldn't open file")?;
+    Ok(if toml::from_str::<toml::Value>(&toml).is_ok() {
         Status::just_one_pass()
     } else {
         Status::just_one_fail("Invalid TOML")
-    }
+    })
 }
 pub const SAY_HELLO: Check = Check {
     id: "com.google.fonts/check/test/say_hello",

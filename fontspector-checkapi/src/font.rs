@@ -6,7 +6,7 @@ use skrifa::{
     string::{LocalizedStrings, StringId},
     MetadataProvider, Tag,
 };
-use std::{collections::HashSet, error::Error, path::Path};
+use std::{collections::HashSet, error::Error, io::ErrorKind, path::Path};
 
 pub struct TestFont {
     filename: String,
@@ -19,13 +19,16 @@ pub const TTF: FileType = FileType { pattern: "*.ttf" };
 
 impl<'a> FileTypeConvert<TestFont> for FileType<'a> {
     fn from_testable(&self, t: &Testable) -> Option<TestFont> {
-        self.applies(t).then(|| TestFont::new(&t.filename))
+        self.applies(t)
+            .then(|| TestFont::new(&t.filename))
+            .transpose()
+            .unwrap_or(None)
     }
 }
 
 impl TestFont {
-    pub fn new(filename: &str) -> TestFont {
-        let font_data = std::fs::read(filename).expect("Couldn't open file");
+    pub fn new(filename: &str) -> std::io::Result<TestFont> {
+        let font_data = std::fs::read(filename)?;
         let mut fnt = TestFont {
             filename: filename.to_string(),
             font_data,
@@ -40,8 +43,14 @@ impl TestFont {
             .collect();
         fnt._sibling_filenames = {
             // All other TTF files in same directory
-            let directory = Path::new(&fnt.filename).parent().expect("Can't get parent");
-            let paths = std::fs::read_dir(directory).expect("Can't read directory");
+            let directory = Path::new(&fnt.filename)
+                .parent()
+                .ok_or(std::io::Error::new(
+                    ErrorKind::NotFound,
+                    "parent directory not found",
+                ))?;
+
+            let paths = std::fs::read_dir(directory)?;
             paths
                 .flatten()
                 .filter(|x| x.path().extension().map_or(false, |ext| ext == "ttf"))
@@ -49,10 +58,17 @@ impl TestFont {
                 .map(|x| x.path().to_string_lossy().to_string())
                 .collect()
         };
-        fnt
+        if FontRef::new(&fnt.font_data).is_err() {
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidData,
+                "Can't parse font",
+            ));
+        }
+        Ok(fnt)
     }
     pub fn font(&self) -> FontRef {
-        FontRef::new(&self.font_data).expect("Can't parse font")
+        #[allow(clippy::expect_used)] // We just tested for it in the initializer
+        FontRef::new(&self.font_data).expect("Can't happen")
     }
 
     pub fn style(&self) -> Option<&str> {
@@ -79,7 +95,7 @@ impl TestFont {
     pub fn siblings(&self) -> Vec<TestFont> {
         self._sibling_filenames
             .iter()
-            .map(|x| TestFont::new(x))
+            .flat_map(|x| TestFont::new(x))
             .collect()
     }
 

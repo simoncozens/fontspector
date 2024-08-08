@@ -33,14 +33,14 @@ impl Profile {
         for included_profile_str in self.include_profiles.iter() {
             if let Some(profile) = registry.profiles.get(included_profile_str) {
                 for (section, checks) in &profile.sections {
-                    if !self.sections.contains_key(section) {
-                        self.sections.insert(section.clone(), checks.clone());
-                    } else {
+                    if let Some(existing_checks) = self.sections.get_mut(section) {
                         for check in checks {
-                            if !self.sections[section].contains(check) {
-                                self.sections.get_mut(section).unwrap().push(check.clone());
+                            if !existing_checks.contains(check) {
+                                existing_checks.push(check.clone());
                             }
                         }
+                    } else {
+                        self.sections.insert(section.clone(), checks.clone());
                     }
                 }
             } else {

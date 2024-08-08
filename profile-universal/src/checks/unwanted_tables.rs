@@ -13,8 +13,8 @@ const UNWANTED_TABLES: [(Tag, &str); 8] = [
     (Tag::new(b"prop"), "Table used on AAT, Apple's OS X specific technology. Although Harfbuzz now has optional AAT support, new fonts should not be using that.")
 ];
 
-fn unwanted_tables(t: &Testable) -> StatusList {
-    let f = TTF.from_testable(t).expect("Not a TTF file");
+fn unwanted_tables(t: &Testable) -> CheckFnResult {
+    let f = TTF.from_testable(t).ok_or("Not a TTF file")?;
 
     let mut reasons = vec![];
     for (table, reason) in UNWANTED_TABLES.iter() {
@@ -22,15 +22,15 @@ fn unwanted_tables(t: &Testable) -> StatusList {
             reasons.push(format!("Table: `{}` Reason: {}\n", table, reason));
         }
     }
-    if !reasons.is_empty() {
+    Ok(if !reasons.is_empty() {
         Status::just_one_fail(&format!("Unwanted tables found:\n {}", reasons.join("\n")))
     } else {
         Status::just_one_pass()
-    }
+    })
 }
 
-fn delete_unwanted_tables(t: &Testable) -> bool {
-    let f = TTF.from_testable(t).expect("Not a TTF file");
+fn delete_unwanted_tables(t: &Testable) -> FixFnResult {
+    let f = TTF.from_testable(t).ok_or("Not a TTF file".to_string())?;
     let unwanted_tags = UNWANTED_TABLES
         .iter()
         .map(|(tag, _)| tag)
@@ -39,13 +39,14 @@ fn delete_unwanted_tables(t: &Testable) -> bool {
     for table in f.font().table_directory.table_records() {
         let tag = table.tag.get();
         if !unwanted_tags.contains(&&tag) {
-            let table = f.font().table_data(tag).unwrap();
-            new_font.add_raw(tag, table);
+            if let Some(table) = f.font().table_data(tag) {
+                new_font.add_raw(tag, table);
+            }
         }
     }
     let new_bytes = new_font.build();
-    std::fs::write(&t.filename, new_bytes).expect("Couldn't write file");
-    true
+    std::fs::write(&t.filename, new_bytes).map_err(|_| "Couldn't write file".to_string())?;
+    Ok(true)
 }
 
 pub const CHECK_UNWANTED_TABLES: Check = Check {

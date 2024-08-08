@@ -1,3 +1,4 @@
+#![deny(clippy::unwrap_used, clippy::expect_used)]
 //! Quality control for OpenType fonts
 use std::collections::HashMap;
 
@@ -53,9 +54,11 @@ fn main() {
 
     // Set up the check registry
     let mut registry = Registry::new();
+    #[allow(clippy::expect_used)] // If this fails, I *want* to panic
     Universal
         .register(&mut registry)
         .expect("Couldn't register universal profile, fontspector bug");
+    #[allow(clippy::expect_used)] // If this fails, I *want* to panic
     GoogleFonts
         .register(&mut registry)
         .expect("Couldn't register googlefonts profile, fontspector bug");
@@ -78,6 +81,7 @@ fn main() {
         .sections
         .iter()
         .flat_map(|(sectionname, checknames)| {
+            #[allow(clippy::unwrap_used)] // We previously ensured the check exists in the registry
             checknames
                 .iter()
                 .map(|checkname| (sectionname.clone(), registry.checks.get(checkname).unwrap()))
@@ -134,13 +138,15 @@ fn main() {
                 if result.status.code != StatusCode::Fail {
                     continue;
                 }
+                #[allow(clippy::unwrap_used)]
+                // This is a genuine can't-happen. We put it in the hashmap earlier!
                 let check = registry.checks.get(&result.check_id).unwrap();
                 if let Some(fix) = check.hotfix {
                     if args.hotfix {
-                        if fix(testable) {
-                            println!("   Hotfix applied");
-                        } else {
-                            println!("   Hotfix failed");
+                        match fix(testable) {
+                            Ok(true) => println!("   Hotfix applied"),
+                            Ok(false) => println!("   Hotfix not applied"),
+                            Err(e) => println!("   Hotfix failed: {:}", e),
                         }
                     } else {
                         termimad::print_inline("  This issue can be fixed automatically. Run with `--hotfix` to apply the fix.\n")

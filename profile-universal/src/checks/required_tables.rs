@@ -1,5 +1,5 @@
 use fontspector_checkapi::{
-    return_result, Check, FileTypeConvert, Status, StatusList, Testable, TTF,
+    return_result, Check, CheckFnResult, FileTypeConvert, Status, Testable, TTF,
 };
 
 const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
@@ -7,8 +7,8 @@ const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
     b"GSUB", b"JSTF", b"gasp", b"hdmx", b"LTSH", b"PCLT", b"VDMX", b"vhea", b"vmtx", b"kern",
 ];
 
-fn required_tables(t: &Testable) -> StatusList {
-    let f = TTF.from_testable(t).expect("Not a TTF file");
+fn required_tables(t: &Testable) -> CheckFnResult {
+    let f = TTF.from_testable(t).ok_or("Not a TTF file")?;
     let mut required_table_tags: Vec<_> = vec![
         b"cmap", b"head", b"hhea", b"hmtx", b"maxp", b"name", b"OS/2", b"post",
     ];
@@ -34,7 +34,10 @@ fn required_tables(t: &Testable) -> StatusList {
 
     for tag in OPTIONAL_TABLE_TAGS {
         if f.has_table(tag) {
-            optional.push(String::from_utf8(tag.to_vec()).unwrap());
+            optional.push(
+                String::from_utf8(tag.to_vec())
+                    .map_err(|_| format!("Font tag '{:?}' wasn't UTF8?", tag.to_vec()))?,
+            )
         }
     }
     if !optional.is_empty() {
@@ -47,7 +50,10 @@ fn required_tables(t: &Testable) -> StatusList {
     let mut missing = vec![];
     for tag in required_table_tags {
         if !f.has_table(tag) {
-            missing.push(String::from_utf8(tag.to_vec()).unwrap());
+            missing.push(
+                String::from_utf8(tag.to_vec())
+                    .map_err(|_| format!("Font tag '{:?}' wasn't UTF8?", tag.to_vec()))?,
+            );
         }
     }
 

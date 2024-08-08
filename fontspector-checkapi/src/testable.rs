@@ -19,12 +19,10 @@ impl Testable {
         }
     }
 
-    pub fn basename(&self) -> String {
+    pub fn basename(&self) -> Option<String> {
         std::path::Path::new(&self.filename)
             .file_name()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string()
+            .and_then(|x| x.to_str())
+            .map(|x| x.to_string())
     }
 }

@@ -1,21 +1,27 @@
-#![allow(renamed_and_removed_lints)]
+#![allow(renamed_and_removed_lints, clippy::unwrap_used)]
 include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 
 use chrono::prelude::*;
 use fonts_public::FamilyProto;
 use fontspector_checkapi::prelude::*;
 
-fn validate_metadatapb(c: &Testable) -> StatusList {
-    let mdpb = std::fs::read_to_string(&c.filename).expect("Couldn't open file");
+fn validate_metadatapb(c: &Testable) -> CheckFnResult {
+    let mdpb =
+        std::fs::read_to_string(&c.filename).map_err(|_| "Couldn't open file".to_string())?;
     match protobuf::text_format::parse_from_str::<FamilyProto>(&mdpb) {
-        Err(error) => Status::just_one_fail(&format!("Invalid METADATA.pb: {}", error)),
+        Err(error) => Ok(Status::just_one_fail(&format!(
+            "Invalid METADATA.pb: {}",
+            error
+        ))),
         Ok(msg) => {
             let mut problems = vec![];
-            if msg.designer.as_ref().is_some_and(|d| d.contains('/')) {
-                problems.push(Status::fail(&format!(
+            if let Some(designer) = msg.designer.as_ref() {
+                if designer.contains('/') {
+                    problems.push(Status::fail(&format!(
                     "Font designer field contains a forward slash '{}'. Please use commas to separate multiple names instead.",
-                    msg.designer.as_ref().unwrap()
-                )))
+                    designer
+                )));
+                }
             }
             // Check subsets are in order
             let mut sorted_subsets = msg.subsets.clone();

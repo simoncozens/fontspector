@@ -1,3 +1,4 @@
+#![deny(clippy::unwrap_used, clippy::expect_used)]
 mod family;
 mod metadata;
 use family::CHECK_FAMILY_EQUAL_CODEPOINT_COVERAGE;
@@ -11,22 +12,20 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_filetype("MDPB", mdpb);
         cr.register_check(CHECK_FAMILY_EQUAL_CODEPOINT_COVERAGE);
         cr.register_check(CHECK_METADATA_PARSES);
-
-        cr.register_profile(
-            "googlefonts",
-            Profile::from_toml(
-                r#"
+        let profile = Profile::from_toml(
+            r#"
 include_profiles = ["universal"]
 [sections]
 "Metadata Checks" = [
-    "com.google.fonts/check/metadata/parses",
+"com.google.fonts/check/metadata/parses",
 ]
 "Family Checks" = [
-    "com.google.fonts/check/family/equal_codepoint_coverage"
+"com.google.fonts/check/family/equal_codepoint_coverage"
 ]
 "#,
-            )
-            .expect("Couldn't parse profile"),
         )
+        .map_err(|_| "Couldn't parse profile")?;
+
+        cr.register_profile("googlefonts", profile)
     }
 }

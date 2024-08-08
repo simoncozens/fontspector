@@ -20,7 +20,11 @@ impl FileType<'_> {
     }
 
     pub fn applies(&self, file: &Testable) -> bool {
-        glob_match(self.pattern, &file.basename())
+        if let Some(basename) = file.basename() {
+            glob_match(self.pattern, &basename)
+        } else {
+            false
+        }
     }
 }
 

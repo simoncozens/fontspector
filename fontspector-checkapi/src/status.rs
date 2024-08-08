@@ -8,6 +8,11 @@ pub enum StatusCode {
     Pass,
     Warn,
     Fail,
+    // An Error is when something which returns a Result<> gave us
+    // an Err - for example a file couldn't be found or couldn't be
+    // parsed, even though we did our best to check for things. In
+    // other words, it's something so bad there's no point continuing
+    // with the check; it's equivalent to a Fontbakery FATAL.
     Error,
 }
 
@@ -72,6 +77,13 @@ impl Status {
             code: StatusCode::Info,
         }
     }
+    pub fn error(s: &str) -> Self {
+        Self {
+            message: Some(s.to_string()),
+            code: StatusCode::Error,
+        }
+    }
 }
 
 pub type StatusList = Box<dyn Iterator<Item = Status>>;
+pub type CheckFnResult = Result<StatusList, String>;
