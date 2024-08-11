@@ -49,7 +49,12 @@ impl TestFont {
                     ErrorKind::NotFound,
                     "parent directory not found",
                 ))?;
-
+            // If directory is empty, use current directory
+            let directory = if directory.to_string_lossy().is_empty() {
+                std::env::current_dir()?
+            } else {
+                directory.to_path_buf()
+            };
             let paths = std::fs::read_dir(directory)?;
             paths
                 .flatten()
@@ -58,6 +63,7 @@ impl TestFont {
                 .map(|x| x.path().to_string_lossy().to_string())
                 .collect()
         };
+
         if FontRef::new(&fnt.font_data).is_err() {
             return Err(std::io::Error::new(
                 ErrorKind::InvalidData,
