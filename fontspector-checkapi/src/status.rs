@@ -36,9 +36,9 @@ pub struct Status {
 
 impl std::fmt::Display for Status {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:}", self.code)?;
+        write!(f, "**{:}**", self.code)?;
         if let Some(message) = self.message.as_ref() {
-            write!(f, " : {:}", message)?;
+            write!(f, ": {:}", message)?;
         }
         Ok(())
     }

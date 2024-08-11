@@ -42,8 +42,8 @@ fn required_tables(t: &Testable) -> CheckFnResult {
     }
     if !optional.is_empty() {
         problems.push(Status::info(&format!(
-            "This font contains the following optional tables:\n\n{}",
-            optional.join("\n")
+            "This font contains the following optional tables:\n\n    {}",
+            optional.join("\n    ")
         )))
     }
 
@@ -74,8 +74,8 @@ fn required_tables(t: &Testable) -> CheckFnResult {
 
     if !missing.is_empty() {
         problems.push(Status::fail(&format!(
-            "This font is missing the following required tables:\n\n{}",
-            missing.join("\n")
+            "This font is missing the following required tables:\n\n    {}",
+            missing.join("\n    ")
         )))
     }
 

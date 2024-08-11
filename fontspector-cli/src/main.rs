@@ -134,8 +134,9 @@ fn main() {
                 if args.verbose > 1 {
                     termimad::print_inline(&format!("Rationale:\n\n```\n{}\n```\n", result.check_rationale));
                 }
-                termimad::print_inline(&format!("**{:}**", result.status));
+                termimad::print_inline(&format!("{:}\n", result.status));
                 if result.status.code != StatusCode::Fail {
+                    println!();
                     continue;
                 }
                 #[allow(clippy::unwrap_used)]
