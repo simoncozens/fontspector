@@ -15,17 +15,9 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
-    /// Increase logging
-    #[clap(short, long, parse(from_occurrences))]
-    verbose: usize,
-
     /// Hotfix
     #[clap(short, long)]
     hotfix: bool,
-
-    /// Log level
-    #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Warn)]
-    loglevel: StatusCode,
 
     /// Plugins to load
     #[clap(long, value_delimiter = ',')]
@@ -34,6 +26,34 @@ struct Args {
     /// Profile to check
     #[clap(short, long, default_value = "universal")]
     profile: String,
+
+    /// List the checks available in the selected profile
+    #[clap(short = 'L', long)]
+    list_checks: bool,
+
+    /// Read configuration file (TOML/YAML)
+    #[clap(long)]
+    configuration: Option<String>,
+
+    /// Explicit check-ids (or parts of their name) to be executed
+    #[clap(short, long)]
+    checkid: Option<Vec<String>>,
+
+    /// Exclude check-ids (or parts of their name) from execution
+    #[clap(short = 'x', long)]
+    exclude_checkid: Option<Vec<String>>,
+
+    /// Threshold for emitting process error code 1
+    #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Fail)]
+    error_code_on: StatusCode,
+
+    /// Increase logging
+    #[clap(short, long, parse(from_occurrences), help_heading = "Logging")]
+    verbose: usize,
+
+    /// Log level
+    #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Warn, help_heading="Logging")]
+    loglevel: StatusCode,
 
     /// Input files
     inputs: Vec<String>,
@@ -76,6 +96,21 @@ fn main() {
     let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
     // let collection = FontCollection(thing);
 
+    // Filter out checks that don't apply
+    let applies = |checkname: &str| {
+        if let Some(checkids) = &args.checkid {
+            if !checkids.iter().any(|id| checkname.contains(id)) {
+                return false;
+            }
+        }
+        if let Some(exclude_checkids) = &args.exclude_checkid {
+            if exclude_checkids.iter().any(|id| checkname.contains(id)) {
+                return false;
+            }
+        }
+        true
+    };
+
     // Establish a check order
     let checkorder: Vec<(String, &Testable, &Check)> = profile
         .sections
@@ -84,6 +119,7 @@ fn main() {
             #[allow(clippy::unwrap_used)] // We previously ensured the check exists in the registry
             checknames
                 .iter()
+                .filter(|checkname| applies(checkname))
                 .map(|checkname| (sectionname.clone(), registry.checks.get(checkname).unwrap()))
         })
         .flat_map(|(sectionname, check)| {
@@ -100,6 +136,18 @@ fn main() {
         .progress()
         .map(|(sectionname, testable, check)| (sectionname, testable, check.run_one(testable)))
         .collect();
+
+    let worst_status = results
+        .iter()
+        .map(|(_sectionname, _testable, checkresults)| {
+            checkresults
+                .iter()
+                .map(|r| r.status.code)
+                .max()
+                .unwrap_or(StatusCode::Pass)
+        })
+        .max()
+        .unwrap_or(StatusCode::Pass);
 
     // Organise results by testable and sectionname
     let mut organised_results: HashMap<&Testable, HashMap<String, Vec<CheckResult>>> =
@@ -156,5 +204,9 @@ fn main() {
                 println!("\n");
             }
         }
+    }
+
+    if worst_status >= args.error_code_on {
+        std::process::exit(1);
     }
 }
