@@ -55,6 +55,10 @@ struct Args {
     #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Warn, help_heading="Logging")]
     loglevel: StatusCode,
 
+    /// Be quiet, don’t report anything on the terminal.
+    #[clap(short, long, help_heading = "Logging")]
+    quiet: bool,
+
     /// Input files
     inputs: Vec<String>,
 }
@@ -82,8 +86,8 @@ fn main() {
     GoogleFonts
         .register(&mut registry)
         .expect("Couldn't register googlefonts profile, fontspector bug");
-    for plugin_path in args.plugins {
-        if let Err(err) = registry.load_plugin(&plugin_path) {
+    for plugin_path in args.plugins.iter() {
+        if let Err(err) = registry.load_plugin(plugin_path) {
             log::error!("Could not load plugin {:}: {:}", plugin_path, err);
         }
     }
@@ -159,6 +163,19 @@ fn main() {
         results.extend(checkresults);
     }
 
+    if !args.quiet {
+        terminal_report(&organised_results, &args, &registry);
+    }
+    if worst_status >= args.error_code_on {
+        std::process::exit(1);
+    }
+}
+
+fn terminal_report(
+    organised_results: &HashMap<&Testable, HashMap<String, Vec<CheckResult>>>,
+    args: &Args,
+    registry: &Registry,
+) {
     for (testable, sectionresults) in organised_results
         .iter()
         .sorted_by_key(|(t, _s)| &t.filename)
@@ -204,9 +221,5 @@ fn main() {
                 println!("\n");
             }
         }
-    }
-
-    if worst_status >= args.error_code_on {
-        std::process::exit(1);
     }
 }
