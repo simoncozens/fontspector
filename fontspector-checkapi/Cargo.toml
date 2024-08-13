@@ -21,3 +21,6 @@ pluginator = "1.0.1"
 # Serializing and deserializing profiles
 toml = "0.8.14"
 serde = { version = "1.0", features = ["derive"] }
+
+# Storing configuration
+serde_json = "1.0"

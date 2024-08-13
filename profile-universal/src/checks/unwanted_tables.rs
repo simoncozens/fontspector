@@ -13,7 +13,7 @@ const UNWANTED_TABLES: [(Tag, &str); 8] = [
     (Tag::new(b"prop"), "Table used on AAT, Apple's OS X specific technology. Although Harfbuzz now has optional AAT support, new fonts should not be using that.")
 ];
 
-fn unwanted_tables(t: &Testable) -> CheckFnResult {
+fn unwanted_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = TTF.from_testable(t).ok_or("Not a TTF file")?;
 
     let mut reasons = vec![];

@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use clap::Parser;
-use fontspector_checkapi::{Check, CheckResult, Plugin, Registry, StatusCode, Testable};
+use fontspector_checkapi::{Check, CheckResult, Context, Plugin, Registry, StatusCode, Testable};
 use indicatif::ParallelProgressIterator;
 use itertools::Itertools;
 // use rayon::prelude::*;
@@ -11,6 +11,7 @@ use itertools::Itertools;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use serde_json::Map;
 /// Quality control for OpenType fonts
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -63,6 +64,21 @@ struct Args {
     inputs: Vec<String>,
 }
 
+/// Filter out checks that don't apply
+fn included_excluded(checkname: &str, args: &Args) -> bool {
+    if let Some(checkids) = &args.checkid {
+        if !checkids.iter().any(|id| checkname.contains(id)) {
+            return false;
+        }
+    }
+    if let Some(exclude_checkids) = &args.exclude_checkid {
+        if exclude_checkids.iter().any(|id| checkname.contains(id)) {
+            return false;
+        }
+    }
+    true
+}
+
 fn main() {
     // Command line handling
     let args = Args::parse();
@@ -100,37 +116,51 @@ fn main() {
     let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
     // let collection = FontCollection(thing);
 
-    // Filter out checks that don't apply
-    let applies = |checkname: &str| {
-        if let Some(checkids) = &args.checkid {
-            if !checkids.iter().any(|id| checkname.contains(id)) {
-                return false;
-            }
-        }
-        if let Some(exclude_checkids) = &args.exclude_checkid {
-            if exclude_checkids.iter().any(|id| checkname.contains(id)) {
-                return false;
-            }
-        }
-        true
-    };
+    // Load configuration
+    let configuration: Map<String, serde_json::Value> = args
+        .configuration
+        .as_ref()
+        .map(|filename| {
+            std::fs::File::open(filename).unwrap_or_else(|e| {
+                println!("Could not open configuration file: {:}", e);
+                std::process::exit(1)
+            })
+        })
+        .and_then(|file| {
+            serde_json::from_reader(std::io::BufReader::new(file)).unwrap_or_else(|e| {
+                println!("Could not parse configuration file: {:}", e);
+                std::process::exit(1)
+            })
+        })
+        .map(|file: serde_json::Value| {
+            file.as_object()
+                .expect("Configuration file must be a JSON object")
+                .clone()
+        })
+        .unwrap_or_default();
 
     // Establish a check order
-    let checkorder: Vec<(String, &Testable, &Check)> = profile
+    let checkorder: Vec<(String, &Testable, &Check, Context)> = profile
         .sections
         .iter()
         .flat_map(|(sectionname, checknames)| {
             #[allow(clippy::unwrap_used)] // We previously ensured the check exists in the registry
             checknames
                 .iter()
-                .filter(|checkname| applies(checkname))
-                .map(|checkname| (sectionname.clone(), registry.checks.get(checkname).unwrap()))
+                .filter(|checkname| included_excluded(checkname, &args))
+                .map(|checkname| {
+                    (
+                        sectionname.clone(),
+                        registry.checks.get(checkname).unwrap(),
+                        context_for(checkname, &args, &configuration),
+                    )
+                })
         })
-        .flat_map(|(sectionname, check)| {
+        .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
             testables
                 .iter()
                 .filter(|testable| check.applies(testable, &registry))
-                .map(move |testable| (sectionname.clone(), testable, check))
+                .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
         })
         .collect();
 
@@ -138,7 +168,9 @@ fn main() {
     let results: Vec<_> = checkorder
         .par_iter()
         .progress()
-        .map(|(sectionname, testable, check)| (sectionname, testable, check.run_one(testable)))
+        .map(|(sectionname, testable, check, context)| {
+            (sectionname, testable, check.run_one(testable, context))
+        })
         .collect();
 
     let worst_status = results
@@ -221,5 +253,21 @@ fn terminal_report(
                 println!("\n");
             }
         }
+    }
+}
+
+fn context_for(
+    checkname: &str,
+    _args: &Args,
+    configuration: &Map<String, serde_json::Value>,
+) -> Context {
+    Context {
+        skip_network: false,
+        network_timeout: None,
+        configuration: configuration
+            .get(checkname)
+            .and_then(|x| x.as_object())
+            .cloned()
+            .unwrap_or_default(),
     }
 }

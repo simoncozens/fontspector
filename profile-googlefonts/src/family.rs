@@ -3,7 +3,7 @@ use std::collections::HashSet;
 
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 
-fn family_equal_codepoint_coverage(c: &Testable) -> CheckFnResult {
+fn family_equal_codepoint_coverage(c: &Testable, _context: &Context) -> CheckFnResult {
     let f = TTF.from_testable(c).ok_or("Not a TTF file")?;
     let siblings = f.siblings();
     if siblings.is_empty() {

@@ -1,7 +1,7 @@
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use read_fonts::TableProvider;
 
-fn name_trailing_spaces(f: &Testable) -> CheckFnResult {
+fn name_trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut problems: Vec<Status> = vec![];
 
     if let Ok(name_table) = TTF.from_testable(f).ok_or("Not a TTF file")?.font().name() {

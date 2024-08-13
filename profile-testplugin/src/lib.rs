@@ -3,12 +3,12 @@ use fontspector_checkapi::prelude::*;
 
 struct Test;
 
-fn say_hello(_c: &Testable) -> CheckFnResult {
+fn say_hello(_c: &Testable, _context: &Context) -> CheckFnResult {
     println!("Hello from the test plugin!");
     return_result(vec![])
 }
 
-fn validate_toml(c: &Testable) -> CheckFnResult {
+fn validate_toml(c: &Testable, _context: &Context) -> CheckFnResult {
     let toml = std::fs::read_to_string(&c.filename).map_err(|_| "Couldn't open file")?;
     Ok(if toml::from_str::<toml::Value>(&toml).is_ok() {
         Status::just_one_pass()

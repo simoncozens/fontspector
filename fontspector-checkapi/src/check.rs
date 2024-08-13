@@ -1,17 +1,20 @@
 use crate::{
-    font::FontCollection, prelude::FixFnResult, status::CheckFnResult, Registry, Status, Testable,
+    context::Context, font::FontCollection, prelude::FixFnResult, status::CheckFnResult, Registry,
+    Status, Testable,
 };
 
 pub type CheckId = String;
+type CheckOneSignature = dyn Fn(&Testable, &Context) -> CheckFnResult;
+type CheckAllSignature = dyn Fn(&FontCollection, &Context) -> CheckFnResult;
 
 #[derive(Clone)]
 pub struct Check<'a> {
     pub id: &'a str,
     pub title: &'a str,
     pub rationale: &'a str,
-    pub proposal: &'a str,
-    pub check_one: Option<&'a dyn Fn(&Testable) -> CheckFnResult>,
-    pub check_all: Option<&'a dyn Fn(&FontCollection) -> CheckFnResult>,
+    pub proposal: Option<&'a str>,
+    pub check_one: Option<&'a CheckOneSignature>,
+    pub check_all: Option<&'a CheckAllSignature>,
     pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub fix_source: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub applies_to: &'a str,
@@ -46,9 +49,9 @@ impl<'a> Check<'a> {
         }
     }
 
-    pub fn run_one(&'a self, f: &'a Testable) -> Vec<CheckResult> {
+    pub fn run_one(&'a self, f: &'a Testable, context: &Context) -> Vec<CheckResult> {
         if let Some(check_one) = self.check_one {
-            match check_one(f) {
+            match check_one(f, context) {
                 Ok(results) => results.map(|r| self.status_to_result(r, Some(f))).collect(),
                 Err(e) => {
                     vec![self.status_to_result(Status::error(&format!("Error: {}", e)), Some(f))]
@@ -59,9 +62,9 @@ impl<'a> Check<'a> {
         }
     }
 
-    pub fn run_all(&'a self, f: &'a FontCollection) -> Vec<CheckResult> {
+    pub fn run_all(&'a self, f: &'a FontCollection, context: &Context) -> Vec<CheckResult> {
         if let Some(check_all) = self.check_all {
-            match check_all(f) {
+            match check_all(f, context) {
                 Ok(results) => results.map(|r| self.status_to_result(r, None)).collect(),
                 Err(e) => {
                     vec![self.status_to_result(Status::error(&format!("Error: {}", e)), None)]

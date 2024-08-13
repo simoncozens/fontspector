@@ -1,5 +1,5 @@
 use fontspector_checkapi::{
-    return_result, Check, CheckFnResult, FileTypeConvert, Status, Testable, TTF,
+    return_result, Check, CheckFnResult, Context, FileTypeConvert, Status, Testable, TTF,
 };
 
 const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
@@ -7,7 +7,7 @@ const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
     b"GSUB", b"JSTF", b"gasp", b"hdmx", b"LTSH", b"PCLT", b"VDMX", b"vhea", b"vmtx", b"kern",
 ];
 
-fn required_tables(t: &Testable) -> CheckFnResult {
+fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = TTF.from_testable(t).ok_or("Not a TTF file")?;
     let mut required_table_tags: Vec<_> = vec![
         b"cmap", b"head", b"hhea", b"hmtx", b"maxp", b"name", b"OS/2", b"post",

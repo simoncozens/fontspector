@@ -5,7 +5,7 @@ use chrono::prelude::*;
 use fonts_public::FamilyProto;
 use fontspector_checkapi::prelude::*;
 
-fn validate_metadatapb(c: &Testable) -> CheckFnResult {
+fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
     let mdpb =
         std::fs::read_to_string(&c.filename).map_err(|_| "Couldn't open file".to_string())?;
     match protobuf::text_format::parse_from_str::<FamilyProto>(&mdpb) {
