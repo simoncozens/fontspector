@@ -3,7 +3,15 @@ use itertools::Itertools;
 use std::collections::HashMap;
 
 use crate::{reporters::Reporter, Args};
-pub(crate) struct TerminalReporter {}
+pub(crate) struct TerminalReporter {
+    succinct: bool
+}
+
+impl TerminalReporter {
+    pub fn new(succinct: bool) -> Self {
+        Self { succinct }
+    }
+}
 
 impl Reporter for TerminalReporter {
     fn report(
@@ -20,6 +28,14 @@ impl Reporter for TerminalReporter {
             for (sectionname, results) in sectionresults.iter() {
                 let mut sectionheading_done = false;
                 for result in results.iter().filter(|c| c.status.code >= args.loglevel) {
+                    if self.succinct {
+                        println!("{:}: {:} {:}",
+                            testable.filename,
+                            result.check_id,
+                            result.status.code,
+                        );
+                        continue
+                    }
                     if !fileheading_done {
                         println!("Testing: {:}", testable.filename);
                         fileheading_done = true;

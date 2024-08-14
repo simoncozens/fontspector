@@ -49,6 +49,10 @@ pub struct Args {
     #[clap(short, long, help_heading = "Logging")]
     pub quiet: bool,
 
+    /// This is a slightly more compact and succinct output layout
+    #[clap(long, help_heading = "Logging")]
+    pub succinct: bool,
+
     /// Timeout (in seconds) for network operations.
     #[clap(long, help_heading = "Network")]
     pub timeout: Option<u64>,

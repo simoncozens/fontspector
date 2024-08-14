@@ -147,7 +147,7 @@ fn main() {
 
     let mut reporters: Vec<Box<dyn Reporter>> = vec![];
     if !args.quiet {
-        reporters.push(Box::new(TerminalReporter {}));
+        reporters.push(Box::new(TerminalReporter::new(args.succinct)));
     }
 
     for reporter in reporters {
