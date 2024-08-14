@@ -3,8 +3,9 @@ use fontspector_checkapi::prelude::*;
 
 struct Test;
 
-fn say_hello(_c: &Testable, _context: &Context) -> CheckFnResult {
+fn say_hello(_c: &Testable, context: &Context) -> CheckFnResult {
     println!("Hello from the test plugin!");
+    println!("My context was: {:?}", context);
     return_result(vec![])
 }
 
