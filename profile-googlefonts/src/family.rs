@@ -7,7 +7,7 @@ fn family_equal_codepoint_coverage(c: &Testable, _context: &Context) -> CheckFnR
     let f = TTF.from_testable(c).ok_or("Not a TTF file")?;
     let siblings = f.siblings();
     if siblings.is_empty() {
-        return return_result(vec![Status::skip("No sibling fonts found")]);
+        return return_result(vec![Status::skip("no-siblings", "No sibling fonts found")]);
     }
     let mut problems = vec![];
     let mut we_have_they_dont: HashSet<u32> = HashSet::new();
@@ -20,22 +20,28 @@ fn family_equal_codepoint_coverage(c: &Testable, _context: &Context) -> CheckFnR
     }
 
     if !we_have_they_dont.is_empty() {
-        problems.push(Status::fail(&format!(
-            "Our font has codepoints not present in sibling fonts: {}",
-            we_have_they_dont
-                .iter()
-                .map(|i| format!("U+{:04X}", i))
-                .join(", ")
-        )))
+        problems.push(Status::fail(
+            "glyphset-diverges",
+            &format!(
+                "Our font has codepoints not present in sibling fonts: {}",
+                we_have_they_dont
+                    .iter()
+                    .map(|i| format!("U+{:04X}", i))
+                    .join(", ")
+            ),
+        ))
     }
     if !they_have_we_dont.is_empty() {
-        problems.push(Status::fail(&format!(
-            "Other fonts have codepoints not present in this font: {}",
-            they_have_we_dont
-                .iter()
-                .map(|i| format!("U+{:04X}", i))
-                .join(", ")
-        )))
+        problems.push(Status::fail(
+            "glyphset-diverges",
+            &format!(
+                "Other fonts have codepoints not present in this font: {}",
+                they_have_we_dont
+                    .iter()
+                    .map(|i| format!("U+{:04X}", i))
+                    .join(", ")
+            ),
+        ))
     }
     return_result(problems)
 }

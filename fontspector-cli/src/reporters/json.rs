@@ -1,4 +1,4 @@
-use crate::reporters::{summary_results, OrganisedResults, Reporter};
+use crate::reporters::{Reporter, RunResults};
 use crate::Args;
 use fontspector_checkapi::Registry;
 use serde_json::{json, Map};
@@ -14,8 +14,9 @@ impl JsonReporter {
     }
 }
 impl Reporter for JsonReporter {
-    fn report(&self, organised_results: &OrganisedResults, _args: &Args, _registry: &Registry) {
-        let summary = summary_results(organised_results);
+    fn report(&self, results: &RunResults, _args: &Args, _registry: &Registry) {
+        let summary = results.summary();
+        let organised_results = results.organize();
         let mut results = Map::new();
         for (testable, sectionresults) in organised_results.iter() {
             let mut testable_result = Map::new();
@@ -29,14 +30,22 @@ impl Reporter for JsonReporter {
                                 "check_id": r.check_id,
                                 "check_name": r.check_name,
                                 "check_rationale": r.check_rationale,
-                                "status": r.status.code,
-                                "status_message": r.status.message,
+                                "subresults": r.subresults
+                                    .iter()
+                                    .map(|r| {
+                                        json!({
+                                            "status": r.severity.to_string(),
+                                            "code": r.code,
+                                            "status_message": r.message,
+                                        })
+                                    })
+                                    .collect::<Vec<_>>(),
                             })
                         })
                         .collect(),
                 );
             }
-            results.insert(testable.filename.clone(), testable_result.into());
+            results.insert(testable.clone(), testable_result.into());
         }
         let output = json!({
             "summary": summary,

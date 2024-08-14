@@ -6,15 +6,12 @@ mod reporters;
 
 use args::Args;
 use clap::Parser;
-use fontspector_checkapi::{Check, Context, Plugin, Registry, Testable};
+use fontspector_checkapi::{Check, CheckResult, Context, Plugin, Registry, Testable};
 use indicatif::ParallelProgressIterator;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use reporters::{
-    json::JsonReporter, organize, summary_results, terminal::TerminalReporter, worst_status,
-    Reporter, RunResults,
-};
+use reporters::{json::JsonReporter, terminal::TerminalReporter, Reporter, RunResults};
 use serde_json::Map;
 
 /// Filter out checks that don't apply
@@ -138,13 +135,13 @@ fn main() {
     let results: RunResults = checkorder
         .par_iter()
         .progress()
-        .map(|(sectionname, testable, check, context)| {
-            (sectionname, testable, check.run_one(testable, context))
+        .flat_map(|(sectionname, testable, check, context)| {
+            check.run_one(testable, context, sectionname)
         })
-        .collect();
+        .collect::<Vec<CheckResult>>()
+        .into();
 
-    let worst_status = worst_status(&results);
-    let organised_results = organize(results);
+    let worst_status = results.worst_status();
 
     let mut reporters: Vec<Box<dyn Reporter>> = vec![];
     if !args.quiet {
@@ -155,12 +152,12 @@ fn main() {
     }
 
     for reporter in reporters {
-        reporter.report(&organised_results, &args, &registry);
+        reporter.report(&results, &args, &registry);
     }
 
     if !args.quiet {
         // Summary report
-        let summary = summary_results(&organised_results);
+        let summary = results.summary();
         print!("\nSummary:\n  ");
         for (status, count) in summary.iter() {
             print!("{:}: {:}  ", status, count);

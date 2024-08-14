@@ -9,15 +9,16 @@ fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
     let mdpb =
         std::fs::read_to_string(&c.filename).map_err(|_| "Couldn't open file".to_string())?;
     match protobuf::text_format::parse_from_str::<FamilyProto>(&mdpb) {
-        Err(error) => Ok(Status::just_one_fail(&format!(
-            "Invalid METADATA.pb: {}",
-            error
-        ))),
+        Err(error) => Ok(Status::just_one_fail(
+            "parsing-error",
+            &format!("Invalid METADATA.pb: {}", error),
+        )),
         Ok(msg) => {
             let mut problems = vec![];
             if let Some(designer) = msg.designer.as_ref() {
                 if designer.contains('/') {
-                    problems.push(Status::fail(&format!(
+                    problems.push(Status::fail("slash",
+                    &format!(
                     "Font designer field contains a forward slash '{}'. Please use commas to separate multiple names instead.",
                     designer
                 )));
@@ -27,7 +28,7 @@ fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
             let mut sorted_subsets = msg.subsets.clone();
             sorted_subsets.sort();
             if msg.subsets != sorted_subsets {
-                problems.push(Status::fail("Subsets are not in order"))
+                problems.push(Status::fail("not-sorted", "Subsets are not in order"))
             }
 
             // Check date added is YYYY-MM-DD
@@ -36,7 +37,10 @@ fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
                 .as_ref()
                 .is_some_and(|da| NaiveDate::parse_from_str(da, "%Y-%m-%d").is_err())
             {
-                problems.push(Status::fail("Date added is not in the format YYYY-MM-DD"))
+                problems.push(Status::fail(
+                    "date-malformed",
+                    "Date added is not in the format YYYY-MM-DD",
+                ))
             }
             return_result(problems)
         }

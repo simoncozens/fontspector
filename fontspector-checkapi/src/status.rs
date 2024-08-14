@@ -33,12 +33,16 @@ impl std::fmt::Display for StatusCode {
 #[derive(Debug, Clone)]
 pub struct Status {
     pub message: Option<String>,
-    pub code: StatusCode,
+    pub severity: StatusCode,
+    pub code: Option<String>,
 }
 
 impl std::fmt::Display for Status {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "**{:}**", self.code)?;
+        write!(f, "**{:}**: ", self.severity)?;
+        if let Some(code) = self.code.as_ref() {
+            write!(f, "[{}]", code)?;
+        }
         if let Some(message) = self.message.as_ref() {
             write!(f, ": {:}", message)?;
         }
@@ -51,38 +55,43 @@ impl Status {
         Box::new(vec![Status::pass()].into_iter())
     }
 
-    pub fn just_one_fail(s: &str) -> Box<dyn Iterator<Item = Status>> {
-        Box::new(vec![Status::fail(s)].into_iter())
+    pub fn just_one_fail(code: &str, message: &str) -> Box<dyn Iterator<Item = Status>> {
+        Box::new(vec![Status::fail(code, message)].into_iter())
     }
 
     pub fn pass() -> Self {
         Self {
             message: None,
-            code: StatusCode::Pass,
+            code: None,
+            severity: StatusCode::Pass,
         }
     }
-    pub fn fail(s: &str) -> Self {
+    pub fn fail(code: &str, message: &str) -> Self {
         Self {
-            message: Some(s.to_string()),
-            code: StatusCode::Fail,
+            message: Some(message.to_string()),
+            code: Some(code.to_string()),
+            severity: StatusCode::Fail,
         }
     }
-    pub fn skip(s: &str) -> Self {
+    pub fn skip(code: &str, message: &str) -> Self {
         Self {
-            message: Some(s.to_string()),
-            code: StatusCode::Skip,
+            message: Some(message.to_string()),
+            code: Some(code.to_string()),
+            severity: StatusCode::Skip,
         }
     }
-    pub fn info(s: &str) -> Self {
+    pub fn info(code: &str, message: &str) -> Self {
         Self {
-            message: Some(s.to_string()),
-            code: StatusCode::Info,
+            message: Some(message.to_string()),
+            code: Some(code.to_string()),
+            severity: StatusCode::Info,
         }
     }
-    pub fn error(s: &str) -> Self {
+    pub fn error(message: &str) -> Self {
         Self {
-            message: Some(s.to_string()),
-            code: StatusCode::Error,
+            message: Some(message.to_string()),
+            code: None,
+            severity: StatusCode::Error,
         }
     }
 }

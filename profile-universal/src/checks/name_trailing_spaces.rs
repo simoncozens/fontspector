@@ -12,7 +12,7 @@ fn name_trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
                 .map(|s| s.trim_end() != s)
                 .unwrap_or(false)
             {
-                problems.push(Status::fail(&format!(
+                problems.push(Status::fail("trailing-space",&format!(
                     "Name table record {:}/{:}/{:}/{:} has trailing spaces that must be removed:\n`{:}`",
                     name_record.platform_id,
                     name_record.encoding_id,

@@ -23,7 +23,10 @@ fn unwanted_tables(t: &Testable, _context: &Context) -> CheckFnResult {
         }
     }
     Ok(if !reasons.is_empty() {
-        Status::just_one_fail(&format!("Unwanted tables found:\n {}", reasons.join("\n")))
+        Status::just_one_fail(
+            "unwanted-tables",
+            &format!("Unwanted tables found:\n {}", reasons.join("\n")),
+        )
     } else {
         Status::just_one_pass()
     })

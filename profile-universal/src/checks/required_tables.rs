@@ -41,10 +41,13 @@ fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
         }
     }
     if !optional.is_empty() {
-        problems.push(Status::info(&format!(
-            "This font contains the following optional tables:\n\n    {}",
-            optional.join("\n    ")
-        )))
+        problems.push(Status::info(
+            "optional-tables",
+            &format!(
+                "This font contains the following optional tables:\n\n    {}",
+                optional.join("\n    ")
+            ),
+        ))
     }
 
     let mut missing = vec![];
@@ -73,10 +76,13 @@ fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     }
 
     if !missing.is_empty() {
-        problems.push(Status::fail(&format!(
-            "This font is missing the following required tables:\n\n    {}",
-            missing.join("\n    ")
-        )))
+        problems.push(Status::fail(
+            "required-tables",
+            &format!(
+                "This font is missing the following required tables:\n\n    {}",
+                missing.join("\n    ")
+            ),
+        ))
     }
 
     return_result(problems)
