@@ -3,6 +3,7 @@ use fontspector_checkapi::{CheckResult, Registry, StatusCode, Testable};
 use std::collections::HashMap;
 
 pub(crate) mod terminal;
+pub(crate) mod json;
 
 pub type RunResults<'a> = Vec<(&'a String, &'a &'a Testable, Vec<CheckResult>)>;
 
@@ -34,7 +35,7 @@ pub fn organize(results: RunResults) -> OrganisedResults {
     organised_results
 }
 
-pub fn summary_results(organised_results: OrganisedResults) -> HashMap<StatusCode, i32> {
+pub fn summary_results(organised_results: &OrganisedResults) -> HashMap<StatusCode, i32> {
     let mut summary = HashMap::new();
     for (_testable, sectionresults) in organised_results.iter() {
         for (_sectionname, results) in sectionresults.iter() {

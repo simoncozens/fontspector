@@ -12,7 +12,8 @@ use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use reporters::{
-    organize, summary_results, terminal::TerminalReporter, worst_status, Reporter, RunResults,
+    json::JsonReporter, organize, summary_results, terminal::TerminalReporter, worst_status,
+    Reporter, RunResults,
 };
 use serde_json::Map;
 
@@ -149,6 +150,9 @@ fn main() {
     if !args.quiet {
         reporters.push(Box::new(TerminalReporter::new(args.succinct)));
     }
+    if let Some(jsonfile) = args.json.as_ref() {
+        reporters.push(Box::new(JsonReporter::new(jsonfile)));
+    }
 
     for reporter in reporters {
         reporter.report(&organised_results, &args, &registry);
@@ -156,7 +160,7 @@ fn main() {
 
     if !args.quiet {
         // Summary report
-        let summary = summary_results(organised_results);
+        let summary = summary_results(&organised_results);
         print!("\nSummary:\n  ");
         for (status, count) in summary.iter() {
             print!("{:}: {:}  ", status, count);

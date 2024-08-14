@@ -61,6 +61,10 @@ pub struct Args {
     #[clap(long, help_heading = "Network")]
     pub skip_network: bool,
 
+    /// Write a JSON formatted report to the given filename
+    #[clap(short, long, help_heading = "Reports")]
+    pub json: Option<String>,
+
     /// Input files
     pub inputs: Vec<String>,
 }
