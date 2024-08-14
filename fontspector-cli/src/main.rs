@@ -4,17 +4,17 @@
 mod args;
 mod reporters;
 
-use crate::reporters::terminal::TerminalReporter;
-pub use args::Args;
+use args::Args;
 use clap::Parser;
-use fontspector_checkapi::{Check, CheckResult, Context, Plugin, Registry, StatusCode, Testable};
+use fontspector_checkapi::{Check, Context, Plugin, Registry, Testable};
 use indicatif::ParallelProgressIterator;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use reporters::Reporter;
+use reporters::{
+    organize, summary_results, terminal::TerminalReporter, worst_status, Reporter, RunResults,
+};
 use serde_json::Map;
-use std::collections::HashMap;
 
 /// Filter out checks that don't apply
 fn included_excluded(checkname: &str, args: &Args) -> bool {
@@ -124,8 +124,17 @@ fn main() {
         })
         .collect();
 
-    println!("Testing...");
-    let results: Vec<_> = checkorder
+    if !args.quiet {
+        println!(
+            "Running {:} check{} on {:} file{}",
+            checkorder.len(),
+            if checkorder.len() == 1 { "" } else { "s" },
+            testables.len(),
+            if testables.len() == 1 { "" } else { "s" }
+        );
+    }
+
+    let results: RunResults = checkorder
         .par_iter()
         .progress()
         .map(|(sectionname, testable, check, context)| {
@@ -133,30 +142,20 @@ fn main() {
         })
         .collect();
 
-    let worst_status = results
-        .iter()
-        .map(|(_sectionname, _testable, checkresults)| {
-            checkresults
-                .iter()
-                .map(|r| r.status.code)
-                .max()
-                .unwrap_or(StatusCode::Pass)
-        })
-        .max()
-        .unwrap_or(StatusCode::Pass);
+    let worst_status = worst_status(&results);
 
     // Organise results by testable and sectionname
-    let mut organised_results: HashMap<&Testable, HashMap<String, Vec<CheckResult>>> =
-        HashMap::new();
-    for (sectionname, testable, checkresults) in results {
-        // let filename = testable.filename.clone();
-        let section = organised_results.entry(testable).or_default();
-        let results = section.entry(sectionname.clone()).or_default();
-        results.extend(checkresults);
-    }
+    let organised_results = organize(results);
 
     if !args.quiet {
         TerminalReporter {}.report(&organised_results, &args, &registry);
+        // Summary report
+        let summary = summary_results(organised_results);
+        print!("\nSummary:\n  ");
+        for (status, count) in summary.iter() {
+            print!("{:}: {:}  ", status, count);
+        }
+        println!();
     }
     if worst_status >= args.error_code_on {
         std::process::exit(1);
