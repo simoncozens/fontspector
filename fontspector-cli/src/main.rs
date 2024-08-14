@@ -143,12 +143,18 @@ fn main() {
         .collect();
 
     let worst_status = worst_status(&results);
-
-    // Organise results by testable and sectionname
     let organised_results = organize(results);
 
+    let mut reporters: Vec<Box<dyn Reporter>> = vec![];
     if !args.quiet {
-        TerminalReporter {}.report(&organised_results, &args, &registry);
+        reporters.push(Box::new(TerminalReporter {}));
+    }
+
+    for reporter in reporters {
+        reporter.report(&organised_results, &args, &registry);
+    }
+
+    if !args.quiet {
         // Summary report
         let summary = summary_results(organised_results);
         print!("\nSummary:\n  ");
