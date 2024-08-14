@@ -116,13 +116,18 @@ fn main() {
     let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
     // let collection = FontCollection(thing);
 
+    if testables.is_empty() {
+        log::error!("No input files");
+        std::process::exit(1);
+    }
+
     // Load configuration
     let configuration: Map<String, serde_json::Value> = args
         .configuration
         .as_ref()
         .map(|filename| {
             std::fs::File::open(filename).unwrap_or_else(|e| {
-                println!("Could not open configuration file: {:}", e);
+                println!("Could not open configuration file {}: {:}", filename, e);
                 std::process::exit(1)
             })
         })
@@ -134,7 +139,10 @@ fn main() {
         })
         .map(|file: serde_json::Value| {
             file.as_object()
-                .expect("Configuration file must be a JSON object")
+                .unwrap_or_else(|| {
+                    println!("Configuration file must be a JSON object");
+                    std::process::exit(1)
+                })
                 .clone()
         })
         .unwrap_or_default();
