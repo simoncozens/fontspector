@@ -60,6 +60,14 @@ struct Args {
     #[clap(short, long, help_heading = "Logging")]
     quiet: bool,
 
+    /// Timeout (in seconds) for network operations.
+    #[clap(long, help_heading = "Network")]
+    timeout: Option<u64>,
+
+    /// Skip network checks
+    #[clap(long, help_heading = "Network")]
+    skip_network: bool,
+
     /// Input files
     inputs: Vec<String>,
 }
@@ -266,12 +274,12 @@ fn terminal_report(
 
 fn context_for(
     checkname: &str,
-    _args: &Args,
+    args: &Args,
     configuration: &Map<String, serde_json::Value>,
 ) -> Context {
     Context {
-        skip_network: false,
-        network_timeout: None,
+        skip_network: args.skip_network,
+        network_timeout: args.timeout,
         configuration: configuration
             .get(checkname)
             .and_then(|x| x.as_object())
