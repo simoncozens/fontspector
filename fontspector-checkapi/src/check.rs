@@ -12,7 +12,7 @@ pub struct Check<'a> {
     pub id: &'a str,
     pub title: &'a str,
     pub rationale: &'a str,
-    pub proposal: Option<&'a str>,
+    pub proposal: &'a str,
     pub check_one: Option<&'a CheckOneSignature>,
     pub check_all: Option<&'a CheckAllSignature>,
     pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
