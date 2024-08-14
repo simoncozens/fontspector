@@ -80,20 +80,20 @@ fn main() {
         .as_ref()
         .map(|filename| {
             std::fs::File::open(filename).unwrap_or_else(|e| {
-                println!("Could not open configuration file {}: {:}", filename, e);
+                log::error!("Could not open configuration file {}: {:}", filename, e);
                 std::process::exit(1)
             })
         })
         .and_then(|file| {
             serde_json::from_reader(std::io::BufReader::new(file)).unwrap_or_else(|e| {
-                println!("Could not parse configuration file: {:}", e);
+                log::error!("Could not parse configuration file: {:}", e);
                 std::process::exit(1)
             })
         })
         .map(|file: serde_json::Value| {
             file.as_object()
                 .unwrap_or_else(|| {
-                    println!("Configuration file must be a JSON object");
+                    log::error!("Configuration file must be a JSON object");
                     std::process::exit(1)
                 })
                 .clone()

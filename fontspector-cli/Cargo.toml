@@ -12,18 +12,20 @@ fontspector-checkapi = { path = "../fontspector-checkapi" }
 # These profiles are baked-in
 profile-universal = { path = "../profile-universal" }
 profile-googlefonts = { path = "../profile-googlefonts" }
-# skrifa = "0.15.0"
-# read-fonts = "0.15.0"
 pluginator = "1.0.1"
 clap = {version = "3.2.5", features = ["derive"]}
 itertools = "0.10.0"
 log = "0.4.14"
 env_logger = "0.8"
 rayon = "1.0.1"
-kurbo = { version = "0.8.1" }
 indicatif = {version = "0", features = ["rayon"]}
-simple_logger = "1.13.0"
-regex = "1.5.4"
-serde_json = "1.0"
 serde =  {version = "1.0.130", features=["derive"] }
+
+# Terminal reporter
 termimad = "0.14"
+
+# JSON reporter
+serde_json = "1.0"
+
+# Markdown/HTML reporters
+tera = "1.20.0"
