@@ -1,7 +1,7 @@
 use super::RunResults;
 use crate::{reporters::Reporter, Args};
 use colored::{ColoredString, Colorize};
-use fontspector_checkapi::{Registry, StatusCode, Testable};
+use fontspector_checkapi::{FixResult, Registry, StatusCode};
 use itertools::Itertools;
 use std::{collections::HashMap, path::Path};
 
@@ -31,7 +31,7 @@ fn colored_status(c: StatusCode, s: Option<&str>) -> ColoredString {
 }
 
 impl Reporter for TerminalReporter {
-    fn report(&self, results: &RunResults, args: &Args, registry: &Registry) {
+    fn report(&self, results: &RunResults, args: &Args, _registry: &Registry) {
         let organised_results = results.organize();
         for (filename, sectionresults) in organised_results
             .iter()
@@ -85,20 +85,30 @@ impl Reporter for TerminalReporter {
                             ));
                         }
                         termimad::print_inline(&format!("{:}\n", subresult));
-                        #[allow(clippy::unwrap_used)]
-                        // This is a genuine can't-happen. We put it in the hashmap earlier!
-                        let check = registry.checks.get(&result.check_id).unwrap();
-                        if let Some(fix) = check.hotfix {
-                            if args.hotfix {
-                                match fix(&Testable::new(filename)) {
-                                    Ok(true) => println!("   Hotfix applied"),
-                                    Ok(false) => println!("   Hotfix not applied"),
-                                    Err(e) => println!("   Hotfix failed: {:}", e),
-                                }
-                            } else {
-                                termimad::print_inline("  This issue can be fixed automatically. Run with `--hotfix` to apply the fix.\n")
-                            }
+                    }
+                    match &result.hotfix_result {
+                        Some(FixResult::Available) => {
+                            termimad::print_inline("  This issue can be fixed automatically. Run with `--hotfix` to apply the fix.\n")
                         }
+                        Some(FixResult::Fixed) => {
+                            termimad::print_inline("  Hotfix applied.\n")
+                        }
+                        Some(FixResult::FixError(e)) => {
+                            termimad::print_inline(&format!("  Hotfix failed: {:}\n", e))
+                        }
+                        _ => {}
+                    }
+                    match &result.sourcefix_result {
+                        Some(FixResult::Available) => {
+                            termimad::print_inline("  This issue can be fixed by modifying the source. Run with `--fix-sources` to apply the fix.\n")
+                        }
+                        Some(FixResult::Fixed) => {
+                            termimad::print_inline("  Source fix applied.\n")
+                        }
+                        Some(FixResult::FixError(e)) => {
+                            termimad::print_inline(&format!("  Source fix failed: {:}\n", e))
+                        }
+                        _ => {}
                     }
                     println!("\n");
                 }

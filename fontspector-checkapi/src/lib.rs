@@ -10,7 +10,7 @@ mod registry;
 mod status;
 mod testable;
 pub use check::{return_result, Check, CheckFlags, CheckId};
-pub use checkresult::CheckResult;
+pub use checkresult::{CheckResult, FixResult};
 pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};
 pub use font::{FontCollection, TestFont, TTF};

@@ -5,10 +5,6 @@ use fontspector_checkapi::StatusCode;
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 pub struct Args {
-    /// Hotfix
-    #[clap(short, long)]
-    pub hotfix: bool,
-
     /// Plugins to load
     #[clap(long, value_delimiter = ',')]
     pub plugins: Vec<String>,
@@ -68,6 +64,14 @@ pub struct Args {
     /// Write a GitHub-Markdown formatted report to the given filename
     #[clap(long, help_heading = "Reports")]
     pub ghmarkdown: Option<String>,
+
+    /// Hotfix found problems in the binaries
+    #[clap(long, help_heading = "Fix problems")]
+    pub hotfix: bool,
+
+    /// Fix sources
+    #[clap(long, help_heading = "Fix problems")]
+    pub fix_sources: bool,
 
     /// Input files
     pub inputs: Vec<String>,

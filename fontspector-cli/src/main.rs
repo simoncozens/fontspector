@@ -6,7 +6,7 @@ mod reporters;
 
 use args::Args;
 use clap::Parser;
-use fontspector_checkapi::{Check, CheckResult, Context, Plugin, Registry, Testable};
+use fontspector_checkapi::{Check, CheckResult, Context, FixResult, Plugin, Registry, Testable};
 use indicatif::ParallelProgressIterator;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
@@ -135,12 +135,48 @@ fn main() {
         );
     }
 
+    let apply_fixes = |(testable, check, mut result): (&&Testable, &&Check, CheckResult)| {
+        if args.hotfix {
+            if let Some(fix) = check.hotfix {
+                result.hotfix_result = match fix(testable) {
+                    Ok(_) => Some(FixResult::Fixed),
+                    Err(e) => Some(FixResult::FixError(e)),
+                }
+            } else {
+                result.hotfix_result = Some(FixResult::Unfixable);
+            }
+        } else if check.hotfix.is_some() {
+            result.hotfix_result = Some(FixResult::Available);
+        }
+        if args.fix_sources {
+            if let Some(fix) = check.fix_source {
+                result.sourcefix_result = match fix(testable) {
+                    Ok(_) => Some(FixResult::Fixed),
+                    Err(e) => Some(FixResult::FixError(e)),
+                }
+            } else {
+                result.sourcefix_result = Some(FixResult::Unfixable);
+            }
+        } else if check.fix_source.is_some() {
+            result.sourcefix_result = Some(FixResult::Available);
+        }
+        result
+    };
+
+    // Run all the things! Check all the fonts! Fix all the binaries! Fix all the sources!
     let results: RunResults = checkorder
         .par_iter()
         .progress()
-        .flat_map(|(sectionname, testable, check, context)| {
-            check.run_one(testable, context, sectionname)
+        .map(|(sectionname, testable, check, context)| {
+            (
+                testable,
+                check,
+                check.run_one(testable, context, sectionname),
+            )
         })
+        .filter(|(_, _, result)| result.is_some())
+        .map(|(testable, check, result)| (testable, check, result.unwrap()))
+        .map(apply_fixes)
         .collect::<Vec<CheckResult>>()
         .into();
 
