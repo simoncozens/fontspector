@@ -1,5 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 mod check;
+mod checkresult;
 mod constants;
 mod context;
 mod filetype;
@@ -8,7 +9,8 @@ mod profile;
 mod registry;
 mod status;
 mod testable;
-pub use check::{return_result, Check, CheckFlags, CheckId, CheckResult};
+pub use check::{return_result, Check, CheckFlags, CheckId};
+pub use checkresult::CheckResult;
 pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};
 pub use font::{FontCollection, TestFont, TTF};

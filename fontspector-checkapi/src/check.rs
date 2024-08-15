@@ -1,8 +1,6 @@
-use serde::Serialize;
-
 use crate::{
-    context::Context, font::FontCollection, prelude::FixFnResult, status::CheckFnResult, Registry,
-    Status, StatusCode, Testable,
+    context::Context, font::FontCollection, prelude::FixFnResult, status::CheckFnResult,
+    CheckResult, Registry, Status, Testable,
 };
 
 pub type CheckId = String;
@@ -40,41 +38,6 @@ pub struct Check<'a> {
 
 // Are we? Really? I don't know. Let's find out...
 unsafe impl Sync for Check<'_> {}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct CheckResult {
-    pub check_id: CheckId,
-    pub check_name: String,
-    pub check_rationale: String,
-    pub filename: Option<String>,
-    pub section: String,
-    pub subresults: Vec<Status>,
-}
-
-impl CheckResult {
-    fn new(check: &Check, filename: Option<&str>, section: &str, subresults: Vec<Status>) -> Self {
-        Self {
-            check_id: check.id.to_string(),
-            check_name: check.title.to_string(),
-            check_rationale: check.rationale.to_string(),
-            filename: filename.map(|x| x.to_string()),
-            section: section.to_string(),
-            subresults,
-        }
-    }
-
-    pub fn worst_status(&self) -> StatusCode {
-        self.subresults
-            .iter()
-            .map(|x| x.severity)
-            .max()
-            .unwrap_or(StatusCode::Pass)
-    }
-
-    pub fn is_error(&self) -> bool {
-        self.worst_status() == StatusCode::Error
-    }
-}
 
 impl<'a> Check<'a> {
     pub fn applies(&self, f: &'a Testable, registry: &Registry) -> bool {
