@@ -1,6 +1,7 @@
 use crate::reporters::{Reporter, RunResults};
 use crate::Args;
 use fontspector_checkapi::Registry;
+use serde::Serialize;
 use serde_json::{json, Map};
 pub(crate) struct JsonReporter {
     filename: String,
@@ -24,25 +25,11 @@ impl Reporter for JsonReporter {
                 testable_result.insert(
                     sectionname.clone(),
                     checkresults
-                        .iter()
-                        .map(|r| {
-                            json!({
-                                "check_id": r.check_id,
-                                "check_name": r.check_name,
-                                "check_rationale": r.check_rationale,
-                                "subresults": r.subresults
-                                    .iter()
-                                    .map(|r| {
-                                        json!({
-                                            "status": r.severity.to_string(),
-                                            "code": r.code,
-                                            "status_message": r.message,
-                                        })
-                                    })
-                                    .collect::<Vec<_>>(),
-                            })
-                        })
-                        .collect(),
+                        .serialize(serde_json::value::Serializer)
+                        .unwrap_or_else(|e| {
+                            eprintln!("Error serializing JSON report: {:}", e);
+                            std::process::exit(1);
+                        }),
                 );
             }
             results.insert(testable.clone(), testable_result.into());
@@ -53,7 +40,7 @@ impl Reporter for JsonReporter {
         });
 
         let report = serde_json::to_string_pretty(&output).unwrap();
-        // Write to self.filename
+
         std::fs::write(&self.filename, report).unwrap_or_else(|e| {
             eprintln!("Error writing JSON report to {:}: {:}", self.filename, e);
             std::process::exit(1);
