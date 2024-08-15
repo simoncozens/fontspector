@@ -1,0 +1,17 @@
+[package]
+name = "fontspector-web"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wasm-bindgen = { version = "0.2.63" }
+console_error_panic_hook = { version = "0.1.6" }
+js-sys = { version = "0.3.68" }
+fontspector-checkapi = { path = "../fontspector-checkapi" }
+profile-universal = { path = "../profile-universal" }
+profile-googlefonts = { path = "../profile-googlefonts" }
+serde_json = { version = "1.0.96", features = ["preserve_order"] }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"

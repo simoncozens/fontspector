@@ -53,4 +53,6 @@ impl fontspector_checkapi::Plugin for Test {
         cr.register_simple_profile("test", vec![VALIDATE_TOML, SAY_HELLO])
     }
 }
+
+#[cfg(not(target_family = "wasm"))]
 pluginator::plugin_implementation!(fontspector_checkapi::Plugin, Test);

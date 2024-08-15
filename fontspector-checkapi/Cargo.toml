@@ -3,6 +3,13 @@ name = "fontspector-checkapi"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+# Plugin architecture
+pluginator = {workspace = true}
+
 [dependencies]
 read-fonts = {workspace = true}
 skrifa = {workspace = true}
@@ -13,9 +20,6 @@ glob="0.3.1"
 
 # Needed so that we can refer to status codes on the command line
 clap = {version = "3.2.5", features = ["derive"]}
-
-# Plugin architecture
-pluginator = {workspace = true}
 
 # Serializing and deserializing profiles
 toml = "0.8.14"

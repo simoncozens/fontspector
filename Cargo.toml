@@ -5,7 +5,10 @@ members = [
     "fontspector-cli",
     "fontspector-checkapi",
     "profile-universal", "profile-testplugin", "profile-googlefonts",
+    "fontspector-web",
 ]
+
+default-members = [ "fontspector-cli" ]
 
 [workspace.dependencies]
 pluginator = "1.0.1"

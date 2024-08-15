@@ -18,9 +18,18 @@ pub struct TestFont {
 pub const TTF: FileType = FileType { pattern: "*.ttf" };
 
 impl<'a> FileTypeConvert<TestFont> for FileType<'a> {
+    #[cfg(not(target_family = "wasm"))]
     fn from_testable(&self, t: &Testable) -> Option<TestFont> {
         self.applies(t)
             .then(|| TestFont::new(&t.filename))
+            .transpose()
+            .unwrap_or(None)
+    }
+
+    #[cfg(target_family = "wasm")]
+    fn from_testable(&self, t: &Testable) -> Option<TestFont> {
+        self.applies(t)
+            .then(|| TestFont::new_from_data(&t.filename, t.contents.clone()))
             .transpose()
             .unwrap_or(None)
     }
@@ -29,6 +38,10 @@ impl<'a> FileTypeConvert<TestFont> for FileType<'a> {
 impl TestFont {
     pub fn new(filename: &str) -> std::io::Result<TestFont> {
         let font_data = std::fs::read(filename)?;
+        TestFont::new_from_data(filename, font_data)
+    }
+
+    pub fn new_from_data(filename: &str, font_data: Vec<u8>) -> std::io::Result<TestFont> {
         let mut fnt = TestFont {
             filename: filename.to_string(),
             font_data,
@@ -41,9 +54,23 @@ impl TestFont {
             .mappings()
             .map(|(u, _gid)| u)
             .collect();
-        fnt._sibling_filenames = {
+
+        fnt.find_siblings()?;
+
+        if FontRef::new(&fnt.font_data).is_err() {
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidData,
+                "Can't parse font",
+            ));
+        }
+        Ok(fnt)
+    }
+
+    #[cfg(not(target_family = "wasm"))]
+    fn find_siblings(&mut self) -> std::io::Result<()> {
+        self._sibling_filenames = {
             // All other TTF files in same directory
-            let directory = Path::new(&fnt.filename)
+            let directory = Path::new(&self.filename)
                 .parent()
                 .ok_or(std::io::Error::new(
                     ErrorKind::NotFound,
@@ -59,19 +86,19 @@ impl TestFont {
             paths
                 .flatten()
                 .filter(|x| x.path().extension().map_or(false, |ext| ext == "ttf"))
-                .filter(|x| x.path().to_string_lossy() != fnt.filename)
+                .filter(|x| x.path().to_string_lossy() != self.filename)
                 .map(|x| x.path().to_string_lossy().to_string())
                 .collect()
         };
-
-        if FontRef::new(&fnt.font_data).is_err() {
-            return Err(std::io::Error::new(
-                ErrorKind::InvalidData,
-                "Can't parse font",
-            ));
-        }
-        Ok(fnt)
+        Ok(())
     }
+
+    #[cfg(target_family = "wasm")]
+    fn find_siblings(&mut self) -> std::io::Result<()> {
+        self._sibling_filenames = vec![];
+        Ok(())
+    }
+
     pub fn font(&self) -> FontRef {
         #[allow(clippy::expect_used)] // We just tested for it in the initializer
         FontRef::new(&self.font_data).expect("Can't happen")

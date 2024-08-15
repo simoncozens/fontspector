@@ -26,8 +26,10 @@ pub mod prelude {
         Status, StatusList, Testable, TTF,
     };
 }
+
 pub trait Plugin {
     fn register(&self, cr: &mut Registry) -> Result<(), String>;
 }
 
+#[cfg(not(target_family = "wasm"))]
 pluginator::plugin_trait!(Plugin);

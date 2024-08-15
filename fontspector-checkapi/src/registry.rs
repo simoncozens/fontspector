@@ -20,6 +20,7 @@ impl<'a> Registry<'a> {
         self.checks.values()
     }
 
+    #[cfg(not(target_family = "wasm"))]
     pub fn load_plugin(&mut self, plugin_path: &str) -> Result<(), String> {
         let plugin = unsafe { crate::load_plugin(plugin_path) }.unwrap_or_else(|e| {
             panic!("Could not load plugin {:?}: {:?}", plugin_path, e);

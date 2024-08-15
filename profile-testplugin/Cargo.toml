@@ -4,9 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type=["dylib"]
+crate-type=["cdylib"]
 
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
-pluginator = "1.0.1"
 toml = "0.8.14"
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+# Plugin architecture
+pluginator = {workspace = true}

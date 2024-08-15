@@ -2,9 +2,12 @@
 pub struct Testable {
     pub filename: String,
     pub source: Option<String>,
+    #[cfg(target_family = "wasm")]
+    pub contents: Vec<u8>,
 }
 
 impl Testable {
+    #[cfg(not(target_family = "wasm"))]
     pub fn new(filename: &str) -> Self {
         Self {
             filename: filename.to_owned(),
@@ -12,6 +15,7 @@ impl Testable {
         }
     }
 
+    #[cfg(not(target_family = "wasm"))]
     pub fn new_with_source(filename: &str, source: &str) -> Self {
         Self {
             filename: filename.to_owned(),
