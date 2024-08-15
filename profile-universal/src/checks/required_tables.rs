@@ -1,6 +1,4 @@
-use fontspector_checkapi::{
-    return_result, Check, CheckFnResult, Context, FileTypeConvert, Status, Testable, TTF,
-};
+use fontspector_checkapi::{prelude::*, FileTypeConvert};
 
 const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
     b"cvt ", b"fpgm", b"loca", b"prep", b"VORG", b"EBDT", b"EBLC", b"EBSC", b"BASE", b"GPOS",
@@ -127,4 +125,5 @@ pub const CHECK_REQUIRED_TABLES: Check = Check {
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,
+    flags: CheckFlags::default(),
 };

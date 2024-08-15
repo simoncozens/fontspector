@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::{
     context::Context, font::FontCollection, prelude::FixFnResult, status::CheckFnResult, Registry,
     Status, StatusCode, Testable,
@@ -6,6 +8,21 @@ use crate::{
 pub type CheckId = String;
 type CheckOneSignature = dyn Fn(&Testable, &Context) -> CheckFnResult;
 type CheckAllSignature = dyn Fn(&FontCollection, &Context) -> CheckFnResult;
+
+#[derive(Clone)]
+pub struct CheckFlags {
+    pub experimental: bool,
+}
+
+impl CheckFlags {
+    // We can't use Default trait here because we want to use
+    // it in const context.
+    pub const fn default() -> Self {
+        Self {
+            experimental: false,
+        }
+    }
+}
 
 #[derive(Clone)]
 pub struct Check<'a> {
@@ -18,12 +35,13 @@ pub struct Check<'a> {
     pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub fix_source: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub applies_to: &'a str,
+    pub flags: CheckFlags,
 }
 
 // Are we? Really? I don't know. Let's find out...
 unsafe impl Sync for Check<'_> {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct CheckResult {
     pub check_id: CheckId,
     pub check_name: String,
@@ -51,6 +69,10 @@ impl CheckResult {
             .map(|x| x.severity)
             .max()
             .unwrap_or(StatusCode::Pass)
+    }
+
+    pub fn is_error(&self) -> bool {
+        self.worst_status() == StatusCode::Error
     }
 }
 

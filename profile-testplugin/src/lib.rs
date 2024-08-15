@@ -28,6 +28,7 @@ pub const SAY_HELLO: Check = Check {
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,
+    flags: CheckFlags::default(),
 };
 
 pub const VALIDATE_TOML: Check = Check {
@@ -41,6 +42,7 @@ pub const VALIDATE_TOML: Check = Check {
     applies_to: "TOML",
     hotfix: None,
     fix_source: None,
+    flags: CheckFlags::default(),
 };
 
 impl fontspector_checkapi::Plugin for Test {

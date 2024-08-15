@@ -60,4 +60,11 @@ impl<'a> Registry<'a> {
         }
         self.register_profile(name, profile)
     }
+
+    /// Returns true if a check has an "experimental" flag
+    pub fn is_experimental(&self, check_id: &str) -> bool {
+        self.checks
+            .get(check_id)
+            .map_or(false, |c| c.flags.experimental)
+    }
 }

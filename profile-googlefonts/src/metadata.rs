@@ -54,4 +54,5 @@ pub const CHECK_METADATA_PARSES: Check = Check {
     applies_to: "MDPB",
     hotfix: None,
     fix_source: None,
+    flags: CheckFlags::default(),
 };

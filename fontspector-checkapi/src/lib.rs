@@ -8,7 +8,7 @@ mod profile;
 mod registry;
 mod status;
 mod testable;
-pub use check::{return_result, Check, CheckId, CheckResult};
+pub use check::{return_result, Check, CheckFlags, CheckId, CheckResult};
 pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};
 pub use font::{FontCollection, TestFont, TTF};
@@ -20,8 +20,8 @@ pub use testable::Testable;
 pub mod prelude {
     pub type FixFnResult = Result<bool, String>;
     pub use crate::{
-        return_result, Check, CheckFnResult, Context, FileType, Profile, Registry, Status,
-        StatusList, Testable, TTF,
+        return_result, Check, CheckFlags, CheckFnResult, Context, FileType, Profile, Registry,
+        Status, StatusList, Testable, TTF,
     };
 }
 pub trait Plugin {

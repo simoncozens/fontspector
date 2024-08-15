@@ -62,4 +62,5 @@ pub const CHECK_UNWANTED_TABLES: Check = Check {
     applies_to: "TTF",
     hotfix: Some(&delete_unwanted_tables),
     fix_source: None,
+    flags: CheckFlags::default(),
 };

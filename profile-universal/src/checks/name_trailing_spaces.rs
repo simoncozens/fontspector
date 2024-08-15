@@ -43,4 +43,5 @@ pub const CHECK_NAME_TRAILING_SPACES: Check = Check {
     applies_to: "TTF",
     hotfix: Some(&fix_trailing_spaces),
     fix_source: None,
+    flags: CheckFlags::default(),
 };

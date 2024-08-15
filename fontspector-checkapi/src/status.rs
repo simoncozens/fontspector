@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(
     Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone, ArgEnum, Serialize, Deserialize, Hash,
 )]
+#[serde(rename_all = "UPPERCASE")]
 pub enum StatusCode {
     Skip,
     Info,
@@ -30,10 +31,12 @@ impl std::fmt::Display for StatusCode {
         }
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Status {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
     pub severity: StatusCode,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub code: Option<String>,
 }
 

@@ -60,4 +60,5 @@ pub const CHECK_FAMILY_EQUAL_CODEPOINT_COVERAGE: Check = Check {
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,
+    flags: CheckFlags::default(),
 };
