@@ -62,9 +62,9 @@ impl RunResults {
     }
 }
 
-impl Into<RunResults> for Vec<CheckResult> {
-    fn into(self) -> RunResults {
-        RunResults { results: self }
+impl From<Vec<CheckResult>> for RunResults {
+    fn from(val: Vec<CheckResult>) -> Self {
+        RunResults { results: val }
     }
 }
 

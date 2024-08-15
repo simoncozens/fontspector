@@ -1,5 +1,7 @@
-use crate::reporters::{Reporter, RunResults};
-use crate::Args;
+use crate::{
+    reporters::{Reporter, RunResults},
+    Args,
+};
 use fontspector_checkapi::Registry;
 use serde::Serialize;
 use serde_json::{json, Map};
@@ -27,7 +29,7 @@ impl Reporter for JsonReporter {
                     checkresults
                         .serialize(serde_json::value::Serializer)
                         .unwrap_or_else(|e| {
-                            eprintln!("Error serializing JSON report: {:}", e);
+                            log::error!("Error serializing JSON report: {:}", e);
                             std::process::exit(1);
                         }),
                 );
@@ -39,10 +41,13 @@ impl Reporter for JsonReporter {
             "results": results,
         });
 
-        let report = serde_json::to_string_pretty(&output).unwrap();
+        let report = serde_json::to_string_pretty(&output).unwrap_or_else(|e| {
+            log::error!("Error serializing JSON report: {:}", e);
+            std::process::exit(1);
+        });
 
         std::fs::write(&self.filename, report).unwrap_or_else(|e| {
-            eprintln!("Error writing JSON report to {:}: {:}", self.filename, e);
+            log::error!("Error writing JSON report to {:}: {:}", self.filename, e);
             std::process::exit(1);
         });
     }

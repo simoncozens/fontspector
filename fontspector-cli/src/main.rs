@@ -164,6 +164,7 @@ fn main() {
     };
 
     // Run all the things! Check all the fonts! Fix all the binaries! Fix all the sources!
+    #[allow(clippy::unwrap_used)] // We check for is_some before unwrapping
     let results: RunResults = checkorder
         .par_iter()
         .progress()

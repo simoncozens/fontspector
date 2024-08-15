@@ -53,12 +53,7 @@ impl<'a> Check<'a> {
         file: Option<&'a Testable>,
         section: &str,
     ) -> CheckResult {
-        CheckResult::new(
-            &self,
-            file.map(|f| f.filename.as_ref()),
-            section,
-            subresults,
-        )
+        CheckResult::new(self, file.map(|f| f.filename.as_ref()), section, subresults)
     }
 
     pub fn run_one(

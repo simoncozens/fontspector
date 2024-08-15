@@ -53,15 +53,15 @@ impl Reporter for TerminalReporter {
                     if self.succinct {
                         println!(
                             "{:}: {:} {:} [{}]",
-                            Path::new(filename).file_name().unwrap().to_string_lossy(),
+                            Path::new(filename)
+                                .file_name()
+                                .unwrap_or_default()
+                                .to_string_lossy(),
                             result.check_id.bright_cyan(),
                             colored_status(result.worst_status(), None),
                             subresults
                                 .iter()
-                                .map(|r| colored_status(
-                                    r.severity,
-                                    r.code.as_ref().map(|x| x.as_str())
-                                ))
+                                .map(|r| colored_status(r.severity, r.code.as_deref()))
                                 .join(" ")
                         );
                         continue;

@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
-use crate::reporters::{Reporter, RunResults};
-use crate::Args;
+use crate::{
+    reporters::{Reporter, RunResults},
+    Args,
+};
 use fontspector_checkapi::Registry;
 use serde_json::json;
 use tera::{Context, Tera, Value};
@@ -13,7 +15,11 @@ pub(crate) struct MarkdownReporter {
 
 fn percent_of(v: &Value, options: &HashMap<String, Value>) -> tera::Result<Value> {
     let v = v.as_f64().unwrap_or(0.0);
-    let total = options.get("total").unwrap().as_f64().unwrap_or(100.0);
+    let total = options
+        .get("total")
+        .unwrap_or(&Value::Null)
+        .as_f64()
+        .unwrap_or(100.0);
     Ok(format!("{:.0}%", v / total * 100.0).into())
 }
 
