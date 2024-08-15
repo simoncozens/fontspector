@@ -9,7 +9,7 @@ authors =  [
 
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
-read-fonts = "0.19.3"
-skrifa = "0.19.3"
-write-fonts = "0.27.0"
-font-types = "0.5.5"
+read-fonts = {workspace = true}
+write-fonts = {workspace = true}
+font-types = {workspace = true}
+skrifa = {workspace = true}

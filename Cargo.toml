@@ -6,3 +6,15 @@ members = [
     "fontspector-checkapi",
     "profile-universal", "profile-testplugin", "profile-googlefonts",
 ]
+
+[workspace.dependencies]
+pluginator = "1.0.1"
+
+# Font-related deps
+read-fonts = "0.19.3"
+skrifa = "0.19.3"
+write-fonts = "0.27.0"
+font-types = "0.5.5"
+
+# Serialization
+serde =  {version = "1.0.130", features=["derive"] }
