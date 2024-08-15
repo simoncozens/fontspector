@@ -57,7 +57,7 @@ impl RunResults {
         organised_results
     }
 
-    fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.results.len()
     }
 }

@@ -1,8 +1,8 @@
-use serde::Serialize;
+use serde::{ser::SerializeStruct, Serialize};
 
 use crate::{Check, CheckId, Status, StatusCode};
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct CheckResult {
     pub check_id: CheckId,
     pub check_name: String,
@@ -10,6 +10,20 @@ pub struct CheckResult {
     pub filename: Option<String>,
     pub section: String,
     pub subresults: Vec<Status>,
+}
+
+impl Serialize for CheckResult {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut s = serializer.serialize_struct("CheckResult", 7)?;
+        s.serialize_field("check_id", &self.check_id)?;
+        s.serialize_field("check_name", &self.check_name)?;
+        s.serialize_field("check_rationale", &self.check_rationale)?;
+        s.serialize_field("filename", &self.filename)?;
+        s.serialize_field("section", &self.section)?;
+        s.serialize_field("subresults", &self.subresults)?;
+        s.serialize_field("worst_status", &self.worst_status())?;
+        s.end()
+    }
 }
 
 impl CheckResult {

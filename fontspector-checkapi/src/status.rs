@@ -19,6 +19,19 @@ pub enum StatusCode {
     Error,
 }
 
+impl StatusCode {
+    pub fn all() -> impl Iterator<Item = StatusCode> {
+        vec![
+            StatusCode::Error,
+            StatusCode::Fail,
+            StatusCode::Warn,
+            StatusCode::Info,
+            StatusCode::Skip,
+            StatusCode::Pass,
+        ]
+        .into_iter()
+    }
+}
 impl std::fmt::Display for StatusCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {

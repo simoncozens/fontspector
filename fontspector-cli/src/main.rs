@@ -11,7 +11,10 @@ use indicatif::ParallelProgressIterator;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use reporters::{json::JsonReporter, terminal::TerminalReporter, Reporter, RunResults};
+use reporters::{
+    json::JsonReporter, markdown::MarkdownReporter, terminal::TerminalReporter, Reporter,
+    RunResults,
+};
 use serde_json::Map;
 
 /// Filter out checks that don't apply
@@ -150,19 +153,16 @@ fn main() {
     if let Some(jsonfile) = args.json.as_ref() {
         reporters.push(Box::new(JsonReporter::new(jsonfile)));
     }
+    if let Some(mdfile) = args.ghmarkdown.as_ref() {
+        reporters.push(Box::new(MarkdownReporter::new(mdfile)));
+    }
 
     for reporter in reporters {
         reporter.report(&results, &args, &registry);
     }
 
     if !args.quiet {
-        // Summary report
-        let summary = results.summary();
-        print!("\nSummary:\n  ");
-        for (status, count) in summary.iter() {
-            print!("{:}: {:}  ", status, count);
-        }
-        println!();
+        TerminalReporter::summary_report(results.summary());
     }
     if worst_status >= args.error_code_on {
         std::process::exit(1);

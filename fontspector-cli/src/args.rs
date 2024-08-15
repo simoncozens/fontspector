@@ -62,8 +62,12 @@ pub struct Args {
     pub skip_network: bool,
 
     /// Write a JSON formatted report to the given filename
-    #[clap(short, long, help_heading = "Reports")]
+    #[clap(long, help_heading = "Reports")]
     pub json: Option<String>,
+
+    /// Write a GitHub-Markdown formatted report to the given filename
+    #[clap(long, help_heading = "Reports")]
+    pub ghmarkdown: Option<String>,
 
     /// Input files
     pub inputs: Vec<String>,
