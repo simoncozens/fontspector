@@ -1,0 +1,38 @@
+name: Build GH Pages
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+      - name: Build
+        run: cd fontspector-web; wasm-pack build
+      - name: Build web site
+        run: |
+          cd fontspector-web; www
+          npm install
+          npm run build
+      - name: Upload
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          path: docs
+  deploy:
+    needs: build
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
