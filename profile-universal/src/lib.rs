@@ -9,6 +9,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::CHECK_NAME_TRAILING_SPACES);
         cr.register_check(checks::CHECK_UNWANTED_TABLES);
         cr.register_check(checks::CHECK_REQUIRED_TABLES);
+        cr.register_check(checks::CHECK_REGULAR_COORDS_CORRECT);
         let profile = Profile::from_toml(
             r#"
 [sections]
@@ -16,6 +17,7 @@ impl fontspector_checkapi::Plugin for Universal {
 "com.google.fonts/check/name/trailing_spaces",
 "com.google.fonts/check/unwanted_tables",
 "com.google.fonts/check/required_tables",
+"com.google.fonts/check/fvar/regular_coords_correct",
 ]
 "#,
         )

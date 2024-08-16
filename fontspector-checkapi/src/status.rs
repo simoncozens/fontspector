@@ -71,8 +71,16 @@ impl Status {
         Box::new(vec![Status::pass()].into_iter())
     }
 
+    pub fn just_one_warn(code: &str, message: &str) -> Box<dyn Iterator<Item = Status>> {
+        Box::new(vec![Status::warn(code, message)].into_iter())
+    }
+
     pub fn just_one_fail(code: &str, message: &str) -> Box<dyn Iterator<Item = Status>> {
         Box::new(vec![Status::fail(code, message)].into_iter())
+    }
+
+    pub fn just_one_skip(code: &str, message: &str) -> Box<dyn Iterator<Item = Status>> {
+        Box::new(vec![Status::skip(code, message)].into_iter())
     }
 
     pub fn pass() -> Self {
@@ -87,6 +95,13 @@ impl Status {
             message: Some(message.to_string()),
             code: Some(code.to_string()),
             severity: StatusCode::Fail,
+        }
+    }
+    pub fn warn(code: &str, message: &str) -> Self {
+        Self {
+            message: Some(message.to_string()),
+            code: Some(code.to_string()),
+            severity: StatusCode::Warn,
         }
     }
     pub fn skip(code: &str, message: &str) -> Self {
@@ -112,5 +127,22 @@ impl Status {
     }
 }
 
+/// Reflects the result of some kind of early return from a check function
+///
+/// This may be because there was an error, or because the check was skipped.
+pub enum CheckError {
+    Error(String),
+    Skip { message: String, code: String },
+}
+
+impl<T> From<T> for CheckError
+where
+    T: std::error::Error,
+{
+    fn from(e: T) -> Self {
+        CheckError::Error(e.to_string())
+    }
+}
+
 pub type StatusList = Box<dyn Iterator<Item = Status>>;
-pub type CheckFnResult = Result<StatusList, String>;
+pub type CheckFnResult = Result<StatusList, CheckError>;

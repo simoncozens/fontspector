@@ -1,10 +1,10 @@
-use fontspector_checkapi::{prelude::*, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
 fn name_trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut problems: Vec<Status> = vec![];
 
-    if let Ok(name_table) = TTF.from_testable(f).ok_or("Not a TTF file")?.font().name() {
+    if let Ok(name_table) = testfont!(f).font().name() {
         for name_record in name_table.name_record().iter() {
             if name_record
                 .string(name_table.string_data())
@@ -18,7 +18,7 @@ fn name_trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
                     name_record.encoding_id,
                     name_record.language_id,
                     name_record.name_id,
-                    name_record.string(name_table.string_data()).map_err(|_| "Error reading string".to_string())?,
+                    name_record.string(name_table.string_data()).map_err(|_| CheckError::Error("Error reading string".to_string()))?,
                 )))
             }
         }

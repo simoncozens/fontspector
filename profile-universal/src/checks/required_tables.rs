@@ -1,4 +1,4 @@
-use fontspector_checkapi::{prelude::*, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 
 const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
     b"cvt ", b"fpgm", b"loca", b"prep", b"VORG", b"EBDT", b"EBLC", b"EBSC", b"BASE", b"GPOS",
@@ -6,7 +6,7 @@ const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
 ];
 
 fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
-    let f = TTF.from_testable(t).ok_or("Not a TTF file")?;
+    let f = testfont!(t);
     let mut required_table_tags: Vec<_> = vec![
         b"cmap", b"head", b"hhea", b"hmtx", b"maxp", b"name", b"OS/2", b"post",
     ];
@@ -32,10 +32,9 @@ fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
 
     for tag in OPTIONAL_TABLE_TAGS {
         if f.has_table(tag) {
-            optional.push(
-                String::from_utf8(tag.to_vec())
-                    .map_err(|_| format!("Font tag '{:?}' wasn't UTF8?", tag.to_vec()))?,
-            )
+            optional.push(String::from_utf8(tag.to_vec()).map_err(|_| {
+                CheckError::Error(format!("Font tag '{:?}' wasn't UTF8?", tag.to_vec()))
+            })?)
         }
     }
     if !optional.is_empty() {
@@ -51,10 +50,9 @@ fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     let mut missing = vec![];
     for tag in required_table_tags {
         if !f.has_table(tag) {
-            missing.push(
-                String::from_utf8(tag.to_vec())
-                    .map_err(|_| format!("Font tag '{:?}' wasn't UTF8?", tag.to_vec()))?,
-            );
+            missing.push(String::from_utf8(tag.to_vec()).map_err(|_| {
+                CheckError::Error(format!("Font tag '{:?}' wasn't UTF8?", tag.to_vec()))
+            })?);
         }
     }
 

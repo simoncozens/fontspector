@@ -10,7 +10,8 @@ fn say_hello(_c: &Testable, context: &Context) -> CheckFnResult {
 }
 
 fn validate_toml(c: &Testable, _context: &Context) -> CheckFnResult {
-    let toml = std::fs::read_to_string(&c.filename).map_err(|_| "Couldn't open file")?;
+    let toml = std::fs::read_to_string(&c.filename)
+        .map_err(|_| CheckError::Error("Couldn't open file".to_string()))?;
     Ok(if toml::from_str::<toml::Value>(&toml).is_ok() {
         Status::just_one_pass()
     } else {

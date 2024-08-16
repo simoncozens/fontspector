@@ -1,5 +1,8 @@
 use crate::{
-    context::Context, font::FontCollection, prelude::FixFnResult, status::CheckFnResult,
+    context::Context,
+    font::FontCollection,
+    prelude::FixFnResult,
+    status::{CheckError, CheckFnResult},
     CheckResult, Registry, Status, Testable,
 };
 
@@ -65,12 +68,22 @@ impl<'a> Check<'a> {
         self.check_one.map(|check_one| {
             let subresults = match check_one(f, context) {
                 Ok(results) => results.collect::<Vec<_>>(),
-                Err(e) => vec![Status::error(&format!("Error: {}", e))],
+                Err(CheckError::Error(e)) => vec![Status::error(&format!("Error: {}", e))],
+                Err(CheckError::Skip { code, message }) => vec![Status::skip(&code, &message)],
             };
-            self.status_to_result(subresults, Some(f), section)
+            self.status_to_result(
+                if subresults.is_empty() {
+                    Status::just_one_pass().collect()
+                } else {
+                    subresults
+                },
+                Some(f),
+                section,
+            )
         })
     }
 
+    /// XXX This repeated code is horrible.
     pub fn run_all(
         &'a self,
         f: &'a FontCollection,
@@ -80,9 +93,19 @@ impl<'a> Check<'a> {
         self.check_all.map(|check_all| {
             let subresults = match check_all(f, context) {
                 Ok(results) => results.collect::<Vec<_>>(),
-                Err(e) => vec![Status::error(&format!("Error: {}", e))],
+                Err(CheckError::Error(e)) => vec![Status::error(&format!("Error: {}", e))],
+                Err(CheckError::Skip { code, message }) => vec![Status::skip(&code, &message)],
             };
-            self.status_to_result(subresults, None, section)
+
+            self.status_to_result(
+                if subresults.is_empty() {
+                    Status::just_one_pass().collect()
+                } else {
+                    subresults
+                },
+                None,
+                section,
+            )
         })
     }
 }

@@ -1,8 +1,10 @@
 use font_types::Tag;
-use fontspector_checkapi::{prelude::*, FileTypeConvert};
+use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
 use write_fonts::FontBuilder;
 
-const UNWANTED_TABLES: [(Tag, &str); 8] = [
+const UNWANTED_TABLES: [(Tag, &str); 9] = [
+    (Tag::new(b"DSIG"), "This font has a digital signature (DSIG table) which is only required - even if only a placeholder - on old programs like MS Office 2013 in order to work properly.\n
+The current recommendation is to completely remove the DSIG table."),
     (Tag::new(b"FFTM"), "Table contains redundant FontForge timestamp info"),
     (Tag::new(b"TTFA"), "Redundant TTFAutohint table"),
     (Tag::new(b"TSI0"), "Table contains data only used in VTT"),
@@ -14,7 +16,7 @@ const UNWANTED_TABLES: [(Tag, &str); 8] = [
 ];
 
 fn unwanted_tables(t: &Testable, _context: &Context) -> CheckFnResult {
-    let f = TTF.from_testable(t).ok_or("Not a TTF file")?;
+    let f = testfont!(t);
 
     let mut reasons = vec![];
     for (table, reason) in UNWANTED_TABLES.iter() {
@@ -33,7 +35,7 @@ fn unwanted_tables(t: &Testable, _context: &Context) -> CheckFnResult {
 }
 
 fn delete_unwanted_tables(t: &Testable) -> FixFnResult {
-    let f = TTF.from_testable(t).ok_or("Not a TTF file".to_string())?;
+    let f = fixfont!(t);
     let unwanted_tags = UNWANTED_TABLES
         .iter()
         .map(|(tag, _)| tag)

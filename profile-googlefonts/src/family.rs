@@ -4,10 +4,15 @@ use std::collections::HashSet;
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 
 fn family_equal_codepoint_coverage(c: &Testable, _context: &Context) -> CheckFnResult {
-    let f = TTF.from_testable(c).ok_or("Not a TTF file")?;
+    let f = TTF
+        .from_testable(c)
+        .ok_or(CheckError::Error("Not a TTF file".to_string()))?;
     let siblings = f.siblings();
     if siblings.is_empty() {
-        return return_result(vec![Status::skip("no-siblings", "No sibling fonts found")]);
+        return Err(CheckError::Skip {
+            code: "no-siblings".to_string(),
+            message: "No sibling fonts found".to_string(),
+        });
     }
     let mut problems = vec![];
     let mut we_have_they_dont: HashSet<u32> = HashSet::new();

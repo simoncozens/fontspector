@@ -7,9 +7,9 @@ use fontspector_checkapi::prelude::*;
 
 fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
     let mdpb = std::fs::read_to_string(&c.filename)
-        .map_err(|e| format!("Couldn't open metadata file: {}", e))?;
+        .map_err(|e| CheckError::Error(format!("Couldn't open metadata file: {}", e)))?;
     let msg = protobuf::text_format::parse_from_str::<FamilyProto>(&mdpb)
-        .map_err(|e| format!("Error parsing METADATA.pb: {}", e))?;
+        .map_err(|e| CheckError::Error(format!("Error parsing METADATA.pb: {}", e)))?;
     let mut problems = vec![];
     if let Some(designer) = msg.designer.as_ref() {
         if designer.contains('/') {
