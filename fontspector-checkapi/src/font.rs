@@ -6,10 +6,13 @@ use skrifa::{
     string::{LocalizedStrings, StringId},
     MetadataProvider, Tag,
 };
-use std::{collections::HashSet, error::Error, io::ErrorKind, path::Path};
+use std::{collections::HashSet, error::Error, io::ErrorKind};
+
+#[cfg(not(target_family = "wasm"))]
+use std::path::Path;
 
 pub struct TestFont {
-    filename: String,
+    pub filename: String,
     font_data: Vec<u8>,
     _codepoints: HashSet<u32>,
     _sibling_filenames: Vec<String>,
