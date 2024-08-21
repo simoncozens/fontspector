@@ -61,8 +61,10 @@ fn main() {
     let grouped_inputs: Vec<TestableCollection> = args
         .inputs
         .iter()
-        .map(|x| PathBuf::from(x))
+        .map(PathBuf::from)
+        .filter(|x| x.parent().is_some())
         .fold(Vec::new(), |mut acc: Vec<Vec<PathBuf>>, path| {
+            #[allow(clippy::unwrap_used)] // We checked for is_some above
             let directory = path.parent().unwrap().to_path_buf();
             if let Some(group) = acc
                 .iter_mut()

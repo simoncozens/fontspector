@@ -6,7 +6,11 @@ use skrifa::{
     string::{LocalizedStrings, StringId},
     MetadataProvider, Tag,
 };
-use std::{collections::HashSet, error::Error, path::PathBuf};
+use std::{
+    collections::HashSet,
+    error::Error,
+    path::{Path, PathBuf},
+};
 
 pub struct TestFont<'a> {
     pub filename: PathBuf,
@@ -27,13 +31,13 @@ impl<'a> FileTypeConvert<'a, TestFont<'a>> for FileType<'a> {
 
 impl TestFont<'_> {
     pub fn new_from_data<'a>(
-        filename: &PathBuf,
+        filename: &Path,
         font_data: &'a [u8],
     ) -> Result<TestFont<'a>, Box<dyn Error>> {
-        let font = FontRef::new(&font_data)?;
+        let font = FontRef::new(font_data)?;
         let _codepoints = Charmap::new(&font).mappings().map(|(u, _gid)| u).collect();
         Ok(TestFont {
-            filename: filename.clone(),
+            filename: filename.to_path_buf(),
             font_data,
             _codepoints,
         })
@@ -41,7 +45,7 @@ impl TestFont<'_> {
 
     pub fn font(&self) -> FontRef {
         #[allow(clippy::expect_used)] // We just tested for it in the initializer
-        FontRef::new(&self.font_data).expect("Can't happen")
+        FontRef::new(self.font_data).expect("Can't happen")
     }
 
     pub fn style(&self) -> Option<&str> {

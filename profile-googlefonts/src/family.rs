@@ -14,6 +14,7 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
     let mut problems = vec![];
     let mut we_have_they_dont: HashSet<u32> = HashSet::new();
     let mut they_have_we_dont: HashSet<u32> = HashSet::new();
+    #[allow(clippy::unwrap_used)] // We checked the length above
     let my_codepoints = fonts.first().unwrap().codepoints();
     let siblings = fonts.iter().skip(1);
     for sibling in siblings {
@@ -22,6 +23,7 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
         they_have_we_dont.extend(their_codepoints.difference(my_codepoints));
     }
 
+    #[allow(clippy::unwrap_used)] // We checked the length above
     let name_of_first = c.iter().next().unwrap().filename.to_str().unwrap(); // That's a lot of unwrap
 
     if !we_have_they_dont.is_empty() {

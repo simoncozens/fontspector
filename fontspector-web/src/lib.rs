@@ -42,7 +42,7 @@ pub fn check_fonts(fonts: &JsValue) -> Result<String, JsValue> {
         network_timeout: None,
         configuration: serde_json::Map::new(),
     };
-    let all_testables = collection.collection_and_files().collect();
+    let all_testables: Vec<TestableType> = collection.collection_and_files().collect();
 
     let checkorder: Vec<(String, &TestableType, &Check, Context)> = profile.check_order(
         &None,

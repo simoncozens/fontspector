@@ -37,7 +37,7 @@ impl Testable {
         Ok(Self {
             filename: filename.into(),
             source: Some(source.into()),
-            contents: contents,
+            contents,
         })
     }
 
@@ -85,10 +85,8 @@ impl TestableCollection {
     pub fn from_filenames<P: Into<PathBuf> + AsRef<Path> + Clone>(
         filenames: &[P],
     ) -> Result<Self, std::io::Error> {
-        let collection: Result<Vec<Testable>, _> = filenames
-            .into_iter()
-            .map(|x| Testable::new(x.clone()))
-            .collect();
+        let collection: Result<Vec<Testable>, _> =
+            filenames.iter().map(|x| Testable::new(x.clone())).collect();
         Ok(Self {
             testables: collection?,
         })
@@ -105,7 +103,7 @@ impl TestableCollection {
     pub fn collection_and_files(&self) -> impl Iterator<Item = TestableType> {
         vec![TestableType::Collection(self)]
             .into_iter()
-            .chain(self.testables.iter().map(|x| TestableType::Single(x)))
+            .chain(self.testables.iter().map(TestableType::Single))
     }
 }
 

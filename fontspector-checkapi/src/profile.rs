@@ -79,7 +79,7 @@ impl Profile {
         registry: &'r Registry<'r>,
         general_context: Context,
         configuration: Map<String, serde_json::Value>,
-        testables: &'t Vec<TestableType>,
+        testables: &'t [TestableType],
     ) -> Vec<(String, &'t TestableType<'t>, &'r Check<'r>, Context)> {
         self.sections
             .iter()

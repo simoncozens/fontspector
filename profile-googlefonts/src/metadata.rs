@@ -8,7 +8,7 @@ use fontspector_checkapi::prelude::*;
 fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
     let mdpb = std::str::from_utf8(&c.contents)
         .map_err(|_| CheckError::Error("METADATA.pb is not valid UTF-8".to_string()))?;
-    let msg = protobuf::text_format::parse_from_str::<FamilyProto>(&mdpb)
+    let msg = protobuf::text_format::parse_from_str::<FamilyProto>(mdpb)
         .map_err(|e| CheckError::Error(format!("Error parsing METADATA.pb: {}", e)))?;
     let mut problems = vec![];
     if let Some(designer) = msg.designer.as_ref() {

@@ -32,6 +32,7 @@ pub trait FileTypeConvert<'a, T: 'a> {
     #[allow(clippy::wrong_self_convention)]
     fn from_testable(&self, t: &'a Testable) -> Option<T>;
 
+    #[allow(clippy::wrong_self_convention)]
     fn from_collection(&self, t: &'a TestableCollection) -> Vec<T> {
         t.iter().filter_map(|f| self.from_testable(f)).collect()
     }
