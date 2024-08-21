@@ -1,4 +1,4 @@
-use crate::Testable;
+use crate::{Testable, TestableCollection};
 use glob_match::glob_match;
 
 /// A file type that Fontrefinery can test.
@@ -28,7 +28,11 @@ impl FileType<'_> {
     }
 }
 
-pub trait FileTypeConvert<T> {
+pub trait FileTypeConvert<'a, T: 'a> {
     #[allow(clippy::wrong_self_convention)]
-    fn from_testable(&self, t: &Testable) -> Option<T>;
+    fn from_testable(&self, t: &'a Testable) -> Option<T>;
+
+    fn from_collection(&self, t: &'a TestableCollection) -> Vec<T> {
+        t.iter().filter_map(|f| self.from_testable(f)).collect()
+    }
 }

@@ -3,12 +3,9 @@ use std::collections::HashSet;
 
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 
-fn family_equal_codepoint_coverage(c: &Testable, _context: &Context) -> CheckFnResult {
-    let f = TTF
-        .from_testable(c)
-        .ok_or(CheckError::Error("Not a TTF file".to_string()))?;
-    let siblings = f.siblings();
-    if siblings.is_empty() {
+fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -> CheckFnResult {
+    let fonts = TTF.from_collection(c);
+    if fonts.len() < 2 {
         return Err(CheckError::Skip {
             code: "no-siblings".to_string(),
             message: "No sibling fonts found".to_string(),
@@ -17,7 +14,8 @@ fn family_equal_codepoint_coverage(c: &Testable, _context: &Context) -> CheckFnR
     let mut problems = vec![];
     let mut we_have_they_dont: HashSet<u32> = HashSet::new();
     let mut they_have_we_dont: HashSet<u32> = HashSet::new();
-    let my_codepoints = f.codepoints();
+    let my_codepoints = fonts.first().unwrap().codepoints();
+    let siblings = fonts.iter().skip(1);
     for sibling in siblings {
         let their_codepoints = sibling.codepoints();
         we_have_they_dont.extend(my_codepoints.difference(their_codepoints));
@@ -60,8 +58,8 @@ pub const CHECK_FAMILY_EQUAL_CODEPOINT_COVERAGE: Check = Check {
                 style; turning on italic would cause the character to be rendered
                 either as a fake italic (auto-slanted) or to show tofu.",
     proposal: "https://github.com/fonttools/fontbakery/issues/4180",
-    check_one: Some(&family_equal_codepoint_coverage),
-    check_all: None,
+    check_one: None,
+    check_all: Some(&family_equal_codepoint_coverage),
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,

@@ -13,11 +13,11 @@ pub use check::{return_result, Check, CheckFlags, CheckId};
 pub use checkresult::{CheckResult, FixResult};
 pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};
-pub use font::{FontCollection, TestFont, TTF};
+pub use font::{TestFont, TTF};
 pub use profile::{Override, Profile};
 pub use registry::Registry;
 pub use status::{CheckError, CheckFnResult, Status, StatusCode, StatusList};
-pub use testable::Testable;
+pub use testable::{Testable, TestableCollection};
 
 pub mod prelude {
     #[macro_export]
@@ -42,7 +42,7 @@ pub mod prelude {
     pub type FixFnResult = Result<bool, String>;
     pub use crate::{
         return_result, Check, CheckError, CheckFlags, CheckFnResult, Context, FileType, Profile,
-        Registry, Status, StatusList, Testable, TTF,
+        Registry, Status, StatusList, Testable, TestableCollection, TTF,
     };
 }
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{Check, CheckId, FileType, Profile, TTF};
+use crate::{Check, CheckId, FileType, Profile, Testable, TTF};
 
 #[derive(Default)]
 pub struct Registry<'a> {
@@ -67,5 +67,10 @@ impl<'a> Registry<'a> {
         self.checks
             .get(check_id)
             .map_or(false, |c| c.flags.experimental)
+    }
+
+    /// Returns true if a Testable is recognised by any filetype
+    pub fn is_known_file(&self, file: &Testable) -> bool {
+        self.filetypes.values().any(|ft| ft.applies(file))
     }
 }

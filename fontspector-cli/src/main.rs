@@ -4,9 +4,13 @@
 mod args;
 mod reporters;
 
+use std::path::PathBuf;
+
 use args::Args;
 use clap::Parser;
-use fontspector_checkapi::{Check, CheckResult, Context, FixResult, Plugin, Registry, Testable};
+use fontspector_checkapi::{
+    Check, CheckResult, Context, FixResult, Plugin, Registry, Testable, TestableCollection,
+};
 use indicatif::ParallelProgressIterator;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
@@ -66,8 +70,39 @@ fn main() {
         log::error!("Could not find profile {:}", args.profile);
         std::process::exit(1);
     });
-    let testables: Vec<Testable> = args.inputs.iter().map(|x| Testable::new(x)).collect();
-    // let collection = FontCollection(thing);
+
+    // We create one collection for each set of testable files in a directory.
+    // So let's group the inputs per directory, and then map them into a FontCollection
+    let grouped_inputs: Vec<TestableCollection> = args
+        .inputs
+        .iter()
+        .map(|x| PathBuf::from(x))
+        .fold(Vec::new(), |mut acc: Vec<Vec<PathBuf>>, path| {
+            let directory = path.parent().unwrap().to_path_buf();
+            if let Some(group) = acc
+                .iter_mut()
+                .find(|group| group[0].parent() == Some(&directory))
+            {
+                group.push(path);
+            } else {
+                acc.push(vec![path]);
+            }
+            acc
+        })
+        .into_iter()
+        .map(|group| {
+            TestableCollection::from_filenames(&group).unwrap_or_else(|e| {
+                log::error!("Could not load files from {:?}: {:}", group[0].parent(), e);
+                std::process::exit(1)
+            })
+        })
+        .collect();
+
+    // This is wrong wrong wrong, but let it be for now.
+    let testables: Vec<Testable> = grouped_inputs
+        .into_iter()
+        .flat_map(|collection| collection.testables)
+        .collect();
 
     if testables.is_empty() {
         log::error!("No input files");

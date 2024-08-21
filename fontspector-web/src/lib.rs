@@ -26,7 +26,7 @@ pub fn check_fonts(fonts: &JsValue) -> Result<String, JsValue> {
             let contents = Uint8Array::new(&file).to_vec();
 
             Testable {
-                filename: filename.as_string().unwrap(),
+                filename: filename.as_string().unwrap().into(),
                 source: None,
                 contents,
             }

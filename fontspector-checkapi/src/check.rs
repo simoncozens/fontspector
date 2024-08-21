@@ -1,14 +1,14 @@
 use crate::{
     context::Context,
-    font::FontCollection,
     prelude::FixFnResult,
     status::{CheckError, CheckFnResult},
+    testable::TestableCollection,
     CheckResult, Registry, Status, Testable,
 };
 
 pub type CheckId = String;
 type CheckOneSignature = dyn Fn(&Testable, &Context) -> CheckFnResult;
-type CheckAllSignature = dyn Fn(&FontCollection, &Context) -> CheckFnResult;
+type CheckAllSignature = dyn Fn(&TestableCollection, &Context) -> CheckFnResult;
 
 #[derive(Clone)]
 pub struct CheckFlags {
@@ -56,7 +56,12 @@ impl<'a> Check<'a> {
         file: Option<&'a Testable>,
         section: &str,
     ) -> CheckResult {
-        CheckResult::new(self, file.map(|f| f.filename.as_ref()), section, subresults)
+        CheckResult::new(
+            self,
+            file.and_then(|f| f.filename.to_str()),
+            section,
+            subresults,
+        )
     }
 
     pub fn run_one(
@@ -86,7 +91,7 @@ impl<'a> Check<'a> {
     /// XXX This repeated code is horrible.
     pub fn run_all(
         &'a self,
-        f: &'a FontCollection,
+        f: &'a TestableCollection,
         context: &Context,
         section: &str,
     ) -> Option<CheckResult> {
