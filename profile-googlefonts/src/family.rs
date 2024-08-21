@@ -58,8 +58,7 @@ pub const CHECK_FAMILY_EQUAL_CODEPOINT_COVERAGE: Check = Check {
                 style; turning on italic would cause the character to be rendered
                 either as a fake italic (auto-slanted) or to show tofu.",
     proposal: "https://github.com/fonttools/fontbakery/issues/4180",
-    check_one: None,
-    check_all: Some(&family_equal_codepoint_coverage),
+    implementation: CheckImplementation::CheckAll(&family_equal_codepoint_coverage),
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,

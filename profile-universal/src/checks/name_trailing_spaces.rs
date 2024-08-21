@@ -38,8 +38,7 @@ pub const CHECK_NAME_TRAILING_SPACES: Check = Check {
                 In most cases this can be fixed by removing trailing spaces from the
                 metadata fields in the font editor.",
     proposal: "https://github.com/googlefonts/fontbakery/issues/2417",
-    check_one: Some(&name_trailing_spaces),
-    check_all: None,
+    implementation: CheckImplementation::CheckOne(&name_trailing_spaces),
     applies_to: "TTF",
     hotfix: Some(&fix_trailing_spaces),
     fix_source: None,

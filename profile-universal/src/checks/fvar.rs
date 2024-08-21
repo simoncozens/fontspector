@@ -53,8 +53,7 @@ pub const CHECK_REGULAR_COORDS_CORRECT: Check = Check {
         If a variable font has a 'wdth' (Width) axis, then the coordinate of its 'Regular' instance is required to be 100.
         If a variable font has a 'slnt' (Slant) axis, then the coordinate of its 'Regular' instance is required to be 0.",
     proposal: "https://github.com/fonttools/fontbakery/issues/1707",
-    check_one: Some(&regular_coords_correct),
-    check_all: None,
+    implementation: CheckImplementation::CheckOne(&regular_coords_correct),
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,

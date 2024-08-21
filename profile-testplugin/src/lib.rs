@@ -24,8 +24,7 @@ pub const SAY_HELLO: Check = Check {
     rationale: "This check is part of the example of how to create plugins.",
     proposal:
         "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
-    check_all: None,
-    check_one: Some(&say_hello),
+    implementation: CheckImplementation::CheckOne(&say_hello),
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,
@@ -38,8 +37,7 @@ pub const VALIDATE_TOML: Check = Check {
     rationale: "This check is part of the example of how to create plugins.",
     proposal:
         "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
-    check_all: None,
-    check_one: Some(&validate_toml),
+    implementation: CheckImplementation::CheckOne(&validate_toml),
     applies_to: "TOML",
     hotfix: None,
     fix_source: None,

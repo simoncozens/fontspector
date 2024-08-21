@@ -26,13 +26,18 @@ impl CheckFlags {
 }
 
 #[derive(Clone)]
+pub enum CheckImplementation<'a> {
+    CheckOne(&'a CheckOneSignature),
+    CheckAll(&'a CheckAllSignature),
+}
+
+#[derive(Clone)]
 pub struct Check<'a> {
     pub id: &'a str,
     pub title: &'a str,
     pub rationale: &'a str,
     pub proposal: &'a str,
-    pub check_one: Option<&'a CheckOneSignature>,
-    pub check_all: Option<&'a CheckAllSignature>,
+    pub implementation: CheckImplementation<'a>,
     pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub fix_source: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub applies_to: &'a str,
@@ -43,6 +48,9 @@ pub struct Check<'a> {
 unsafe impl Sync for Check<'_> {}
 
 impl<'a> Check<'a> {
+    pub fn runs_on_collection(&self) -> bool {
+        matches!(self.implementation, CheckImplementation::CheckAll(_))
+    }
     pub fn applies(&self, f: &'a Testable, registry: &Registry) -> bool {
         registry
             .filetypes
@@ -50,18 +58,23 @@ impl<'a> Check<'a> {
             .map_or(false, |ft| ft.applies(f))
     }
 
-    fn status_to_result(
+    fn clarify_result(
         &'a self,
-        subresults: Vec<Status>,
+        fn_result: CheckFnResult,
         file: Option<&'a Testable>,
         section: &str,
     ) -> CheckResult {
-        CheckResult::new(
-            self,
-            file.and_then(|f| f.filename.to_str()),
-            section,
-            subresults,
-        )
+        let subresults = match fn_result {
+            Ok(results) => results.collect::<Vec<_>>(),
+            Err(CheckError::Error(e)) => vec![Status::error(&format!("Error: {}", e))],
+            Err(CheckError::Skip { code, message }) => vec![Status::skip(&code, &message)],
+        };
+        let res = if subresults.is_empty() {
+            vec![Status::pass()]
+        } else {
+            subresults
+        };
+        CheckResult::new(self, file.and_then(|f| f.filename.to_str()), section, res)
     }
 
     pub fn run_one(
@@ -70,48 +83,26 @@ impl<'a> Check<'a> {
         context: &Context,
         section: &str,
     ) -> Option<CheckResult> {
-        self.check_one.map(|check_one| {
-            let subresults = match check_one(f, context) {
-                Ok(results) => results.collect::<Vec<_>>(),
-                Err(CheckError::Error(e)) => vec![Status::error(&format!("Error: {}", e))],
-                Err(CheckError::Skip { code, message }) => vec![Status::skip(&code, &message)],
-            };
-            self.status_to_result(
-                if subresults.is_empty() {
-                    Status::just_one_pass().collect()
-                } else {
-                    subresults
-                },
-                Some(f),
-                section,
-            )
-        })
+        match self.implementation {
+            CheckImplementation::CheckAll(_) => None,
+            CheckImplementation::CheckOne(check_one) => {
+                Some(self.clarify_result(check_one(f, context), Some(f), section))
+            }
+        }
     }
 
-    /// XXX This repeated code is horrible.
     pub fn run_all(
         &'a self,
         f: &'a TestableCollection,
         context: &Context,
         section: &str,
     ) -> Option<CheckResult> {
-        self.check_all.map(|check_all| {
-            let subresults = match check_all(f, context) {
-                Ok(results) => results.collect::<Vec<_>>(),
-                Err(CheckError::Error(e)) => vec![Status::error(&format!("Error: {}", e))],
-                Err(CheckError::Skip { code, message }) => vec![Status::skip(&code, &message)],
-            };
-
-            self.status_to_result(
-                if subresults.is_empty() {
-                    Status::just_one_pass().collect()
-                } else {
-                    subresults
-                },
-                None,
-                section,
-            )
-        })
+        match self.implementation {
+            CheckImplementation::CheckOne(_) => None,
+            CheckImplementation::CheckAll(check_all) => {
+                Some(self.clarify_result(check_all(f, context), None, section))
+            }
+        }
     }
 }
 

@@ -118,8 +118,7 @@ pub const CHECK_REQUIRED_TABLES: Check = Check {
           at which grayscaling is used under Windows. Etc.
     ",
     proposal: "legacy:check/052",
-    check_one: Some(&required_tables),
-    check_all: None,
+    implementation: CheckImplementation::CheckOne(&required_tables),
     applies_to: "TTF",
     hotfix: None,
     fix_source: None,

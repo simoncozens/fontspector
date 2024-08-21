@@ -9,7 +9,7 @@ mod profile;
 mod registry;
 mod status;
 mod testable;
-pub use check::{return_result, Check, CheckFlags, CheckId};
+pub use check::{return_result, Check, CheckFlags, CheckId, CheckImplementation};
 pub use checkresult::{CheckResult, FixResult};
 pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};
@@ -41,8 +41,8 @@ pub mod prelude {
     }
     pub type FixFnResult = Result<bool, String>;
     pub use crate::{
-        return_result, Check, CheckError, CheckFlags, CheckFnResult, Context, FileType, Profile,
-        Registry, Status, StatusList, Testable, TestableCollection, TTF,
+        return_result, Check, CheckError, CheckFlags, CheckFnResult, CheckImplementation, Context,
+        FileType, Profile, Registry, Status, StatusList, Testable, TestableCollection, TTF,
     };
 }
 

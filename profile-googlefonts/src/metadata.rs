@@ -49,8 +49,7 @@ pub const CHECK_METADATA_PARSES: Check = Check {
         malformed.
     ",
     proposal: "https://github.com/fonttools/fontbakery/issues/2248",
-    check_all: None,
-    check_one: Some(&validate_metadatapb),
+    implementation: CheckImplementation::CheckOne(&validate_metadatapb),
     applies_to: "MDPB",
     hotfix: None,
     fix_source: None,
