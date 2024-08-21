@@ -21,21 +21,6 @@ use reporters::{
 };
 use serde_json::Map;
 
-/// Filter out checks that don't apply
-fn included_excluded(checkname: &str, args: &Args) -> bool {
-    if let Some(checkids) = &args.checkid {
-        if !checkids.iter().any(|id| checkname.contains(id)) {
-            return false;
-        }
-    }
-    if let Some(exclude_checkids) = &args.exclude_checkid {
-        if exclude_checkids.iter().any(|id| checkname.contains(id)) {
-            return false;
-        }
-    }
-    true
-}
-
 fn main() {
     // Command line handling
     let args = Args::parse();
@@ -112,29 +97,18 @@ fn main() {
     let configuration: Map<String, serde_json::Value> = load_configuration(&args);
 
     // Establish a check order
-    let checkorder: Vec<(String, &TestableType, &Check, Context)> = profile
-        .sections
-        .iter()
-        .flat_map(|(sectionname, checknames)| {
-            #[allow(clippy::unwrap_used)] // We previously ensured the check exists in the registry
-            checknames
-                .iter()
-                .filter(|checkname| included_excluded(checkname, &args))
-                .map(|checkname| {
-                    (
-                        sectionname.clone(),
-                        registry.checks.get(checkname).unwrap(),
-                        context_for(checkname, &args, &configuration),
-                    )
-                })
-        })
-        .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
-            testables
-                .iter()
-                .filter(|testable| check.applies(testable, &registry))
-                .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
-        })
-        .collect();
+    let checkorder: Vec<(String, &TestableType, &Check, Context)> = profile.check_order(
+        &args.checkid,
+        &args.exclude_checkid,
+        &registry,
+        Context {
+            skip_network: args.skip_network,
+            network_timeout: Some(10), // XXX
+            configuration: Map::new(),
+        },
+        configuration,
+        &testables,
+    );
 
     // The testables are the collection object plus the files; only count the files.
     let count_of_files = testables.iter().filter(|x| x.is_single()).count();
@@ -245,20 +219,4 @@ fn load_configuration(args: &Args) -> Map<String, serde_json::Value> {
                 .clone()
         })
         .unwrap_or_default()
-}
-
-fn context_for(
-    checkname: &str,
-    args: &Args,
-    configuration: &Map<String, serde_json::Value>,
-) -> Context {
-    Context {
-        skip_network: args.skip_network,
-        network_timeout: args.timeout,
-        configuration: configuration
-            .get(checkname)
-            .and_then(|x| x.as_object())
-            .cloned()
-            .unwrap_or_default(),
-    }
 }

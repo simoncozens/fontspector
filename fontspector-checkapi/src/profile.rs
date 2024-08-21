@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use serde_json::Map;
 
-use crate::{CheckId, Registry, StatusCode};
+use crate::{Check, CheckId, Context, Registry, StatusCode, TestableType};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
@@ -70,4 +71,59 @@ impl Profile {
         }
         Ok(())
     }
+
+    pub fn check_order<'t, 'r>(
+        &self,
+        include_checks: &Option<Vec<String>>,
+        exclude_checks: &Option<Vec<String>>,
+        registry: &'r Registry<'r>,
+        general_context: Context,
+        configuration: Map<String, serde_json::Value>,
+        testables: &'t Vec<TestableType>,
+    ) -> Vec<(String, &'t TestableType<'t>, &'r Check<'r>, Context)> {
+        self.sections
+            .iter()
+            .flat_map(|(sectionname, checknames)| {
+                #[allow(clippy::unwrap_used)]
+                // We previously ensured the check exists in the registry
+                checknames
+                    .iter()
+                    .filter(|checkname| {
+                        included_excluded(checkname, include_checks, exclude_checks)
+                    })
+                    .map(|checkname| {
+                        (
+                            sectionname.clone(),
+                            registry.checks.get(checkname).unwrap(),
+                            general_context.specialize(checkname, &configuration),
+                        )
+                    })
+            })
+            .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
+                testables
+                    .iter()
+                    .filter(|testable| check.applies(testable, registry))
+                    .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
+            })
+            .collect()
+    }
+}
+
+/// Filter out checks that don't apply
+fn included_excluded(
+    checkname: &str,
+    include_checks: &Option<Vec<String>>,
+    exclude_checks: &Option<Vec<String>>,
+) -> bool {
+    if let Some(checkids) = &include_checks {
+        if !checkids.iter().any(|id| checkname.contains(id)) {
+            return false;
+        }
+    }
+    if let Some(exclude_checkids) = &exclude_checks {
+        if exclude_checkids.iter().any(|id| checkname.contains(id)) {
+            return false;
+        }
+    }
+    true
 }

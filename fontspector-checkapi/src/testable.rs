@@ -94,6 +94,10 @@ impl TestableCollection {
         })
     }
 
+    pub fn from_testables(testables: Vec<Testable>) -> Self {
+        Self { testables }
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = &Testable> {
         self.testables.iter()
     }

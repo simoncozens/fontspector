@@ -1,7 +1,9 @@
 use js_sys::{Reflect, Uint8Array};
 use wasm_bindgen::prelude::*;
 extern crate console_error_panic_hook;
-use fontspector_checkapi::{Check, CheckResult, Context, Plugin, Registry, Testable};
+use fontspector_checkapi::{
+    Check, CheckResult, Context, Plugin, Registry, Testable, TestableCollection, TestableType,
+};
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 
@@ -32,45 +34,29 @@ pub fn check_fonts(fonts: &JsValue) -> Result<String, JsValue> {
             }
         })
         .collect();
+    let collection = TestableCollection::from_testables(testables);
+
     let profile = registry.get_profile("googlefonts").unwrap();
     let context = Context {
         skip_network: true,
         network_timeout: None,
         configuration: serde_json::Map::new(),
     };
+    let all_testables = collection.collection_and_files().collect();
 
-    let checkorder: Vec<(String, &Testable, &Check, Context)> = profile
-        .sections
-        .iter()
-        .flat_map(|(sectionname, checknames)| {
-            #[allow(clippy::unwrap_used)] // We previously ensured the check exists in the registry
-            checknames
-                .iter()
-                // .filter(|checkname| included_excluded(checkname, &args))
-                .map(|checkname| {
-                    (
-                        sectionname.clone(),
-                        registry.checks.get(checkname).unwrap(),
-                        context.clone(),
-                    )
-                })
-        })
-        .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
-            testables
-                .iter()
-                .filter(|testable| check.applies(testable, &registry))
-                .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
-        })
-        .collect();
+    let checkorder: Vec<(String, &TestableType, &Check, Context)> = profile.check_order(
+        &None,
+        &None,
+        &registry,
+        context,
+        serde_json::Map::new(),
+        &all_testables,
+    );
 
     let results: Vec<CheckResult> = checkorder
         .iter()
         .map(|(sectionname, testable, check, context)| {
-            (
-                testable,
-                check,
-                check.run_one(testable, context, sectionname),
-            )
+            (testable, check, check.run(testable, context, sectionname))
         })
         .flat_map(|(_, _, result)| result)
         .collect();
