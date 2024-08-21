@@ -10,6 +10,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::CHECK_UNWANTED_TABLES);
         cr.register_check(checks::CHECK_REQUIRED_TABLES);
         cr.register_check(checks::CHECK_REGULAR_COORDS_CORRECT);
+        cr.register_check(checks::CHECK_VALID_GLYPHNAMES);
         let profile = Profile::from_toml(
             r#"
 [sections]
@@ -18,6 +19,7 @@ impl fontspector_checkapi::Plugin for Universal {
 "com.google.fonts/check/unwanted_tables",
 "com.google.fonts/check/required_tables",
 "com.google.fonts/check/fvar/regular_coords_correct",
+"com.google.fonts/check/valid_glyphnames"
 ]
 "#,
         )
