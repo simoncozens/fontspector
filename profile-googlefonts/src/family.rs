@@ -22,11 +22,14 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
         they_have_we_dont.extend(their_codepoints.difference(my_codepoints));
     }
 
+    let name_of_first = c.iter().next().unwrap().filename.to_str().unwrap(); // That's a lot of unwrap
+
     if !we_have_they_dont.is_empty() {
         problems.push(Status::fail(
             "glyphset-diverges",
             &format!(
-                "Our font has codepoints not present in sibling fonts: {}",
+                "Font {} has codepoints not present in sibling fonts: {}",
+                name_of_first,
                 we_have_they_dont
                     .iter()
                     .map(|i| format!("U+{:04X}", i))
@@ -38,7 +41,8 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
         problems.push(Status::fail(
             "glyphset-diverges",
             &format!(
-                "Other fonts have codepoints not present in this font: {}",
+                "Other fonts have codepoints not present in {}: {}",
+                name_of_first,
                 they_have_we_dont
                     .iter()
                     .map(|i| format!("U+{:04X}", i))

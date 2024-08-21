@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use args::Args;
 use clap::Parser;
 use fontspector_checkapi::{
-    Check, CheckResult, Context, FixResult, Plugin, Registry, Testable, TestableCollection,
+    Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
 };
 use indicatif::ParallelProgressIterator;
 use profile_googlefonts::GoogleFonts;
@@ -98,45 +98,21 @@ fn main() {
         })
         .collect();
 
-    // This is wrong wrong wrong, but let it be for now.
-    let testables: Vec<Testable> = grouped_inputs
-        .into_iter()
-        .flat_map(|collection| collection.testables)
-        .collect();
-
-    if testables.is_empty() {
+    if grouped_inputs.is_empty() {
         log::error!("No input files");
         std::process::exit(1);
     }
 
+    let testables: Vec<TestableType> = grouped_inputs
+        .iter()
+        .flat_map(|x| x.collection_and_files())
+        .collect();
+
     // Load configuration
-    let configuration: Map<String, serde_json::Value> = args
-        .configuration
-        .as_ref()
-        .map(|filename| {
-            std::fs::File::open(filename).unwrap_or_else(|e| {
-                log::error!("Could not open configuration file {}: {:}", filename, e);
-                std::process::exit(1)
-            })
-        })
-        .and_then(|file| {
-            serde_json::from_reader(std::io::BufReader::new(file)).unwrap_or_else(|e| {
-                log::error!("Could not parse configuration file: {:}", e);
-                std::process::exit(1)
-            })
-        })
-        .map(|file: serde_json::Value| {
-            file.as_object()
-                .unwrap_or_else(|| {
-                    log::error!("Configuration file must be a JSON object");
-                    std::process::exit(1)
-                })
-                .clone()
-        })
-        .unwrap_or_default();
+    let configuration: Map<String, serde_json::Value> = load_configuration(&args);
 
     // Establish a check order
-    let checkorder: Vec<(String, &Testable, &Check, Context)> = profile
+    let checkorder: Vec<(String, &TestableType, &Check, Context)> = profile
         .sections
         .iter()
         .flat_map(|(sectionname, checknames)| {
@@ -160,40 +136,48 @@ fn main() {
         })
         .collect();
 
+    // The testables are the collection object plus the files; only count the files.
+    let count_of_files = testables.iter().filter(|x| x.is_single()).count();
+    let count_of_families = testables.len() - count_of_files;
+
     if !args.quiet {
         println!(
-            "Running {:} check{} on {:} file{}",
+            "Running {:} check{} on {} file{} in {} famil{}",
             checkorder.len(),
             if checkorder.len() == 1 { "" } else { "s" },
-            testables.len(),
-            if testables.len() == 1 { "" } else { "s" }
+            count_of_files,
+            if count_of_files == 1 { "" } else { "s" },
+            count_of_families,
+            if count_of_families == 1 { "y" } else { "ies" }
         );
     }
 
-    let apply_fixes = |(testable, check, mut result): (&&Testable, &&Check, CheckResult)| {
-        if args.hotfix {
-            if let Some(fix) = check.hotfix {
-                result.hotfix_result = match fix(testable) {
-                    Ok(_) => Some(FixResult::Fixed),
-                    Err(e) => Some(FixResult::FixError(e)),
+    let apply_fixes = |(testable, check, mut result): (&&TestableType, &&Check, CheckResult)| {
+        if let TestableType::Single(testable) = testable {
+            if args.hotfix {
+                if let Some(fix) = check.hotfix {
+                    result.hotfix_result = match fix(testable) {
+                        Ok(_) => Some(FixResult::Fixed),
+                        Err(e) => Some(FixResult::FixError(e)),
+                    }
+                } else {
+                    result.hotfix_result = Some(FixResult::Unfixable);
                 }
-            } else {
-                result.hotfix_result = Some(FixResult::Unfixable);
+            } else if check.hotfix.is_some() {
+                result.hotfix_result = Some(FixResult::Available);
             }
-        } else if check.hotfix.is_some() {
-            result.hotfix_result = Some(FixResult::Available);
-        }
-        if args.fix_sources {
-            if let Some(fix) = check.fix_source {
-                result.sourcefix_result = match fix(testable) {
-                    Ok(_) => Some(FixResult::Fixed),
-                    Err(e) => Some(FixResult::FixError(e)),
+            if args.fix_sources {
+                if let Some(fix) = check.fix_source {
+                    result.sourcefix_result = match fix(testable) {
+                        Ok(_) => Some(FixResult::Fixed),
+                        Err(e) => Some(FixResult::FixError(e)),
+                    }
+                } else {
+                    result.sourcefix_result = Some(FixResult::Unfixable);
                 }
-            } else {
-                result.sourcefix_result = Some(FixResult::Unfixable);
+            } else if check.fix_source.is_some() {
+                result.sourcefix_result = Some(FixResult::Available);
             }
-        } else if check.fix_source.is_some() {
-            result.sourcefix_result = Some(FixResult::Available);
         }
         result
     };
@@ -204,11 +188,7 @@ fn main() {
         .par_iter()
         .progress()
         .map(|(sectionname, testable, check, context)| {
-            (
-                testable,
-                check,
-                check.run_one(testable, context, sectionname),
-            )
+            (testable, check, check.run(testable, context, sectionname))
         })
         .filter(|(_, _, result)| result.is_some())
         .map(|(testable, check, result)| (testable, check, result.unwrap()))
@@ -239,6 +219,32 @@ fn main() {
     if worst_status >= args.error_code_on {
         std::process::exit(1);
     }
+}
+
+fn load_configuration(args: &Args) -> Map<String, serde_json::Value> {
+    args.configuration
+        .as_ref()
+        .map(|filename| {
+            std::fs::File::open(filename).unwrap_or_else(|e| {
+                log::error!("Could not open configuration file {}: {:}", filename, e);
+                std::process::exit(1)
+            })
+        })
+        .and_then(|file| {
+            serde_json::from_reader(std::io::BufReader::new(file)).unwrap_or_else(|e| {
+                log::error!("Could not parse configuration file: {:}", e);
+                std::process::exit(1)
+            })
+        })
+        .map(|file: serde_json::Value| {
+            file.as_object()
+                .unwrap_or_else(|| {
+                    log::error!("Configuration file must be a JSON object");
+                    std::process::exit(1)
+                })
+                .clone()
+        })
+        .unwrap_or_default()
 }
 
 fn context_for(

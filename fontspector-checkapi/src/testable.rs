@@ -97,4 +97,21 @@ impl TestableCollection {
     pub fn iter(&self) -> impl Iterator<Item = &Testable> {
         self.testables.iter()
     }
+
+    pub fn collection_and_files(&self) -> impl Iterator<Item = TestableType> {
+        vec![TestableType::Collection(self)]
+            .into_iter()
+            .chain(self.testables.iter().map(|x| TestableType::Single(x)))
+    }
+}
+
+pub enum TestableType<'a> {
+    Single(&'a Testable),
+    Collection(&'a TestableCollection),
+}
+
+impl TestableType<'_> {
+    pub fn is_single(&self) -> bool {
+        matches!(self, TestableType::Single(_))
+    }
 }

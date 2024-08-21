@@ -2,7 +2,7 @@ use crate::{
     context::Context,
     prelude::FixFnResult,
     status::{CheckError, CheckFnResult},
-    testable::TestableCollection,
+    testable::{TestableCollection, TestableType},
     CheckResult, Registry, Status, Testable,
 };
 
@@ -51,11 +51,15 @@ impl<'a> Check<'a> {
     pub fn runs_on_collection(&self) -> bool {
         matches!(self.implementation, CheckImplementation::CheckAll(_))
     }
-    pub fn applies(&self, f: &'a Testable, registry: &Registry) -> bool {
-        registry
-            .filetypes
-            .get(self.applies_to)
-            .map_or(false, |ft| ft.applies(f))
+    pub fn applies(&self, f: &'a TestableType, registry: &Registry) -> bool {
+        match (&self.implementation, f) {
+            (CheckImplementation::CheckAll(_), TestableType::Collection(_)) => true,
+            (CheckImplementation::CheckOne(_), TestableType::Single(f)) => registry
+                .filetypes
+                .get(self.applies_to)
+                .map_or(false, |ft| ft.applies(f)),
+            _ => false,
+        }
     }
 
     fn clarify_result(
@@ -77,29 +81,22 @@ impl<'a> Check<'a> {
         CheckResult::new(self, file.and_then(|f| f.filename.to_str()), section, res)
     }
 
-    pub fn run_one(
+    /// Run the check, either on a collection or a single file.
+    ///
+    /// Returns `None` if the check is not applicable to the given testable.
+    pub fn run(
         &'a self,
-        f: &'a Testable,
+        testable: &'a TestableType,
         context: &Context,
         section: &str,
     ) -> Option<CheckResult> {
-        match self.implementation {
-            CheckImplementation::CheckAll(_) => None,
-            CheckImplementation::CheckOne(check_one) => {
+        match (&self.implementation, testable) {
+            (CheckImplementation::CheckAll(_), TestableType::Single(_)) => None,
+            (CheckImplementation::CheckOne(_), TestableType::Collection(_)) => None,
+            (CheckImplementation::CheckOne(check_one), TestableType::Single(f)) => {
                 Some(self.clarify_result(check_one(f, context), Some(f), section))
             }
-        }
-    }
-
-    pub fn run_all(
-        &'a self,
-        f: &'a TestableCollection,
-        context: &Context,
-        section: &str,
-    ) -> Option<CheckResult> {
-        match self.implementation {
-            CheckImplementation::CheckOne(_) => None,
-            CheckImplementation::CheckAll(check_all) => {
+            (CheckImplementation::CheckAll(check_all), TestableType::Collection(f)) => {
                 Some(self.clarify_result(check_all(f, context), None, section))
             }
         }

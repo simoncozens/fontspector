@@ -17,7 +17,7 @@ pub use font::{TestFont, TTF};
 pub use profile::{Override, Profile};
 pub use registry::Registry;
 pub use status::{CheckError, CheckFnResult, Status, StatusCode, StatusList};
-pub use testable::{Testable, TestableCollection};
+pub use testable::{Testable, TestableCollection, TestableType};
 
 pub mod prelude {
     #[macro_export]
@@ -42,7 +42,8 @@ pub mod prelude {
     pub type FixFnResult = Result<bool, String>;
     pub use crate::{
         return_result, Check, CheckError, CheckFlags, CheckFnResult, CheckImplementation, Context,
-        FileType, Profile, Registry, Status, StatusList, Testable, TestableCollection, TTF,
+        FileType, Profile, Registry, Status, StatusList, Testable, TestableCollection,
+        TestableType, TTF,
     };
 }
 
