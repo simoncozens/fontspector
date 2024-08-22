@@ -58,9 +58,17 @@ impl Profile {
                 }
             }
         }
-        if !missing_checks.is_empty() {
-            return Err(format!("Missing checks: {}", missing_checks.join(", ")));
+
+        // #[cfg(not(debug_assertions))]
+        // if !missing_checks.is_empty() {
+        //     return Err(format!("Missing checks: {}", missing_checks.join(", ")));
+        // }
+
+        #[cfg(debug_assertions)]
+        for missing in missing_checks {
+            eprintln!("Missing check: {}", missing);
         }
+
         for check in registry.checks.values() {
             if !registry.filetypes.contains_key(check.applies_to) {
                 return Err(format!(
@@ -84,8 +92,6 @@ impl Profile {
         self.sections
             .iter()
             .flat_map(|(sectionname, checknames)| {
-                #[allow(clippy::unwrap_used)]
-                // We previously ensured the check exists in the registry
                 checknames
                     .iter()
                     .filter(|checkname| {
@@ -94,9 +100,12 @@ impl Profile {
                     .map(|checkname| {
                         (
                             sectionname.clone(),
-                            registry.checks.get(checkname).unwrap(),
+                            registry.checks.get(checkname),
                             general_context.specialize(checkname, &configuration),
                         )
+                    })
+                    .flat_map(|(sectionname, check, context)| {
+                        check.map(|c| (sectionname, c, context))
                     })
             })
             .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
