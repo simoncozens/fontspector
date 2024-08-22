@@ -74,7 +74,7 @@ fn axis_ranges_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     let mut problems = vec![];
     for (name, location) in f.named_instances() {
         if let Some(wght) = location.get("wght") {
-            if !(1.0..1000.0).contains(wght) {
+            if !(1.0..=1000.0).contains(wght) {
                 problems.push(Status::fail(
                     "wght-out-of-range",
                     &format!(
