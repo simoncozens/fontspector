@@ -99,6 +99,53 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
             ),
         ));
     }
+    let spacename = font.glyph_name_for_unicode(0x20u32);
+    let nbspname = font.glyph_name_for_unicode(0xa0u32);
+
+    match nbspname.as_deref() {
+        Some("space") | Some("uni00A0") | None => {}
+        x if x == spacename.as_deref() => {}
+        Some("nonbreakingspace")
+        | Some("nbspace")
+        | Some("u00A0")
+        | Some("u000A0")
+        | Some("u0000A0") => {
+            #[allow(clippy::unwrap_used)]
+            problems.push(Status::warn(
+                "not-recommended-00A0",
+                &format!(
+                    "Glyph 0x00A0 is called {}; must be named 'uni00A0'.",
+                    nbspname.unwrap()
+                ),
+            ));
+        }
+        Some(other) => {
+            problems.push(Status::fail(
+                "non-compliant-00A0",
+                &format!("Glyph 0x00A0 is called {}; must be named 'uni00A0'.", other),
+            ));
+        }
+    }
+
+    match spacename.as_deref() {
+        Some("space") | None => {}
+        Some("uni0020") | Some("u0020") | Some("u00020") | Some("u000020") => {
+            #[allow(clippy::unwrap_used)]
+            problems.push(Status::warn(
+                "not-recommended-0020",
+                &format!(
+                    "Glyph 0x0020 is called {}; must be named 'space'.",
+                    spacename.unwrap()
+                ),
+            ));
+        }
+        Some(other) => {
+            problems.push(Status::fail(
+                "non-compliant-0020",
+                &format!("Glyph 0x0020 is called {}; must be named 'space'.", other),
+            ));
+        }
+    }
 
     return_result(problems)
 }
