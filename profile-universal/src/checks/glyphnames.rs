@@ -4,7 +4,7 @@ use font_types::Version16Dot16;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use itertools::Itertools;
 use read_fonts::TableProvider;
-use regex::Regex;
+use skrifa::GlyphId;
 
 enum NameValidity {
     OK,
@@ -15,9 +15,12 @@ fn test_glyph_name(s: &str) -> NameValidity {
     if s.starts_with(".null") || s.starts_with(".notdef") || s.starts_with(".ttfautohint") {
         return NameValidity::OK;
     }
-    #[allow(clippy::unwrap_used)]
-    let re = Regex::new(r"^[a-zA-z_][a-zA-Z._0-9]{0,62}$").unwrap();
-    if !re.is_match(s) {
+    // A valid name starts with a-zA-Z_, and contains up to 63 characters from a-zA-Z0-9._.
+    if !(s.starts_with(|c: char| c.is_ascii_alphabetic() || c == '_')
+        && s.chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '_')
+        && s.len() < 63)
+    {
         return NameValidity::Naughty;
     }
     if s.len() > 31 && s.len() <= 63 {
@@ -40,31 +43,23 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut warnnames = HashSet::new();
     let mut allnames = HashSet::new();
     let mut duplicates = HashSet::new();
-    if let Some(indices) = post.glyph_name_index() {
-        for index in indices {
-            if let Some(Ok(name)) = post
-                .string_data()
-                .ok_or_else(|| {
-                    CheckError::Error("Failed to read post table string data".to_string())
-                })?
-                .get(index.get() as usize)
-            {
-                let name = name.as_str();
-                if allnames.contains(name) {
-                    duplicates.insert(name);
-                }
-                allnames.insert(name);
-                match test_glyph_name(name) {
-                    NameValidity::OK => {}
-                    NameValidity::Naughty => {
-                        badnames.insert(name);
-                    }
-                    NameValidity::Long => {
-                        warnnames.insert(name);
-                    }
-                }
+
+    for name in
+        (0..font.glyph_count).filter_map(|x| font.glyph_name_for_id(GlyphId::new(x as u16), false))
+    {
+        if allnames.contains(&name) {
+            duplicates.insert(name.clone());
+        }
+        match test_glyph_name(&name) {
+            NameValidity::OK => {}
+            NameValidity::Naughty => {
+                badnames.insert(name.clone());
+            }
+            NameValidity::Long => {
+                warnnames.insert(name.clone());
             }
         }
+        allnames.insert(name);
     }
     if !badnames.is_empty() {
         problems.push(Status::fail(
@@ -77,7 +72,7 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
                 There are a few exceptions such as the special glyph '.notdef'.
                 The glyph names \"twocents\", \"a1\", and \"_\" are all valid,
                 while \"2cents\" and \".twocents\" are not.'",
-                Itertools::intersperse(badnames.into_iter(), ", ").collect::<String>()
+                Itertools::intersperse(badnames.into_iter(), ", ".to_string()).collect::<String>()
             ),
         ));
     }
@@ -86,7 +81,7 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
             "legacy-long-names",
             &format!(
                 "The following glyph names are too long: {:?}",
-                Itertools::intersperse(warnnames.into_iter(), ", ").collect::<String>()
+                Itertools::intersperse(warnnames.into_iter(), ", ".to_string()).collect::<String>()
             ),
         ));
     }
@@ -95,12 +90,13 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
             "duplicated-glyph-names",
             &format!(
                 "These glyph names occur more than once: {:?}",
-                Itertools::intersperse(duplicates.into_iter(), ", ").collect::<String>()
+                Itertools::intersperse(duplicates.into_iter(), ", ".to_string())
+                    .collect::<String>()
             ),
         ));
     }
-    let spacename = font.glyph_name_for_unicode(0x20u32);
-    let nbspname = font.glyph_name_for_unicode(0xa0u32);
+    let spacename = font.glyph_name_for_unicode(0x20u32, false);
+    let nbspname = font.glyph_name_for_unicode(0xa0u32, false);
 
     match nbspname.as_deref() {
         Some("space") | Some("uni00A0") | None => {}

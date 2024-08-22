@@ -13,5 +13,4 @@ read-fonts = {workspace = true}
 write-fonts = {workspace = true}
 font-types = {workspace = true}
 skrifa = {workspace = true}
-regex = "1.10.6"
 itertools = "0.13.0"

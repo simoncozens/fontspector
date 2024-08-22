@@ -19,8 +19,8 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
     let siblings = fonts.iter().skip(1);
     for sibling in siblings {
         let their_codepoints = sibling.codepoints();
-        we_have_they_dont.extend(my_codepoints.difference(their_codepoints));
-        they_have_we_dont.extend(their_codepoints.difference(my_codepoints));
+        we_have_they_dont.extend(my_codepoints.difference(&their_codepoints));
+        they_have_we_dont.extend(their_codepoints.difference(&my_codepoints));
     }
 
     #[allow(clippy::unwrap_used)] // We checked the length above
