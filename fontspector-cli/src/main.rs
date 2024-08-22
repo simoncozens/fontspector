@@ -39,7 +39,7 @@ fn main() {
     #[allow(clippy::expect_used)] // If this fails, I *want* to panic
     Universal
         .register(&mut registry)
-        .expect("Couldn't register universal profile, fontspector bug");
+        .expect("Couldn't register universal/opentype profile, fontspector bug");
     #[allow(clippy::expect_used)] // If this fails, I *want* to panic
     GoogleFonts
         .register(&mut registry)
@@ -116,17 +116,17 @@ fn main() {
     let count_of_files = testables.iter().filter(|x| x.is_single()).count();
     let count_of_families = testables.len() - count_of_files;
 
-    if !args.quiet {
-        println!(
-            "Running {:} check{} on {} file{} in {} famil{}",
-            checkorder.len(),
-            if checkorder.len() == 1 { "" } else { "s" },
-            count_of_files,
-            if count_of_files == 1 { "" } else { "s" },
-            count_of_families,
-            if count_of_families == 1 { "y" } else { "ies" }
-        );
-    }
+    // if !args.quiet {
+    println!(
+        "Running {:} check{} on {} file{} in {} famil{}",
+        checkorder.len(),
+        if checkorder.len() == 1 { "" } else { "s" },
+        count_of_files,
+        if count_of_files == 1 { "" } else { "s" },
+        count_of_families,
+        if count_of_families == 1 { "y" } else { "ies" }
+    );
+    // }
 
     let apply_fixes = |(testable, check, mut result): (&&TestableType, &&Check, CheckResult)| {
         if let TestableType::Single(testable) = testable {
@@ -189,9 +189,9 @@ fn main() {
         reporter.report(&results, &args, &registry);
     }
 
-    if !args.quiet {
-        TerminalReporter::summary_report(results.summary());
-    }
+    // if !args.quiet {
+    TerminalReporter::summary_report(results.summary());
+    // }
     if worst_status >= args.error_code_on {
         std::process::exit(1);
     }
