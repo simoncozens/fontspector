@@ -1,5 +1,9 @@
 use crate::{filetype::FileTypeConvert, FileType, Testable};
-use read_fonts::{tables::os2::SelectionFlags, TableProvider};
+use read_fonts::{
+    tables::{os2::SelectionFlags, post::DEFAULT_GLYPH_NAMES},
+    types::Version16Dot16,
+    TableProvider,
+};
 use skrifa::{
     charmap::Charmap,
     font::FontRef,
@@ -7,6 +11,7 @@ use skrifa::{
     GlyphId, MetadataProvider, Tag,
 };
 use std::{
+    cell::RefCell,
     collections::{HashMap, HashSet},
     error::Error,
     path::{Path, PathBuf},
@@ -15,9 +20,10 @@ use std::{
 pub struct TestFont<'a> {
     pub filename: PathBuf,
     font_data: &'a [u8],
-    // things it's worth caching
-    _codepoints: HashSet<u32>,
-    _instance_coordinates: Vec<(String, HashMap<String, f32>)>,
+    // Try to avoid caching stuff here unless you really need to, the conversion Testable->TestFont
+    // should be cheap as it is run for each check.
+    pub glyph_count: usize,
+    _glyphnames: RefCell<Vec<Option<String>>>,
 }
 
 pub const TTF: FileType = FileType { pattern: "*.ttf" };
@@ -37,29 +43,13 @@ impl TestFont<'_> {
         font_data: &'a [u8],
     ) -> Result<TestFont<'a>, Box<dyn Error>> {
         let font = FontRef::new(font_data)?;
-        let _codepoints = Charmap::new(&font).mappings().map(|(u, _gid)| u).collect();
-        let _axes = font.axes();
-        let _instance_coordinates = font
-            .named_instances()
-            .iter()
-            .map(|ni| {
-                let instance_name = font
-                    .localized_strings(ni.subfamily_name_id())
-                    .english_or_first()
-                    .map(|s| s.chars().collect::<String>())
-                    .unwrap_or("Unnamed".to_string());
-                let coords = ni
-                    .user_coords()
-                    .zip(font.axes().iter())
-                    .map(|(coord, axis)| (axis.tag().to_string(), coord));
-                (instance_name, coords.collect())
-            })
-            .collect();
+        #[allow(clippy::unwrap_used)] // Heck, Skrifa does the same
+        let glyph_count = font.maxp().unwrap().num_glyphs().into();
         Ok(TestFont {
             filename: filename.to_path_buf(),
             font_data,
-            _codepoints,
-            _instance_coordinates,
+            glyph_count,
+            _glyphnames: RefCell::new(vec![]),
         })
     }
 
@@ -85,37 +75,77 @@ impl TestFont<'_> {
         self.font().localized_strings(name_id)
     }
 
-    pub fn glyph_name_for_id(&self, gid: GlyphId) -> String {
-        if let Ok(Some(name)) = self
-            .font()
-            .post()
-            .map(|post| post.glyph_name(gid).map(|x| x.to_string()))
-        {
-            name
+    pub fn glyph_name_for_id(&self, gid: GlyphId, synthesize: bool) -> Option<String> {
+        if self._glyphnames.borrow().is_empty() {
+            if let Ok(post) = self.font().post() {
+                match post.version() {
+                    Version16Dot16::VERSION_1_0 => {
+                        let names = DEFAULT_GLYPH_NAMES.into_iter().map(|x| Some(x.to_string()));
+                        self._glyphnames.borrow_mut().extend(names);
+                    }
+                    Version16Dot16::VERSION_2_0 => {
+                        let strings: Vec<Option<read_fonts::tables::post::PString>> =
+                            post.string_data()?.iter().map(|x| x.ok()).collect();
+                        if let Some(index) = post.glyph_name_index() {
+                            let names = (0..self.glyph_count).map(|gid| {
+                                let idx = index.get(gid)?.get() as usize;
+                                if idx < 258 {
+                                    Some(DEFAULT_GLYPH_NAMES[idx].to_string())
+                                } else {
+                                    let entry = strings.get(idx - 258)?;
+                                    entry.map(|x| x.to_string())
+                                }
+                            });
+                            self._glyphnames.borrow_mut().extend(names);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        if let Some(Some(n)) = self._glyphnames.borrow().get(gid.to_u32() as usize) {
+            Some(n.to_string())
+        } else if synthesize {
+            Some(format!("gid{:}", gid).to_string())
         } else {
-            format!("gid{:}", gid)
+            None
         }
     }
 
-    pub fn glyph_name_for_unicode(&self, u: impl Into<u32>) -> Option<String> {
+    pub fn glyph_name_for_unicode(&self, u: impl Into<u32>, synthesize: bool) -> Option<String> {
         self.font()
             .charmap()
             .map(u)
-            .map(|gid| self.glyph_name_for_id(gid))
+            .and_then(|gid| self.glyph_name_for_id(gid, synthesize))
     }
 
     pub fn is_variable_font(&self) -> bool {
         self.has_table(b"fvar")
     }
 
-    pub fn codepoints(&self) -> &HashSet<u32> {
-        &self._codepoints
+    pub fn codepoints(&self) -> HashSet<u32> {
+        Charmap::new(&self.font())
+            .mappings()
+            .map(|(u, _gid)| u)
+            .collect()
     }
 
     /// Returns an iterator over the named instances in the font.
     ///
     /// Each item is a tuple of the instance name and a map of axis tag to user coordinate value.
-    pub fn named_instances(&self) -> impl Iterator<Item = &(String, HashMap<String, f32>)> + '_ {
-        self._instance_coordinates.iter()
+    pub fn named_instances(&self) -> impl Iterator<Item = (String, HashMap<String, f32>)> + '_ {
+        self.font().named_instances().iter().map(|ni| {
+            let instance_name = self
+                .font()
+                .localized_strings(ni.subfamily_name_id())
+                .english_or_first()
+                .map(|s| s.chars().collect::<String>())
+                .unwrap_or("Unnamed".to_string());
+            let coords = ni
+                .user_coords()
+                .zip(self.font().axes().iter())
+                .map(|(coord, axis)| (axis.tag().to_string(), coord));
+            (instance_name, coords.collect())
+        })
     }
 }
