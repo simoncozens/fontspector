@@ -155,7 +155,7 @@ function showResult(data) {
       $("#v-pills-tabContent").append(thistab);
     }
     // Update pill / tab results with worst result
-    if (SORT_RESULT[worststatus] < thispill.data("sortorder")) {
+    if (SORT_RESULT[worststatus] > thispill.data("sortorder")) {
       thispill.removeClass(function (index, className) {
         return (className.match(/(^|\s)bg-\S+/g) || []).join(" ");
       });
