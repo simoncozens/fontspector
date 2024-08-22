@@ -167,7 +167,7 @@ function showResult(data) {
     if (worststatus == "ERROR" && EXCUSES[checkid]) {
       thistab.find("ul.results").append(`<li>${EXCUSES[checkid]}</li>`);
     } else {
-      const filename = result.filename;
+      const filename = result.filename || "Family Check";
       for (var log of result.subresults) {
         let where = "ul.results";
         where = `ul.results li ul[data-filename='${filename}']`;

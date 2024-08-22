@@ -24,7 +24,7 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
     }
 
     #[allow(clippy::unwrap_used)] // We checked the length above
-    let name_of_first = c.iter().next().unwrap().filename.to_str().unwrap(); // That's a lot of unwrap
+    let name_of_first = fonts.first().unwrap().filename.to_str().unwrap(); // That's a lot of unwrap
 
     if !we_have_they_dont.is_empty() {
         problems.push(Status::fail(
