@@ -113,6 +113,7 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
             #block
         }
 
+        #[allow(non_upper_case_globals)]
         pub const #check_ident : Check = Check {
             id: #id,
             proposal: #proposal,
