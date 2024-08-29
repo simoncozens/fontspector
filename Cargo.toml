@@ -4,6 +4,7 @@ resolver = "2"
 members = [
     "fontspector-cli",
     "fontspector-checkapi",
+    "fontspector-checkhelper",
     "profile-universal", "profile-testplugin", "profile-googlefonts",
     "fontspector-web",
 ]
@@ -21,3 +22,4 @@ font-types = "0.5.5"
 
 # Serialization
 serde =  {version = "1.0.130", features=["derive"] }
+fontspector-checkhelper = { path = "./fontspector-checkhelper" }
