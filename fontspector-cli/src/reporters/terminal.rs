@@ -75,15 +75,15 @@ impl Reporter for TerminalReporter {
                         println!("  Section: {:}\n", sectionname);
                         sectionheading_done = true;
                     }
+                    println!(">> {:}", result.check_id);
+                    if args.verbose > 1 {
+                        println!("   {:}", result.check_name);
+                        termimad::print_inline(&format!(
+                            "Rationale:\n\n```\n{}\n```\n",
+                            result.check_rationale
+                        ));
+                    }
                     for subresult in subresults {
-                        println!(">> {:}", result.check_id);
-                        if args.verbose > 1 {
-                            println!("   {:}", result.check_name);
-                            termimad::print_inline(&format!(
-                                "Rationale:\n\n```\n{}\n```\n",
-                                result.check_rationale
-                            ));
-                        }
                         termimad::print_inline(&format!("{:}\n", subresult));
                     }
                     match &result.hotfix_result {
