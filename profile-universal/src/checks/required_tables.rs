@@ -5,6 +5,41 @@ const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
     b"GSUB", b"JSTF", b"gasp", b"hdmx", b"LTSH", b"PCLT", b"VDMX", b"vhea", b"vmtx", b"kern",
 ];
 
+#[check(
+    id = "com.google.fonts/check/required_tables",
+    title = "Font contains all required tables?",
+    rationale = "
+        According to the OpenType spec
+        https://docs.microsoft.com/en-us/typography/opentype/spec/otff#required-tables
+
+        Whether TrueType or CFF outlines are used in an OpenType font, the following
+        tables are required for the font to function correctly:
+
+        - cmap (Character to glyph mapping)⏎
+        - head (Font header)⏎
+        - hhea (Horizontal header)⏎
+        - hmtx (Horizontal metrics)⏎
+        - maxp (Maximum profile)⏎
+        - name (Naming table)⏎
+        - OS/2 (OS/2 and Windows specific metrics)⏎
+        - post (PostScript information)
+
+        The spec also documents that variable fonts require the following table:
+
+        - STAT (Style attributes)
+
+        Depending on the typeface and coverage of a font, certain tables are
+        recommended for optimum quality.
+
+        For example:⏎
+        - the performance of a non-linear font is improved if the VDMX, LTSH,
+          and hdmx tables are present.⏎
+        - Non-monospaced Latin fonts should have a kern table.⏎
+        - A gasp table is necessary if a designer wants to influence the sizes
+          at which grayscaling is used under Windows. Etc.
+    ",
+    proposal = "legacy:check/052"
+)]
 fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut required_table_tags: Vec<_> = vec![
@@ -83,44 +118,3 @@ fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
 
     return_result(problems)
 }
-
-pub const CHECK_REQUIRED_TABLES: Check = Check {
-    id: "com.google.fonts/check/required_tables",
-    title: "Font contains all required tables?",
-    rationale: "
-        According to the OpenType spec
-        https://docs.microsoft.com/en-us/typography/opentype/spec/otff#required-tables
-
-        Whether TrueType or CFF outlines are used in an OpenType font, the following
-        tables are required for the font to function correctly:
-
-        - cmap (Character to glyph mapping)⏎
-        - head (Font header)⏎
-        - hhea (Horizontal header)⏎
-        - hmtx (Horizontal metrics)⏎
-        - maxp (Maximum profile)⏎
-        - name (Naming table)⏎
-        - OS/2 (OS/2 and Windows specific metrics)⏎
-        - post (PostScript information)
-
-        The spec also documents that variable fonts require the following table:
-
-        - STAT (Style attributes)
-
-        Depending on the typeface and coverage of a font, certain tables are
-        recommended for optimum quality.
-
-        For example:⏎
-        - the performance of a non-linear font is improved if the VDMX, LTSH,
-          and hdmx tables are present.⏎
-        - Non-monospaced Latin fonts should have a kern table.⏎
-        - A gasp table is necessary if a designer wants to influence the sizes
-          at which grayscaling is used under Windows. Etc.
-    ",
-    proposal: "legacy:check/052",
-    implementation: CheckImplementation::CheckOne(&required_tables),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

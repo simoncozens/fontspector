@@ -3,6 +3,17 @@ use std::collections::HashSet;
 
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 
+#[check(
+    id = "com.google.fonts/check/family/equal_codepoint_coverage",
+    title = "Fonts have equal codepoint coverage?",
+    rationale = "For a given family, all fonts must have the same codepoint coverage.
+                This is because we want to avoid the situation where, for example,
+                a character is present in a regular font but missing in the italic
+                style; turning on italic would cause the character to be rendered
+                either as a fake italic (auto-slanted) or to show tofu.",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4180",
+    implementation = "all"
+)]
 fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -> CheckFnResult {
     let fonts = TTF.from_collection(c);
     if fonts.len() < 2 {
@@ -54,19 +65,3 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
     }
     return_result(problems)
 }
-
-pub const CHECK_FAMILY_EQUAL_CODEPOINT_COVERAGE: Check = Check {
-    id: "com.google.fonts/check/family/equal_codepoint_coverage",
-    title: "Fonts have equal codepoint coverage?",
-    rationale: "For a given family, all fonts must have the same codepoint coverage.
-                This is because we want to avoid the situation where, for example,
-                a character is present in a regular font but missing in the italic
-                style; turning on italic would cause the character to be rendered
-                either as a fake italic (auto-slanted) or to show tofu.",
-    proposal: "https://github.com/fonttools/fontbakery/issues/4180",
-    implementation: CheckImplementation::CheckAll(&family_equal_codepoint_coverage),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

@@ -3,12 +3,25 @@ use fontspector_checkapi::prelude::*;
 
 struct Test;
 
+#[check(
+    id = "com.google.fonts/check/test/say_hello",
+    title = "Check that the plugin protocol is working",
+    rationale = "This check is part of the example of how to create plugins.",
+    proposal = "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73"
+)]
 fn say_hello(_c: &Testable, context: &Context) -> CheckFnResult {
     println!("Hello from the test plugin!");
     println!("My context was: {:?}", context);
     return_result(vec![])
 }
 
+#[check(
+    id = "com.google.fonts/check/test/validate_toml",
+    title = "Check that the filetype plugin protocol is working",
+    rationale = "This check is part of the example of how to create plugins.",
+    proposal = "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
+    applies_to = "TOML"
+)]
 fn validate_toml(c: &Testable, _context: &Context) -> CheckFnResult {
     let toml = std::fs::read_to_string(&c.filename)
         .map_err(|_| CheckError::Error("Couldn't open file".to_string()))?;
@@ -18,38 +31,13 @@ fn validate_toml(c: &Testable, _context: &Context) -> CheckFnResult {
         Status::just_one_fail("invalid-toml", "Invalid TOML")
     })
 }
-pub const SAY_HELLO: Check = Check {
-    id: "com.google.fonts/check/test/say_hello",
-    title: "Check that the plugin protocol is working",
-    rationale: "This check is part of the example of how to create plugins.",
-    proposal:
-        "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
-    implementation: CheckImplementation::CheckOne(&say_hello),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};
-
-pub const VALIDATE_TOML: Check = Check {
-    id: "com.google.fonts/check/test/validate_toml",
-    title: "Check that the filetype plugin protocol is working",
-    rationale: "This check is part of the example of how to create plugins.",
-    proposal:
-        "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
-    implementation: CheckImplementation::CheckOne(&validate_toml),
-    applies_to: "TOML",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};
 
 impl fontspector_checkapi::Plugin for Test {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         let toml = FileType::new("*.toml");
         cr.register_filetype("TOML", toml);
 
-        cr.register_simple_profile("test", vec![VALIDATE_TOML, SAY_HELLO])
+        cr.register_simple_profile("test", vec![validate_toml, say_hello])
     }
 }
 

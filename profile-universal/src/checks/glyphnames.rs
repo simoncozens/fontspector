@@ -29,6 +29,30 @@ fn test_glyph_name(s: &str) -> NameValidity {
     NameValidity::OK
 }
 
+#[check(
+    id = "com.google.fonts/check/valid_glyphnames",
+    title = "Glyph names are all valid?",
+    rationale = "Microsoft's recommendations for OpenType Fonts states the following:
+
+        'NOTE: The PostScript glyph name must be no longer than 31 characters,
+        include only uppercase or lowercase English letters, European digits,
+        the period or the underscore, i.e. from the set `[A-Za-z0-9_.]` and
+        should start with a letter, except the special glyph name `.notdef`
+        which starts with a period.'
+
+        https://learn.microsoft.com/en-us/typography/opentype/otspec181/recom#-post--table
+
+
+        In practice, though, particularly in modern environments, glyph names
+        can be as long as 63 characters.
+
+        According to the \"Adobe Glyph List Specification\" available at:
+
+        https://github.com/adobe-type-tools/agl-specification
+        
+        Glyph names must also be unique, as duplicate glyph names prevent font installation on Mac OS X.",
+    proposal = "https://github.com/fonttools/fontbakery/issues/2832"
+)]
 fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let mut problems: Vec<Status> = vec![];
@@ -145,33 +169,3 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
 
     return_result(problems)
 }
-
-pub const CHECK_VALID_GLYPHNAMES: Check = Check {
-    id: "com.google.fonts/check/valid_glyphnames",
-    title: "Glyph names are all valid?",
-    rationale: "Microsoft's recommendations for OpenType Fonts states the following:
-
-        'NOTE: The PostScript glyph name must be no longer than 31 characters,
-        include only uppercase or lowercase English letters, European digits,
-        the period or the underscore, i.e. from the set `[A-Za-z0-9_.]` and
-        should start with a letter, except the special glyph name `.notdef`
-        which starts with a period.'
-
-        https://learn.microsoft.com/en-us/typography/opentype/otspec181/recom#-post--table
-
-
-        In practice, though, particularly in modern environments, glyph names
-        can be as long as 63 characters.
-
-        According to the \"Adobe Glyph List Specification\" available at:
-
-        https://github.com/adobe-type-tools/agl-specification
-        
-        Glyph names must also be unique, as duplicate glyph names prevent font installation on Mac OS X.",
-    proposal: "https://github.com/fonttools/fontbakery/issues/2832",
-    implementation: CheckImplementation::CheckOne(&valid_glyphnames),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

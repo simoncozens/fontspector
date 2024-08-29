@@ -15,6 +15,13 @@ The current recommendation is to completely remove the DSIG table."),
     (Tag::new(b"prop"), "Table used on AAT, Apple's OS X specific technology. Although Harfbuzz now has optional AAT support, new fonts should not be using that.")
 ];
 
+#[check(
+    id = "com.google.fonts/check/unwanted_tables",
+    title = "Are there unwanted tables?",
+    rationale = "Some font editors store source data in their own SFNT tables, and these can sometimes sneak into final release files, which should only have OpenType spec tables.",
+    proposal = "legacy:check/053",
+    hotfix = delete_unwanted_tables
+)]
 fn unwanted_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
 
@@ -53,15 +60,3 @@ fn delete_unwanted_tables(t: &Testable) -> FixFnResult {
     std::fs::write(&t.filename, new_bytes).map_err(|_| "Couldn't write file".to_string())?;
     Ok(true)
 }
-
-pub const CHECK_UNWANTED_TABLES: Check = Check {
-    id: "com.google.fonts/check/unwanted_tables",
-    title: "Are there unwanted tables?",
-    rationale: "Some font editors store source data in their own SFNT tables, and these can sometimes sneak into final release files, which should only have OpenType spec tables.",
-    proposal: "legacy:check/053",
-    implementation: CheckImplementation::CheckOne(&unwanted_tables),
-    applies_to: "TTF",
-    hotfix: Some(&delete_unwanted_tables),
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

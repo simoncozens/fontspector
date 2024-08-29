@@ -6,15 +6,15 @@ pub struct Universal;
 
 impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
-        cr.register_check(checks::fvar::CHECK_AXIS_RANGES_CORRECT);
-        cr.register_check(checks::fvar::CHECK_REGULAR_COORDS_CORRECT);
-        cr.register_check(checks::glyphnames::CHECK_VALID_GLYPHNAMES);
-        cr.register_check(checks::hhea::CHECK_CARET_SLOPE);
-        cr.register_check(checks::hhea::CHECK_MAXADVANCEWIDTH);
-        cr.register_check(checks::name_trailing_spaces::CHECK_NAME_TRAILING_SPACES);
-        cr.register_check(checks::name::CHECK_NAME_EMPTY_RECORDS);
-        cr.register_check(checks::required_tables::CHECK_REQUIRED_TABLES);
-        cr.register_check(checks::unwanted_tables::CHECK_UNWANTED_TABLES);
+        cr.register_check(checks::fvar::axis_ranges_correct);
+        cr.register_check(checks::fvar::regular_coords_correct);
+        cr.register_check(checks::glyphnames::valid_glyphnames);
+        cr.register_check(checks::hhea::caret_slope);
+        cr.register_check(checks::hhea::maxadvancewidth);
+        cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
+        cr.register_check(checks::name::name_empty_records);
+        cr.register_check(checks::required_tables::required_tables);
+        cr.register_check(checks::unwanted_tables::unwanted_tables);
 
         let opentype_profile = Profile::from_toml(
             r#"

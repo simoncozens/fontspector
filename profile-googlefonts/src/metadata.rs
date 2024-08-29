@@ -5,6 +5,16 @@ use chrono::prelude::*;
 use fonts_public::FamilyProto;
 use fontspector_checkapi::prelude::*;
 
+#[check(
+    id = "com.google.fonts/check/metadata/parses",
+    title = "Check METADATA.pb parses correctly",
+    rationale = "
+        The purpose of this check is to ensure that the METADATA.pb file is not
+        malformed.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/2248",
+    applies_to = "MDPB"
+)]
 fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
     let mdpb = std::str::from_utf8(&c.contents)
         .map_err(|_| CheckError::Error("METADATA.pb is not valid UTF-8".to_string()))?;
@@ -40,18 +50,3 @@ fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
     }
     return_result(problems)
 }
-
-pub const CHECK_METADATA_PARSES: Check = Check {
-    id: "com.google.fonts/check/metadata/parses",
-    title: "Check METADATA.pb parses correctly",
-    rationale: "
-        The purpose of this check is to ensure that the METADATA.pb file is not
-        malformed.
-    ",
-    proposal: "https://github.com/fonttools/fontbakery/issues/2248",
-    implementation: CheckImplementation::CheckOne(&validate_metadatapb),
-    applies_to: "MDPB",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

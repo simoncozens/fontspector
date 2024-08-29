@@ -1,6 +1,12 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
+#[check(
+    id = "com.google.fonts/check/maxadvancewidth",
+    title = "MaxAdvanceWidth is consistent with values in the Hmtx and Hhea tables?",
+    rationale = "The 'hhea' table contains a field which specifies the maximum advance width. This value should be consistent with the maximum advance width of all glyphs specified in the 'hmtx' table.",
+    proposal = "legacy:check/073"
+)]
 fn maxadvancewidth(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let hhea_advance_width_max = f.font().hhea()?.advance_width_max().to_u16();
@@ -25,18 +31,26 @@ fn maxadvancewidth(t: &Testable, _context: &Context) -> CheckFnResult {
     })
 }
 
-pub const CHECK_MAXADVANCEWIDTH: Check = Check {
-    id: "com.google.fonts/check/maxadvancewidth",
-    title: "MaxAdvanceWidth is consistent with values in the Hmtx and Hhea tables?",
-    rationale: "The 'hhea' table contains a field which specifies the maximum advance width. This value should be consistent with the maximum advance width of all glyphs specified in the 'hmtx' table.",
-    proposal: "legacy:check/073",
-    implementation: CheckImplementation::CheckOne(&maxadvancewidth),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};
+#[check(
+    id = "com.google.fonts/check/caret_slope",
+    title = "Check hhea.caretSlopeRise and hhea.caretSlopeRun",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3670",
+    rationale = r#"
+        Checks whether hhea.caretSlopeRise and hhea.caretSlopeRun
+        match with post.italicAngle.
 
+        For Upright fonts, you can set hhea.caretSlopeRise to 1
+        and hhea.caretSlopeRun to 0.
+
+        For Italic fonts, you can set hhea.caretSlopeRise to head.unitsPerEm
+        and calculate hhea.caretSlopeRun like this:
+        round(math.tan(
+          math.radians(-1 * font["post"].italicAngle)) * font["head"].unitsPerEm)
+
+        This check allows for a 0.1° rounding difference between the Italic angle
+        as calculated by the caret slope and post.italicAngle
+    "#
+)]
 fn caret_slope(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let post_italic_angle = f.font().post()?.italic_angle().to_f32();
@@ -64,29 +78,3 @@ fn caret_slope(t: &Testable, _context: &Context) -> CheckFnResult {
     }
     Ok(Status::just_one_pass())
 }
-
-pub const CHECK_CARET_SLOPE: Check = Check {
-    id: "com.google.fonts/check/caret_slope",
-    title: "Check hhea.caretSlopeRise and hhea.caretSlopeRun",
-    rationale: r#"
-        Checks whether hhea.caretSlopeRise and hhea.caretSlopeRun
-        match with post.italicAngle.
-
-        For Upright fonts, you can set hhea.caretSlopeRise to 1
-        and hhea.caretSlopeRun to 0.
-
-        For Italic fonts, you can set hhea.caretSlopeRise to head.unitsPerEm
-        and calculate hhea.caretSlopeRun like this:
-        round(math.tan(
-          math.radians(-1 * font["post"].italicAngle)) * font["head"].unitsPerEm)
-
-        This check allows for a 0.1° rounding difference between the Italic angle
-        as calculated by the caret slope and post.italicAngle
-    "#,
-    proposal: "https://github.com/fonttools/fontbakery/issues/3670",
-    implementation: CheckImplementation::CheckOne(&caret_slope),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

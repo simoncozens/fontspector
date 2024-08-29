@@ -1,6 +1,16 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
+#[check(
+    id = "com.google.fonts/check/name/trailing_spaces",
+    title = "Name table records must not have trailing spaces.",
+    rationale = "This check ensures that no entries in the name table end in spaces;
+                trailing spaces, particularly in font names, can be confusing to users.
+                In most cases this can be fixed by removing trailing spaces from the
+                metadata fields in the font editor.",
+    proposal = "https://github.com/googlefonts/fontbakery/issues/2417",
+    hotfix = fix_trailing_spaces
+)]
 fn name_trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut problems: Vec<Status> = vec![];
 
@@ -29,18 +39,3 @@ fn name_trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
 fn fix_trailing_spaces(_f: &Testable) -> FixFnResult {
     Ok(false)
 }
-
-pub const CHECK_NAME_TRAILING_SPACES: Check = Check {
-    id: "com.google.fonts/check/name/trailing_spaces",
-    title: "Name table records must not have trailing spaces.",
-    rationale: "This check ensures that no entries in the name table end in spaces;
-                trailing spaces, particularly in font names, can be confusing to users.
-                In most cases this can be fixed by removing trailing spaces from the
-                metadata fields in the font editor.",
-    proposal: "https://github.com/googlefonts/fontbakery/issues/2417",
-    implementation: CheckImplementation::CheckOne(&name_trailing_spaces),
-    applies_to: "TTF",
-    hotfix: Some(&fix_trailing_spaces),
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

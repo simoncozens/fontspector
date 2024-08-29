@@ -8,6 +8,16 @@ const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
     ("ital", 0.0),
 ];
 
+#[check(
+    id = "com.google.fonts/check/fvar/regular_coords_correct",
+    title = "Axes and named instances fall within correct ranges?",
+    rationale = "According to the Open-Type spec's registered design-variation tags, instances in a variable font should have certain prescribed values.
+        If a variable font has a 'wght' (Weight) axis, the valid coordinate range is 1-1000.
+        If a variable font has a 'wdth' (Width) axis, the valid numeric range is strictly greater than zero.
+        If a variable font has a 'slnt' (Slant) axis, then the coordinate of its 'Regular' instance is required to be 0.
+        If a variable font has a 'ital' (Slant) axis, then the coordinate of its 'Regular' instance is required to be 0.",
+    proposal = "https://github.com/fonttools/fontbakery/issues/2572"
+)]
 fn regular_coords_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     if !f.is_variable_font() {
@@ -50,22 +60,16 @@ fn regular_coords_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     return_result(problems)
 }
 
-pub const CHECK_REGULAR_COORDS_CORRECT: Check = Check {
-    id: "com.google.fonts/check/fvar/regular_coords_correct",
-    title: "Regular instance coordinates are correct?",
-    rationale: "According to the Open-Type spec's registered design-variation tags, the Regular instance in a variable font should have certain prescribed values.
-        If a variable font has a 'wght' (Weight) axis, then the coordinate of its 'Regular' instance is required to be 400.
-        If a variable font has a 'wdth' (Width) axis, then the coordinate of its 'Regular' instance is required to be 100.
+#[check(
+    id = "com.google.fonts/check/fvar/axis_ranges_correct",
+    title = "Axes and named instances fall within correct ranges?",
+    rationale = "According to the Open-Type spec's registered design-variation tags, instances in a variable font should have certain prescribed values.
+        If a variable font has a 'wght' (Weight) axis, the valid coordinate range is 1-1000.
+        If a variable font has a 'wdth' (Width) axis, the valid numeric range is strictly greater than zero.
         If a variable font has a 'slnt' (Slant) axis, then the coordinate of its 'Regular' instance is required to be 0.
         If a variable font has a 'ital' (Slant) axis, then the coordinate of its 'Regular' instance is required to be 0.",
-    proposal: "https://github.com/fonttools/fontbakery/issues/1707",
-    implementation: CheckImplementation::CheckOne(&regular_coords_correct),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};
-
+    proposal = "https://github.com/fonttools/fontbakery/issues/2572"
+)]
 fn axis_ranges_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     if !f.is_variable_font() {
@@ -136,19 +140,3 @@ fn axis_ranges_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     }
     return_result(problems)
 }
-
-pub const CHECK_AXIS_RANGES_CORRECT: Check = Check {
-    id: "com.google.fonts/check/fvar/axis_ranges_correct",
-    title: "Axes and named instances fall within correct ranges?",
-    rationale: "According to the Open-Type spec's registered design-variation tags, instances in a variable font should have certain prescribed values.
-        If a variable font has a 'wght' (Weight) axis, the valid coordinate range is 1-1000.
-        If a variable font has a 'wdth' (Width) axis, the valid numeric range is strictly greater than zero.
-        If a variable font has a 'slnt' (Slant) axis, then the coordinate of its 'Regular' instance is required to be 0.
-        If a variable font has a 'ital' (Slant) axis, then the coordinate of its 'Regular' instance is required to be 0.",
-    proposal: "https://github.com/fonttools/fontbakery/issues/2572",
-    implementation: CheckImplementation::CheckOne(&axis_ranges_correct),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};

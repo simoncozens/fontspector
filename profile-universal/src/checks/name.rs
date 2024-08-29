@@ -1,6 +1,12 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
+#[check(
+    id = "com.google.fonts/check/name/empty_records",
+    title = "Check name table for empty records.",
+    rationale = "Check the name table for empty records, as this can cause problems in Adobe apps.",
+    proposal = "https://github.com/fonttools/fontbakery/pull/2369"
+)]
 fn name_empty_records(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let name = f.font().name()?;
@@ -25,15 +31,3 @@ fn name_empty_records(t: &Testable, _context: &Context) -> CheckFnResult {
     }
     return_result(problems)
 }
-
-pub const CHECK_NAME_EMPTY_RECORDS: Check = Check {
-    id: "com.google.fonts/check/name/empty_records",
-    title: "Check name table for empty records.",
-    rationale: "Check the name table for empty records, as this can cause problems in Adobe apps.",
-    proposal: "https://github.com/fonttools/fontbakery/pull/2369",
-    implementation: CheckImplementation::CheckOne(&name_empty_records),
-    applies_to: "TTF",
-    hotfix: None,
-    fix_source: None,
-    flags: CheckFlags::default(),
-};
