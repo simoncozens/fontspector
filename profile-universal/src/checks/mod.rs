@@ -7,4 +7,5 @@ pub mod name;
 pub mod name_trailing_spaces;
 pub mod post;
 pub mod required_tables;
+pub mod stat;
 pub mod unwanted_tables;

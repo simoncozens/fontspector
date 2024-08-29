@@ -20,9 +20,7 @@ const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
 )]
 fn regular_coords_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
-    if !f.is_variable_font() {
-        skip!("not-variable", "Not a variable font");
-    }
+    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
     let mut problems = vec![];
     let regular_location = f
         .named_instances()
@@ -72,9 +70,8 @@ fn regular_coords_correct(t: &Testable, _context: &Context) -> CheckFnResult {
 )]
 fn axis_ranges_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
-    if !f.is_variable_font() {
-        skip!("not-variable", "Not a variable font");
-    }
+    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
+
     let mut problems = vec![];
     for (name, location) in f.named_instances() {
         if let Some(wght) = location.get("wght") {

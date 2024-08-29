@@ -57,12 +57,11 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let mut problems: Vec<Status> = vec![];
     let post = font.font().post()?;
-    if post.version() == Version16Dot16::new(3, 0) {
-        skip!(
-            "post-3",
-            "TrueType fonts with a format 3 post table contain no glyph names."
-        );
-    }
+    skip!(
+        post.version() == Version16Dot16::new(3, 0),
+        "post-3",
+        "TrueType fonts with a format 3 post table contain no glyph names."
+    );
     let mut badnames = HashSet::new();
     let mut warnnames = HashSet::new();
     let mut allnames = HashSet::new();
