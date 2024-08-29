@@ -9,6 +9,7 @@ mod profile;
 mod registry;
 mod status;
 mod testable;
+mod utils;
 pub use check::{return_result, Check, CheckFlags, CheckId, CheckImplementation};
 pub use checkresult::{CheckResult, FixResult};
 pub use context::Context;
@@ -40,11 +41,16 @@ pub mod prelude {
         ($code: expr, $message: expr) => {
             return Ok(Status::just_one_skip($code, $message));
         };
+        ($condition: expr, $code: expr, $message: expr) => {
+            if $condition {
+                return Ok(Status::just_one_skip($code, $message));
+            }
+        };
     }
     pub type FixFnResult = Result<bool, String>;
     pub use crate::{
-        return_result, Check, CheckError, CheckFlags, CheckFnResult, CheckImplementation, Context,
-        FileType, Profile, Registry, Status, StatusList, Testable, TestableCollection,
+        return_result, utils::*, Check, CheckError, CheckFlags, CheckFnResult, CheckImplementation,
+        Context, FileType, Profile, Registry, Status, StatusList, Testable, TestableCollection,
         TestableType, TTF,
     };
 }
