@@ -1,6 +1,8 @@
 use crate::{filetype::FileTypeConvert, FileType, Testable};
 use read_fonts::{
     tables::{os2::SelectionFlags, post::DEFAULT_GLYPH_NAMES},
+    tables::cmap::Cmap,
+    tables::gdef::Gdef,
     types::Version16Dot16,
     TableProvider,
 };
@@ -64,6 +66,16 @@ impl TestFont<'_> {
 
     pub fn has_table(&self, table: &[u8; 4]) -> bool {
         self.font().table_data(Tag::new(table)).is_some()
+    }
+
+    pub fn get_cmap(&self) -> Result<Cmap, Box<dyn Error>> {
+        let cmap = self.font().cmap()?;
+        Ok(cmap)
+    }
+
+    pub fn get_gdef(&self) -> Result<Gdef, Box<dyn Error>> {
+        let gdef = self.font().gdef()?;
+        Ok(gdef)
     }
 
     pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, Box<dyn Error>> {

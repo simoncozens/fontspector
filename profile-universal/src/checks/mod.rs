@@ -1,3 +1,4 @@
+pub mod arabic_spacing_symbols;
 pub mod bold_italic_unique;
 pub mod fvar;
 pub mod glyphnames;
