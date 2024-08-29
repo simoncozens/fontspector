@@ -57,10 +57,10 @@ impl std::fmt::Display for Status {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "**{:}**: ", self.severity)?;
         if let Some(code) = self.code.as_ref() {
-            write!(f, "[{}]", code)?;
+            write!(f, "[{}]: ", code)?;
         }
         if let Some(message) = self.message.as_ref() {
-            write!(f, ": {:}", message)?;
+            write!(f, "{:}", message)?;
         }
         Ok(())
     }

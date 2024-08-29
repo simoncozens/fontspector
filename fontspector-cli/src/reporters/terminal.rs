@@ -4,6 +4,7 @@ use colored::{ColoredString, Colorize};
 use fontspector_checkapi::{FixResult, Registry, StatusCode};
 use itertools::Itertools;
 use std::{collections::HashMap, path::Path};
+use termimad::MadSkin;
 
 pub(crate) struct TerminalReporter {
     succinct: bool,
@@ -32,6 +33,8 @@ fn colored_status(c: StatusCode, s: Option<&str>) -> ColoredString {
 
 impl Reporter for TerminalReporter {
     fn report(&self, results: &RunResults, args: &Args, _registry: &Registry) {
+        let skin = MadSkin::default();
+
         let organised_results = results.organize();
         for (filename, sectionresults) in organised_results
             .iter()
@@ -76,15 +79,12 @@ impl Reporter for TerminalReporter {
                         sectionheading_done = true;
                     }
                     println!(">> {:}", result.check_id);
-                    if args.verbose > 1 {
+                    if args.verbose > 0 {
                         println!("   {:}", result.check_name);
-                        termimad::print_inline(&format!(
-                            "Rationale:\n\n```\n{}\n```\n",
-                            result.check_rationale
-                        ));
+                        println!("\nRationale:\n{}", skin.term_text(&result.check_rationale));
                     }
                     for subresult in subresults {
-                        termimad::print_inline(&format!("{:}\n", subresult));
+                        println!("{}\n", skin.term_text(&subresult.to_string()));
                     }
                     match &result.hotfix_result {
                         Some(FixResult::Available) => {
