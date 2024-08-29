@@ -20,6 +20,8 @@ pub use status::{CheckError, CheckFnResult, Status, StatusCode, StatusList};
 pub use testable::{Testable, TestableCollection, TestableType};
 
 pub mod prelude {
+    pub use fontspector_checkhelper::check;
+
     #[macro_export]
     macro_rules! testfont {
         ($f: ident) => {

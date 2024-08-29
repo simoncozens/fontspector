@@ -13,6 +13,7 @@ pluginator = {workspace = true}
 [dependencies]
 read-fonts = {workspace = true}
 skrifa = {workspace = true}
+fontspector-checkhelper = {workspace = true}
 
 # Filetype
 glob-match = "0.2.1"
