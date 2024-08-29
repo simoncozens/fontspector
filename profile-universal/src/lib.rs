@@ -13,6 +13,8 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::hhea::maxadvancewidth);
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::name::name_empty_records);
+        cr.register_check(checks::post::underline_thickness);
+        cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
 
