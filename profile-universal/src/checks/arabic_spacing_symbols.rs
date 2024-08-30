@@ -1,3 +1,4 @@
+use fontspector_checkapi::constants::GlyphClass;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 
 const ARABIC_SPACING_SYMBOLS: [u16; 17] = [
@@ -36,30 +37,19 @@ const ARABIC_SPACING_SYMBOLS: [u16; 17] = [
 fn arabic_spacing_symbols(t: &Testable, _context: &Context) -> CheckFnResult {
     let mut problems: Vec<Status> = vec![];
     let f = testfont!(t);
-    let cmap = f
-        .get_cmap()
-        .map_err(|_| CheckError::Error("Font lacks a cmap table".to_string()))?;
-    let gdef = f
-        .get_gdef()
-        .map_err(|_| CheckError::Error("Font lacks a gdef table".to_string()))?;
-
-    let class_def = match gdef.glyph_class_def() {
-        None => return return_result(problems),
-        Some(d) => d.map_err(|e| CheckError::Error(format!("Some classDef error: {}", e)))?,
-    };
+    let cmap = f.get_cmap()?;
 
     for codepoint in ARABIC_SPACING_SYMBOLS {
-        let gid = cmap.map_codepoint(codepoint);
-        if gid.is_some()
-            && class_def.get(gid.ok_or(CheckError::Error("Failed to read gid".to_string()))?) == 3
-        {
-            problems.push(Status::fail(
-                "gdef-mark",
-                &format!(
-                    "U+{:04X} is defined in GDEF as a mark (class 3).",
-                    codepoint
-                ),
-            ));
+        if let Some(gid) = cmap.map_codepoint(codepoint) {
+            if f.gdef_class(gid) == Some(GlyphClass::Mark) {
+                problems.push(Status::fail(
+                    "gdef-mark",
+                    &format!(
+                        "U+{:04X} is defined in GDEF as a mark (class 3).",
+                        codepoint
+                    ),
+                ));
+            }
         }
     }
 
