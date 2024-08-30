@@ -43,17 +43,15 @@ fn arabic_spacing_symbols(t: &Testable, _context: &Context) -> CheckFnResult {
         .get_gdef()
         .map_err(|_| CheckError::Error("Font lacks a gdef table".to_string()))?;
 
-    let _class_def = match gdef.glyph_class_def() {
+    let class_def = match gdef.glyph_class_def() {
         None => return return_result(problems),
-        Some(d) => {
-            d.map_err(|e| CheckError::Error(format!("Some classDef error: {}", e)))?;
-        }
+        Some(d) => d.map_err(|e| CheckError::Error(format!("Some classDef error: {}", e)))?,
     };
 
     for codepoint in ARABIC_SPACING_SYMBOLS {
         let gid = cmap.map_codepoint(codepoint);
         if gid.is_some()
-        // && class_def.get(gid.ok_or("Failed to read gid")?) == 3
+            && class_def.get(gid.ok_or(CheckError::Error("Failed to read gid".to_string()))?) == 3
         {
             problems.push(Status::fail(
                 "gdef-mark",
