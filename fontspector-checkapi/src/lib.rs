@@ -1,7 +1,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 mod check;
 mod checkresult;
-mod constants;
+pub mod constants;
 mod context;
 mod filetype;
 mod font;
