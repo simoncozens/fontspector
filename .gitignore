@@ -1,4 +1,7 @@
 target
+foo*
+python
+docs
 Cargo.lock
 *.ttf
 flamegraph.svg
