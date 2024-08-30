@@ -68,17 +68,23 @@ impl TestFont<'_> {
         self.font().table_data(Tag::new(table)).is_some()
     }
 
-    pub fn get_cmap(&self) -> Result<Cmap, Box<dyn Error>> {
-        let cmap = self.font().cmap()?;
+    pub fn get_cmap(&self) -> Result<Cmap, CheckError> {
+        let cmap = self
+            .font()
+            .cmap()
+            .map_err(|_| CheckError::Error("Font lacks a cmap table".to_string()))?;
         Ok(cmap)
     }
 
-    pub fn get_gdef(&self) -> Result<Gdef, Box<dyn Error>> {
-        let gdef = self.font().gdef()?;
+    pub fn get_gdef(&self) -> Result<Gdef, CheckError> {
+        let gdef = self
+            .font()
+            .gdef()
+            .map_err(|_| CheckError::Error("Font lacks a GDEF table".to_string()))?;
         Ok(gdef)
     }
 
-    pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, Box<dyn Error>> {
+    pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, CheckError> {
         let os2 = self.font().os2()?;
         Ok(os2.fs_selection())
     }
