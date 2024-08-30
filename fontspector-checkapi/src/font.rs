@@ -1,8 +1,8 @@
-use crate::{filetype::FileTypeConvert, FileType, Testable};
+use crate::{constants::GlyphClass, filetype::FileTypeConvert, CheckError, FileType, Testable};
 use read_fonts::{
-    tables::{os2::SelectionFlags, post::DEFAULT_GLYPH_NAMES},
     tables::cmap::Cmap,
     tables::gdef::Gdef,
+    tables::{os2::SelectionFlags, post::DEFAULT_GLYPH_NAMES},
     types::Version16Dot16,
     TableProvider,
 };
@@ -82,6 +82,15 @@ impl TestFont<'_> {
             .gdef()
             .map_err(|_| CheckError::Error("Font lacks a GDEF table".to_string()))?;
         Ok(gdef)
+    }
+
+    pub fn gdef_class(&self, glyph_id: GlyphId) -> Option<GlyphClass> {
+        self.get_gdef()
+            .ok()
+            .and_then(|gdef| gdef.glyph_class_def())?
+            .ok()
+            .map(|class_def| class_def.get(glyph_id))
+            .and_then(GlyphClass::from_u16)
     }
 
     pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, CheckError> {
