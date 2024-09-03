@@ -17,6 +17,11 @@ pub struct Args {
     #[clap(short = 'L', long)]
     pub list_checks: bool,
 
+    #[cfg(not(debug_assertions))]
+    /// Number of worker processes. Defaults to the number of logical CPUs.
+    #[clap(short = 'J', long)]
+    pub jobs: Option<usize>,
+
     /// Read configuration file (TOML/YAML)
     #[clap(long)]
     pub configuration: Option<String>,

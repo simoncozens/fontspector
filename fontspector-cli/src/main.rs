@@ -11,15 +11,16 @@ use clap::Parser;
 use fontspector_checkapi::{
     Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
 };
-use indicatif::ParallelProgressIterator;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use reporters::{
     json::JsonReporter, markdown::MarkdownReporter, terminal::TerminalReporter, Reporter,
     RunResults,
 };
 use serde_json::Map;
+
+#[cfg(not(debug_assertions))]
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 fn main() {
     // Command line handling
@@ -33,6 +34,14 @@ fn main() {
             _ => "debug",
         },
     ));
+
+    #[cfg(not(debug_assertions))]
+    if let Some(threads) = args.jobs {
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(threads)
+            .build_global()
+            .expect("Could not set thread count");
+    }
 
     // Set up the check registry
     let mut registry = Registry::new();
@@ -159,10 +168,15 @@ fn main() {
     };
 
     // Run all the things! Check all the fonts! Fix all the binaries! Fix all the sources!
+
+    // Do this in parallel for release, serial for debug
+    #[cfg(debug_assertions)]
+    let checkorder_iterator = checkorder.iter();
+    #[cfg(not(debug_assertions))]
+    let checkorder_iterator = checkorder.par_iter();
+
     #[allow(clippy::unwrap_used)] // We check for is_some before unwrapping
-    let results: RunResults = checkorder
-        .par_iter()
-        .progress()
+    let results: RunResults = checkorder_iterator
         .map(|(sectionname, testable, check, context)| {
             (testable, check, check.run(testable, context, sectionname))
         })
