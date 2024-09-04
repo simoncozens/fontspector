@@ -5,10 +5,10 @@ edition = "2021"
 
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
-protobuf = "3.5.0"
+protobuf ={ git = "https://github.com/cmyr/rust-protobuf", branch="parse-unicode-strings" }
 itertools = "0.13.0"
 
 chrono="0.4.38"  # For metadata date checks
 
 [build-dependencies]
-protobuf-codegen = "3.5.0"
+protobuf-codegen ={ git = "https://github.com/cmyr/rust-protobuf", branch="parse-unicode-strings" }
