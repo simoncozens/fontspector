@@ -9,6 +9,7 @@ protobuf ={ git = "https://github.com/cmyr/rust-protobuf", branch="parse-unicode
 itertools = "0.13.0"
 
 chrono="0.4.38"  # For metadata date checks
+google-fonts-languages = { git="https://github.com/googlefonts/lang", branch = "rust" }
 
 [build-dependencies]
 protobuf-codegen ={ git = "https://github.com/cmyr/rust-protobuf", branch="parse-unicode-strings" }

@@ -10,12 +10,14 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_filetype("MDPB", mdpb);
         cr.register_check(family::family_equal_codepoint_coverage);
         cr.register_check(metadata::validate_metadatapb);
+        cr.register_check(metadata::can_render_samples);
         let profile = Profile::from_toml(
             r#"
 include_profiles = ["universal"]
 [sections]
 "Metadata Checks" = [
 "com.google.fonts/check/metadata/parses",
+"com.google.fonts/check/metadata/can_render_samples",
 ]
 "Family Checks" = [
 "com.google.fonts/check/family/equal_codepoint_coverage"
