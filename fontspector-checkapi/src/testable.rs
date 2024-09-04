@@ -105,6 +105,12 @@ impl TestableCollection {
             .into_iter()
             .chain(self.testables.iter().map(TestableType::Single))
     }
+
+    pub fn get_file(&self, filename: &str) -> Option<&Testable> {
+        self.testables
+            .iter()
+            .find(|x| x.basename().as_deref() == Some(filename))
+    }
 }
 
 pub enum TestableType<'a> {
