@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install protoc
+        run: sudo apt-get install protobuf-compiler
       - name: Install wasm-pack
         run: cargo install wasm-pack
       - name: Build
