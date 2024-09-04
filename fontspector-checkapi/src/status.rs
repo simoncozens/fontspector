@@ -144,5 +144,14 @@ where
     }
 }
 
+impl CheckError {
+    pub fn skip(code: &str, message: &str) -> Self {
+        CheckError::Skip {
+            code: code.to_string(),
+            message: message.to_string(),
+        }
+    }
+}
+
 pub type StatusList = Box<dyn Iterator<Item = Status>>;
 pub type CheckFnResult = Result<StatusList, CheckError>;
