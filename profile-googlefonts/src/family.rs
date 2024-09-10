@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 
 #[check(
-    id = "com.google.fonts/check/family/equal_codepoint_coverage",
+    id = "googlefonts/family/equal_codepoint_coverage",
     title = "Fonts have equal codepoint coverage?",
     rationale = "For a given family, all fonts must have the same codepoint coverage.
                 This is because we want to avoid the situation where, for example,

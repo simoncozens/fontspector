@@ -14,7 +14,7 @@ fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {
 }
 
 #[check(
-    id = "com.google.fonts/check/metadata/parses",
+    id = "googlefonts/metadata/parses",
     title = "Check METADATA.pb parses correctly",
     rationale = "
         The purpose of this check is to ensure that the METADATA.pb file is not
@@ -57,7 +57,7 @@ fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
 }
 
 #[check(
-    id = "com.google.fonts/check/metadata/can_render_samples",
+    id = "googlefonts/metadata/can_render_samples",
     title = "Check samples can be rendered",
     rationale = "
         In order to prevent tofu from being seen on fonts.google.com, this check

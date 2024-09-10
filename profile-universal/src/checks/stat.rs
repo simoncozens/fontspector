@@ -5,7 +5,7 @@ use read_fonts::TableProvider;
 use skrifa::MetadataProvider;
 
 #[check(
-    id = "com.google.fonts/check/varfont/stat_axis_record_for_each_axis",
+    id = "opentype/varfont/stat_axis_record_for_each_axis",
     rationale = "
         According to the OpenType spec, there must be an Axis Record
         for every axis defined in the fvar table.

@@ -16,7 +16,7 @@ The current recommendation is to completely remove the DSIG table."),
 ];
 
 #[check(
-    id = "com.google.fonts/check/unwanted_tables",
+    id = "unwanted_tables",
     title = "Are there unwanted tables?",
     rationale = "Some font editors store source data in their own SFNT tables, and these can sometimes sneak into final release files, which should only have OpenType spec tables.",
     proposal = "legacy:check/053",

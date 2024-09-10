@@ -6,7 +6,7 @@ use itertools::Itertools;
 use read_fonts::TableProvider;
 
 #[check(
-    id = "com.google.fonts/check/family/underline_thickness",
+    id = "opentype/family/underline_thickness",
     title = "Fonts have consistent underline thickness?",
     rationale = r#"
         Dave C Lemon (Adobe Type Team) recommends setting the underline thickness to be
@@ -52,7 +52,7 @@ fn underline_thickness(c: &TestableCollection, _context: &Context) -> CheckFnRes
 }
 
 #[check(
-    id = "com.google.fonts/check/post_table_version",
+    id = "opentype/post_table_version",
     rationale = r#"
         Format 2.5 of the 'post' table was deprecated in OpenType 1.3 and
         should not be used.

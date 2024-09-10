@@ -9,7 +9,7 @@ const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
 ];
 
 #[check(
-    id = "com.google.fonts/check/fvar/regular_coords_correct",
+    id = "opentype/fvar/regular_coords_correct",
     title = "Axes and named instances fall within correct ranges?",
     rationale = "According to the Open-Type spec's registered design-variation tags, instances in a variable font should have certain prescribed values.
         If a variable font has a 'wght' (Weight) axis, the valid coordinate range is 1-1000.
@@ -59,7 +59,7 @@ fn regular_coords_correct(t: &Testable, _context: &Context) -> CheckFnResult {
 }
 
 #[check(
-    id = "com.google.fonts/check/fvar/axis_ranges_correct",
+    id = "opentype/fvar/axis_ranges_correct",
     title = "Axes and named instances fall within correct ranges?",
     rationale = "According to the Open-Type spec's registered design-variation tags, instances in a variable font should have certain prescribed values.
         If a variable font has a 'wght' (Weight) axis, the valid coordinate range is 1-1000.

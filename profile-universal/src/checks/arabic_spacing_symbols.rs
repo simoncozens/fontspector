@@ -22,7 +22,7 @@ const ARABIC_SPACING_SYMBOLS: [u16; 17] = [
 ];
 
 #[check(
-    id = "com.google.fonts/check/arabic_spacing_symbols",
+    id = "arabic_spacing_symbols",
     title = "Check that Arabic spacing symbols U+FBB2–FBC1 aren't classified as marks.",
     rationale = "
         Unicode has a few spacing symbols representing Arabic dots and other marks,
