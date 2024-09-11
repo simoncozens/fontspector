@@ -23,38 +23,35 @@ const BABELFONT = NOWASM(
 );
 const EXCUSES = {
   // Needs dependencies
-  "com.adobe.fonts/check/freetype_rasterizer": CANT_COMPILE("Freetype"),
-  "com.google.fonts/check/ots": CANT_COMPILE("OpenType Sanitizer"),
-  "com.google.fonts/check/alt_caron:googlefonts": BABELFONT,
-  "com.google.fonts/check/alt_caron": BABELFONT,
-  "com.google.fonts/check/arabic_high_hamza": BABELFONT,
-  "com.google.fonts/check/arabic_spacing_symbols": BABELFONT,
-  "com.google.fonts/check/legacy_accents:googlefonts": BABELFONT,
+  "freetype_rasterizer": CANT_COMPILE("Freetype"),
+  "ots": CANT_COMPILE("OpenType Sanitizer"),
+  "alt_caron:googlefonts": BABELFONT,
+  "alt_caron": BABELFONT,
+  "arabic_high_hamza": BABELFONT,
+  "arabic_spacing_symbols": BABELFONT,
+  "legacy_accents": BABELFONT,
   // Needs network
-  "com.google.fonts/check/vendor_id": NEEDS_NETWORK,
-  "com.google.fonts/check/fontdata_namecheck": NEEDS_NETWORK,
-  "com.google.fonts/check/vertical_metrics_regressions": NEEDS_NETWORK,
-  "com.google.fonts/check/metadata/includes_production_subsets": NEEDS_NETWORK,
-  "com.google.fonts/check/metadata/designer_profiles": NEEDS_NETWORK,
-  "com.google.fonts/check/description/broken_links": NEEDS_NETWORK,
-  "com.google.fonts/check/metadata/broken_links": NEEDS_NETWORK,
-  "com.google.fonts/check/version_bump": NEEDS_NETWORK,
-  "com.google.fonts/check/production_glyphs_similarity": NEEDS_NETWORK,
+  "googlefonts/vendor_id": NEEDS_NETWORK,
+  "fontdata_namecheck": NEEDS_NETWORK,
+  "googlefonts/vertical_metrics_regressions": NEEDS_NETWORK,
+  "googlefonts/metadata/includes_production_subsets": NEEDS_NETWORK,
+  "googlefonts/metadata/designer_profiles": NEEDS_NETWORK,
+  "googlefonts/description/broken_links": NEEDS_NETWORK,
+  "googlefonts/metadata/broken_links": NEEDS_NETWORK,
+  "googlefonts/version_bump": NEEDS_NETWORK,
+  "googlefonts/production_glyphs_similarity": NEEDS_NETWORK,
   // Shaping checks
-  "com.google.fonts/check/render_own_name": CANT_COMPILE("Freetype"),
-  "com.google.fonts/check/dotted_circle": CANT_COMPILE(
-    "cffsubr [required by ufo2ft]"
-  ),
-  "com.google.fonts/check/metadata/can_render_samples":
-    CANT_COMPILE("Harfbuzz"),
-  "com.google.fonts/check/slant_direction": CANT_COMPILE("Harfbuzz"),
-  "com.google.fonts/check/glyphsets/shape_languages": CANT_COMPILE("Harfbuzz"),
+  "render_own_name": CANT_COMPILE("Freetype"),
+  "dotted_circle": CANT_COMPILE("cffsubr [required by ufo2ft]"),
+  "googlefonts/metadata/can_render_samples": CANT_COMPILE("Harfbuzz"),
+  "opentype/slant_direction": CANT_COMPILE("Harfbuzz"),
+  "googlefonts/glyphsets/shape_languages": CANT_COMPILE("Harfbuzz"),
 
   // Other checks
-  "com.google.fonts/check/metadata/family_directory_name": NOWASM(
+  "googlefonts/metadata/family_directory_name": NOWASM(
     "there are no directories in the WASM environment"
   ),
-  "com.google.fonts/check/ttx_roundtrip": NOWASM(
+  "ttx_roundtrip": NOWASM(
     "the WASM environment does not support calling other processes"
   ),
 };

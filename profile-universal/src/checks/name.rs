@@ -2,7 +2,7 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
 #[check(
-    id = "com.google.fonts/check/name/empty_records",
+    id = "opentype/name/empty_records",
     title = "Check name table for empty records.",
     rationale = "Check the name table for empty records, as this can cause problems in Adobe apps.",
     proposal = "https://github.com/fonttools/fontbakery/pull/2369"

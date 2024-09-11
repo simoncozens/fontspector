@@ -6,17 +6,17 @@ async function init() {
   console.log("Loaded");
   self.postMessage({ ready: true });
   const EXCLUDE_CHECKS = [
-    "com.google.fonts/check/fontbakery_version", // We download the latest each time
-    "com.daltonmaag/check/ufo_required_fields",
-    "com.daltonmaag/check/ufo_recommended_fields",
-    "com.google.fonts/check/designspace_has_sources",
-    "com.google.fonts/check/designspace_has_default_master",
-    "com.google.fonts/check/designspace_has_consistent_glyphset",
-    "com.google.fonts/check/designspace_has_consistent_codepoints",
-    "com.google.fonts/check/shaping/regression",
-    "com.google.fonts/check/shaping/forbidden",
-    "com.google.fonts/check/shaping/collides",
-    "com.google.fonts/check/fontv", // Requires a subprocess
+    "fontbakery_version", // We download the latest each time
+    "ufo_required_fields",
+    "ufo_recommended_fields",
+    "designspace_has_sources",
+    "designspace_has_default_master",
+    "designspace_has_consistent_glyphset",
+    "designspace_has_consistent_codepoints",
+    "shaping/regression",
+    "shaping/forbidden",
+    "shaping/collides",
+    "fontv", // Requires a subprocess
   ];
 
   self.onmessage = async (event) => {

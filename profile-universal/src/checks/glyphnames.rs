@@ -30,7 +30,7 @@ fn test_glyph_name(s: &str) -> NameValidity {
 }
 
 #[check(
-    id = "com.google.fonts/check/valid_glyphnames",
+    id = "valid_glyphnames",
     title = "Glyph names are all valid?",
     rationale = "Microsoft's recommendations for OpenType Fonts states the following:
 

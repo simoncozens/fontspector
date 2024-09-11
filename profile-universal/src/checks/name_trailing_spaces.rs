@@ -2,7 +2,7 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
 #[check(
-    id = "com.google.fonts/check/name/trailing_spaces",
+    id = "name/trailing_spaces",
     title = "Name table records must not have trailing spaces.",
     rationale = "This check ensures that no entries in the name table end in spaces;
                 trailing spaces, particularly in font names, can be confusing to users.

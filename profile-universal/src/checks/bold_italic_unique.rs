@@ -40,7 +40,7 @@
 //     return_result(problems)
 // }
 // pub const BOLD_ITALIC_UNIQUE_CHECK: Check = Check {
-//     id: "com.adobe.fonts/check/family/bold_italic_unique_for_nameid1",
+//     id: "opentype/family/bold_italic_unique_for_nameid1",
 //     title: "Check that OS/2.fsSelection bold & italic settings are unique for each NameID1",
 //     rationale: None,
 //     proposal: Some("https://github.com/googlefonts/fontbakery/pull/2388"),

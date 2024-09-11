@@ -4,7 +4,7 @@ use fontspector_checkapi::prelude::*;
 struct Test;
 
 #[check(
-    id = "com.google.fonts/check/test/say_hello",
+    id = "test/say_hello",
     title = "Check that the plugin protocol is working",
     rationale = "This check is part of the example of how to create plugins.",
     proposal = "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73"
@@ -16,7 +16,7 @@ fn say_hello(_c: &Testable, context: &Context) -> CheckFnResult {
 }
 
 #[check(
-    id = "com.google.fonts/check/test/validate_toml",
+    id = "test/validate_toml",
     title = "Check that the filetype plugin protocol is working",
     rationale = "This check is part of the example of how to create plugins.",
     proposal = "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",

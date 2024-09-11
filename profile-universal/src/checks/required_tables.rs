@@ -6,7 +6,7 @@ const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
 ];
 
 #[check(
-    id = "com.google.fonts/check/required_tables",
+    id = "required_tables",
     title = "Font contains all required tables?",
     rationale = "
         According to the OpenType spec
@@ -58,7 +58,7 @@ fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     // required tables above. Perhaps split it into individual checks
     // with the correspondent rationales for each subset of required tables.
     //
-    // com.google.fonts/check/kern_table is a good example of a separate
+    // opentype/kern_table is a good example of a separate
     // check for a specific table providing a detailed description of
     // the rationale behind it.
 

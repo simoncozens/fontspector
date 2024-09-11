@@ -2,7 +2,7 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
 #[check(
-    id = "com.google.fonts/check/maxadvancewidth",
+    id = "opentype/maxadvancewidth",
     title = "MaxAdvanceWidth is consistent with values in the Hmtx and Hhea tables?",
     rationale = "The 'hhea' table contains a field which specifies the maximum advance width. This value should be consistent with the maximum advance width of all glyphs specified in the 'hmtx' table.",
     proposal = "legacy:check/073"
@@ -32,7 +32,7 @@ fn maxadvancewidth(t: &Testable, _context: &Context) -> CheckFnResult {
 }
 
 #[check(
-    id = "com.google.fonts/check/caret_slope",
+    id = "opentype/caret_slope",
     title = "Check hhea.caretSlopeRise and hhea.caretSlopeRun",
     proposal = "https://github.com/fonttools/fontbakery/issues/3670",
     rationale = r#"

@@ -16,11 +16,11 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
 include_profiles = ["universal"]
 [sections]
 "Metadata Checks" = [
-"com.google.fonts/check/metadata/parses",
-"com.google.fonts/check/metadata/can_render_samples",
+"googlefonts/metadata/parses",
+"googlefonts/metadata/can_render_samples",
 ]
 "Family Checks" = [
-"com.google.fonts/check/family/equal_codepoint_coverage"
+"googlefonts/family/equal_codepoint_coverage"
 ]
 "#,
         )
