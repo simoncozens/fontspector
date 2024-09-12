@@ -19,30 +19,52 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::stat::stat_axis_record);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
+        cr.register_check(checks::bold_italic_unique::bold_italic_unique);
+        cr.register_check(checks::head::font_version);
+        cr.register_check(checks::head::mac_style);
 
         let opentype_profile = Profile::from_toml(
             r#"
 [sections]
 "OpenType Specification Checks" = [
+    # Checks which we have definitely ported already
+    "opentype/fvar/regular_coords_correct",
+    "opentype/maxadvancewidth",
     "opentype/caret_slope",
+    "opentype/name/empty_records",
+    "opentype/family/underline_thickness",
+    "opentype/post_table_version",
+    "opentype/varfont/stat_axis_record_for_each_axis",
+    "opentype/family/bold_italic_unique_for_nameid1",
+    "opentype/font_version",
+    "opentype/mac_style",
+
+    # Checks left to port
     "opentype/cff2_call_depth",
     "opentype/cff_ascii_strings",
     "opentype/cff_call_depth",
     "opentype/cff_deprecated_operators",
     "opentype/code_pages",
-    "opentype/dsig",
-    "opentype/family/bold_italic_unique_for_nameid1",
     "opentype/family/consistent_family_name",
     "opentype/family/equal_font_versions",
     "opentype/family/max_4_fonts_per_family_name",
     "opentype/family_naming_recommendations",
+
+    # Checks we don't need because they have been integrated into other checks
+    # "opentype/dsig", (unwanted_tables)
+    # "opentype/varfont/ital_range", (opentype/fvar/axis_ranges_correct)
+    # "opentype/varfont/slnt_range",
+    # "opentype/varfont/regular_ital_coord", (opentype/fvar/regular_coords_correct)
+    # "opentype/varfont/regular_opsz_coord",
+    # "opentype/varfont/regular_slnt_coord",
+    # "opentype/varfont/regular_wdth_coord",
+    # "opentype/varfont/regular_wght_coord",
+
+    # Checks I haven't got around to classifying yet
     "opentype/family/panose_familytype",
-    "opentype/family/underline_thickness",
-    "opentype/font_version",
     "opentype/fsselection",
     "opentype/fsselection_matches_macstyle",
     "opentype/fvar/axis_ranges_correct",
-    "opentype/fvar/regular_coords_correct",
     "opentype/gdef_mark_chars",
     "opentype/gdef_non_mark_chars",
     "opentype/gdef_spacing_marks",
@@ -58,10 +80,7 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/layout_valid_language_tags",
     "opentype/layout_valid_script_tags",
     "opentype/loca/maxp_num_glyphs",
-    "opentype/mac_style",
-    "opentype/maxadvancewidth",
     "opentype/monospace",
-    "opentype/name/empty_records",
     "opentype/name/italic_names",
     "opentype/name/match_familyname_fullfont",
     "opentype/name/no_copyright_on_description",
@@ -69,22 +88,13 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/name/postscript_vs_cff",
     "opentype/points_out_of_bounds",
     "opentype/postscript_name",
-    "opentype/post_table_version",
     "opentype/slant_direction",
     "opentype/stat_has_axis_value_tables",
     "opentype/unitsperem",
     "opentype/varfont/distinct_instance_records",
     "opentype/varfont/family_axis_ranges",
     "opentype/varfont/foundry_defined_tag_name",
-    "opentype/varfont/ital_range",
-    "opentype/varfont/regular_ital_coord",
-    "opentype/varfont/regular_opsz_coord",
-    "opentype/varfont/regular_slnt_coord",
-    "opentype/varfont/regular_wdth_coord",
-    "opentype/varfont/regular_wght_coord",
     "opentype/varfont/same_size_instance_records",
-    "opentype/varfont/slnt_range",
-    "opentype/varfont/stat_axis_record_for_each_axis",
     "opentype/varfont/valid_axis_nameid",
     "opentype/varfont/valid_default_instance_nameids",
     "opentype/varfont/valid_postscript_nameid",
@@ -123,9 +133,21 @@ include_profiles = ["opentype"]
     "ufo_unnecessary_fields",
 ]
 "Universal Profile Checks" = [
+    # Checks which we have definitely ported already
+    "arabic_spacing_symbols",
+    "valid_glyphnames",
+    "name/trailing_spaces",
+    "required_tables",
+
+    # Checks left to port
+
+    # Checks we don't need because they have been integrated into other checks
+    "whitespace_glyphnames", # integrated into valid_glyphnames
+
+    # Checks I haven't got around to classifying yet
+
     "alt_caron",
     "arabic_high_hamza",
-    "arabic_spacing_symbols",
     # "caps_vertically_centered",  # Disabled: issue #4274
     "case_mapping",
     "cjk_chws_feature",
@@ -162,12 +184,10 @@ include_profiles = ["opentype"]
     "missing_small_caps_glyphs",
     "name/ascii_only_entries",
     "name/family_and_style_max_length",
-    "name/trailing_spaces",
     "no_debugging_tables",
     "no_mac_entries",
     "os2_metrics_match_hhea",
     "ots",
-    "required_tables",
     "render_own_name",
     "rupee",
     "sfnt_version",
@@ -185,14 +205,12 @@ include_profiles = ["opentype"]
     "unreachable_glyphs",
     "unwanted_aat_tables",
     "unwanted_tables",
-    "valid_glyphnames",
     "varfont/consistent_axes",
     "varfont/duplexed_axis_reflow",
     "varfont/instances_in_order",
     "varfont/unsupported_axes",
     "vtt_volt_data",  # very similar to vttclean, may be a good idea to merge them.
     "vttclean",
-    "whitespace_glyphnames",
     "whitespace_glyphs",
     "whitespace_ink",
     "whitespace_widths",

@@ -2,6 +2,7 @@ pub mod arabic_spacing_symbols;
 pub mod bold_italic_unique;
 pub mod fvar;
 pub mod glyphnames;
+pub mod head;
 pub mod hhea;
 pub mod name;
 pub mod name_trailing_spaces;

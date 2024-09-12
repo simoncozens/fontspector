@@ -1,4 +1,8 @@
-use crate::{constants::GlyphClass, filetype::FileTypeConvert, CheckError, FileType, Testable};
+use crate::{
+    constants::{GlyphClass, RIBBI_STYLE_NAMES, STATIC_STYLE_NAMES},
+    filetype::FileTypeConvert,
+    CheckError, FileType, Testable,
+};
 use read_fonts::{
     tables::cmap::Cmap,
     tables::gdef::Gdef,
@@ -7,7 +11,6 @@ use read_fonts::{
     TableProvider,
 };
 use skrifa::{
-    charmap::Charmap,
     font::FontRef,
     string::{LocalizedStrings, StringId},
     GlyphId, MetadataProvider, Tag,
@@ -61,7 +64,33 @@ impl TestFont<'_> {
     }
 
     pub fn style(&self) -> Option<&str> {
-        Some("Regular")
+        if let Some(default_location) = self.default_location() {
+            if default_location.get("wght") == Some(&700.0) {
+                if self.filename.to_str()?.contains("Italic") {
+                    return Some("BoldItalic");
+                } else {
+                    return Some("Bold");
+                }
+            } else {
+                if self.filename.to_str()?.contains("Italic") {
+                    return Some("Italic");
+                }
+                return Some("Regular");
+            }
+        }
+        if let Some(style_part) = self.filename.file_stem()?.to_str()?.split('-').last() {
+            for styles in STATIC_STYLE_NAMES.iter() {
+                if style_part == styles.replace(" ", "") {
+                    return Some(style_part);
+                }
+            }
+        }
+        None
+    }
+
+    pub fn is_ribbi(&self) -> bool {
+        self.style()
+            .map_or(false, |s| RIBBI_STYLE_NAMES.iter().any(|r| r == &s))
     }
 
     pub fn has_table(&self, table: &[u8; 4]) -> bool {
@@ -150,8 +179,26 @@ impl TestFont<'_> {
         self.has_table(b"fvar")
     }
 
+    pub fn default_location(&self) -> Option<HashMap<String, f32>> {
+        Some(
+            self.font()
+                .fvar()
+                .ok()?
+                .axes()
+                .ok()?
+                .iter()
+                .map(|axis| {
+                    let tag = axis.axis_tag().to_string();
+                    let default = axis.default_value().to_f32();
+                    (tag, default)
+                })
+                .collect(),
+        )
+    }
+
     pub fn codepoints(&self) -> HashSet<u32> {
-        Charmap::new(&self.font())
+        self.font()
+            .charmap()
             .mappings()
             .map(|(u, _gid)| u)
             .collect()
