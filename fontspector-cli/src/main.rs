@@ -65,6 +65,20 @@ fn main() {
         std::process::exit(1);
     });
 
+    if args.list_checks {
+        for (section, checks) in profile.sections.iter() {
+            termimad::print_text(&format!("# {:}\n\n", section));
+            let mut table = "|Check ID|Title|\n|---|---|\n".to_string();
+            for check in checks {
+                if let Some(check) = registry.checks.get(check) {
+                    table.push_str(&format!("|{:}|{:}|\n", check.id, check.title));
+                }
+            }
+            termimad::print_text(&table);
+        }
+        std::process::exit(0);
+    }
+
     // We create one collection for each set of testable files in a directory.
     // So let's group the inputs per directory, and then map them into a FontCollection
     let grouped_inputs: Vec<TestableCollection> = args
