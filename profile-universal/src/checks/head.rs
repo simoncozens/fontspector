@@ -1,6 +1,6 @@
 use font_types::NameId;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
-use read_fonts::{tables::head::MacStyle, TableProvider};
+use read_fonts::{tables::head::MacStyle, ReadError, TableProvider};
 use skrifa::MetadataProvider;
 
 #[check(
@@ -101,4 +101,71 @@ fn mac_style(f: &Testable, _context: &Context) -> CheckFnResult {
         ));
     }
     return_result(problems)
+}
+
+#[check(
+    id = "opentype/family/equal_font_versions",
+    title = "Make sure all font files have the same version value.",
+    rationale = "Within a family released at the same time, all members of the family should have the same version number in the head table.",
+    proposal = "legacy:check/014",
+    implementation = "all"
+)]
+fn equal_font_versions(c: &TestableCollection, context: &Context) -> CheckFnResult {
+    let fonts = TTF.from_collection(c);
+    let versions_names: Result<Vec<_>, ReadError> = fonts
+        .iter()
+        .map(|f| {
+            f.font().head().map(|head| {
+                (
+                    head.font_revision(),
+                    format!("{:.03}", head.font_revision().to_f32()),
+                    f.filename.to_string_lossy(),
+                )
+            })
+        })
+        .collect();
+    assert_all_the_same(
+        context,
+        &versions_names?,
+        "mismatch",
+        "Version info differs among font files of the same font project.",
+    )
+}
+
+#[check(
+    id = "opentype/unitsperem",
+    proposal = "legacy:check/043",
+    title = "Checking unitsPerEm value is reasonable.",
+    rationale = "
+    According to the OpenType spec:
+
+    The value of unitsPerEm at the head table must be a value
+    between 16 and 16384. Any value in this range is valid.
+
+    In fonts that have TrueType outlines, a power of 2 is recommended
+    as this allows performance optimizations in some rasterizers.
+
+    But 1000 is a commonly used value. And 2000 may become
+    increasingly more common on Variable Fonts.
+    "
+)]
+fn unitsperem(f: &Testable, _context: &Context) -> CheckFnResult {
+    match testfont!(f).font().head()?.units_per_em() {
+        bad_upem if !(16..=16384).contains(&bad_upem) => {
+            Ok(Status::just_one_fail(
+                "out-of-range",
+                &format!(
+                    "unitsPerEm value must be a value between 16 and 16384. {} is out of range",
+                    bad_upem
+                ),
+            ))
+        }
+        16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384 |1000 | 2000 => {
+            Ok(Status::just_one_pass())
+        }
+        upem => Ok(Status::just_one_warn(
+            "suboptimal",
+            &format!("In order to optimize performance on some legacy renderers, the value of unitsPerEm at the head table should ideally be a power of 2 between 16 to 16384. And values of 1000 and 2000 are also common and may be just fine as well. But we got {} instead.", upem),
+        )),
+    }
 }
