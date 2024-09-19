@@ -6,25 +6,17 @@ pub struct Universal;
 
 impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
-        cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
+
+        // For the OpenType profile:
         cr.register_check(checks::bold_italic_unique::bold_italic_unique);
+        cr.register_check(checks::code_pages::code_pages);
         cr.register_check(checks::fvar::axis_ranges_correct);
         cr.register_check(checks::fvar::regular_coords_correct);
-        cr.register_check(checks::glyphnames::valid_glyphnames);
-        cr.register_check(checks::head::equal_font_versions);
-        cr.register_check(checks::head::font_version);
-        cr.register_check(checks::head::mac_style);
-        cr.register_check(checks::head::unitsperem);
         cr.register_check(checks::hhea::caret_slope);
         cr.register_check(checks::hhea::maxadvancewidth);
-        cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
-        cr.register_check(checks::name::name_empty_records);
-        cr.register_check(checks::os2::fsselection);
         cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::post::underline_thickness);
-        cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::stat::stat_axis_record);
-        cr.register_check(checks::unwanted_tables::unwanted_tables);
 
         let opentype_profile = Profile::from_toml(
             r#"
@@ -112,6 +104,14 @@ impl fontspector_checkapi::Plugin for Universal {
         )
         .map_err(|_| "Couldn't parse profile")?;
         cr.register_profile("opentype", opentype_profile)?;
+
+        // For the Universal profile:
+        cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
+        cr.register_check(checks::glyphnames::valid_glyphnames);
+        cr.register_check(checks::name::name_empty_records);
+        cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
+        cr.register_check(checks::required_tables::required_tables);
+        cr.register_check(checks::unwanted_tables::unwanted_tables);
 
         let universal_profile = Profile::from_toml(
             r#"
