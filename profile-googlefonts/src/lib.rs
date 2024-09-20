@@ -28,8 +28,15 @@ include_profiles = ["universal"]
 "googlefonts/family/equal_codepoint_coverage",
 ]
 "Description Checks" = [
-"googlefonts/description/min_length",
+"googlefonts/description/broken_links",
 "googlefonts/description/eof_linebreak",
+"googlefonts/description/family_update",
+"googlefonts/description/git_url",
+"googlefonts/description/has_article",
+"googlefonts/description/has_unsupported_elements",
+"googlefonts/description/min_length",
+"googlefonts/description/urls",
+"googlefonts/description/valid_html",
 ]
 "#,
         )
