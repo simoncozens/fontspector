@@ -29,7 +29,7 @@ fn code_pages(t: &Testable, _context: &Context) -> CheckFnResult {
     let os2 = f.font().os2()?;
     let cpr1 = os2.ul_code_page_range_1();
     let cpr2 = os2.ul_code_page_range_2();
-    if !cpr1.is_some() || !cpr2.is_some() || ((cpr1 == Some(0)) && (cpr2 == Some(0))) {
+    if cpr1.is_none() || cpr2.is_none() || ((cpr1 == Some(0)) && (cpr2 == Some(0))) {
         Ok(Status::just_one_fail(
             "no-code-pages",
             "No code pages defined in the OS/2 table ulCodePageRange1 \
