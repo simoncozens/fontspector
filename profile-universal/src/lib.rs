@@ -6,7 +6,6 @@ pub struct Universal;
 
 impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
-
         // For the OpenType profile:
         cr.register_check(checks::bold_italic_unique::bold_italic_unique);
         cr.register_check(checks::code_pages::code_pages);
@@ -17,6 +16,8 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::stat_axis_record);
+        cr.register_check(checks::os2::fsselection);
+        cr.register_check(checks::os2::panose_familytype);
 
         let opentype_profile = Profile::from_toml(
             r#"
@@ -36,6 +37,7 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/family/equal_font_versions",
     "opentype/unitsperem",
     "opentype/fsselection",
+    "opentype/family/panose_familytype",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -59,7 +61,6 @@ impl fontspector_checkapi::Plugin for Universal {
     # "opentype/fsselection_matches_macstyle", (merged into opentype/fsselection)
 
     # Checks I haven't got around to classifying yet
-    "opentype/family/panose_familytype",
     "opentype/fvar/axis_ranges_correct",
     "opentype/gdef_mark_chars",
     "opentype/gdef_non_mark_chars",
