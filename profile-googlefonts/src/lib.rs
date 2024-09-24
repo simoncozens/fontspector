@@ -1,6 +1,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 mod description;
 mod family;
+mod license;
 mod metadata;
 use fontspector_checkapi::prelude::*;
 
@@ -14,6 +15,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(description::description_min_length);
         cr.register_check(description::description_eof_linebreak);
         cr.register_check(family::family_equal_codepoint_coverage);
+        cr.register_check(license::name_rfn);
         cr.register_check(metadata::validate_metadatapb);
         cr.register_check(metadata::can_render_samples);
         let profile = Profile::from_toml(
@@ -37,6 +39,18 @@ include_profiles = ["universal"]
 "googlefonts/description/min_length",
 "googlefonts/description/urls",
 "googlefonts/description/valid_html",
+]
+"Licensing Checks" = [
+"googlefonts/family/has_license",
+"googlefonts/font_copyright",
+"googlefonts/license/OFL_body_text",
+"googlefonts/license/OFL_copyright",
+"googlefonts/metadata/copyright",
+"googlefonts/metadata/license",
+"googlefonts/metadata/reserved_font_name",
+"googlefonts/name/license",
+"googlefonts/name/license_url",
+"googlefonts/name/rfn",
 ]
 "#,
         )
