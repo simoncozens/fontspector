@@ -11,6 +11,9 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::code_pages::code_pages);
         cr.register_check(checks::fvar::axis_ranges_correct);
         cr.register_check(checks::fvar::regular_coords_correct);
+        cr.register_check(checks::glyf::glyf_unused_data);
+        cr.register_check(checks::glyf::check_point_out_of_bounds);
+        cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
         cr.register_check(checks::hhea::caret_slope);
         cr.register_check(checks::hhea::maxadvancewidth);
         cr.register_check(checks::post::post_table_version);
@@ -38,6 +41,10 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/unitsperem",
     "opentype/fsselection",
     "opentype/family/panose_familytype",
+    "opentype/fvar/axis_ranges_correct",
+    "opentype/glyf_unused_data",
+    "opentype/points_out_of_bounds",
+    "opentype/glyf_non_transformed_duplicate_components",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -52,7 +59,9 @@ impl fontspector_checkapi::Plugin for Universal {
     # Checks we don't need because they have been integrated into other checks
     # "opentype/dsig", (unwanted_tables)
     # "opentype/varfont/ital_range", (opentype/fvar/axis_ranges_correct)
-    # "opentype/varfont/slnt_range",
+    # "opentype/varfont/wdth_valid_range", (above)
+    # "opentype/varfont/wght_valid_range", (above)
+    # "opentype/varfont/slnt_range", (above)
     # "opentype/varfont/regular_ital_coord", (opentype/fvar/regular_coords_correct)
     # "opentype/varfont/regular_opsz_coord",
     # "opentype/varfont/regular_slnt_coord",
@@ -61,12 +70,9 @@ impl fontspector_checkapi::Plugin for Universal {
     # "opentype/fsselection_matches_macstyle", (merged into opentype/fsselection)
 
     # Checks I haven't got around to classifying yet
-    "opentype/fvar/axis_ranges_correct",
     "opentype/gdef_mark_chars",
     "opentype/gdef_non_mark_chars",
     "opentype/gdef_spacing_marks",
-    "opentype/glyf_non_transformed_duplicate_components",
-    "opentype/glyf_unused_data",
     "opentype/gpos_kerning_info",
     "opentype/italic_angle",
     "opentype/italic_axis_in_stat",
@@ -83,7 +89,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/name/no_copyright_on_description",
     "opentype/name/postscript_name_consistency",
     "opentype/name/postscript_vs_cff",
-    "opentype/points_out_of_bounds",
     "opentype/postscript_name",
     "opentype/slant_direction",
     "opentype/stat_has_axis_value_tables",
@@ -95,8 +100,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/varfont/valid_default_instance_nameids",
     "opentype/varfont/valid_postscript_nameid",
     "opentype/varfont/valid_subfamily_nameid",
-    "opentype/varfont/wdth_valid_range",
-    "opentype/varfont/wght_valid_range",
     "opentype/vendor_id",
     "opentype/weight_class_fvar",
     "opentype/xavgcharwidth",
