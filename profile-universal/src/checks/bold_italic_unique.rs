@@ -23,7 +23,6 @@ fn bold_italic_unique(c: &TestableCollection, _context: &Context) -> CheckFnResu
     let mut flags: HashSet<(bool, bool)> = HashSet::new();
     let ribbi = fonts.iter().filter(|f| f.is_ribbi());
     for font in ribbi {
-        let _names_list = font.get_name_entry_strings(StringId::FAMILY_NAME);
         let fsselection = font.get_os2_fsselection()?;
         let val = (
             fsselection.intersects(SelectionFlags::BOLD),

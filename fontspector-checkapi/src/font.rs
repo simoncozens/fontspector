@@ -4,9 +4,7 @@ use crate::{
     CheckError, FileType, Testable,
 };
 use read_fonts::{
-    tables::cmap::Cmap,
-    tables::gdef::Gdef,
-    tables::{os2::SelectionFlags, post::DEFAULT_GLYPH_NAMES},
+    tables::{cmap::Cmap, gdef::Gdef, os2::SelectionFlags, post::DEFAULT_GLYPH_NAMES},
     types::Version16Dot16,
     TableProvider,
 };
@@ -127,8 +125,10 @@ impl TestFont<'_> {
         Ok(os2.fs_selection())
     }
 
-    pub fn get_name_entry_strings(&self, name_id: StringId) -> LocalizedStrings {
-        self.font().localized_strings(name_id)
+    pub fn get_name_entry_strings(&self, name_id: StringId) -> impl Iterator<Item = String> + '_ {
+        self.font()
+            .localized_strings(name_id)
+            .map(|s| s.to_string())
     }
 
     pub fn glyph_name_for_id(&self, gid: GlyphId, synthesize: bool) -> Option<String> {
