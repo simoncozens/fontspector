@@ -1,6 +1,5 @@
 use font_types::NameId;
-use fontspector_checkapi::prelude::*;
-use fontspector_checkapi::{testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 use regex::Regex;
 use skrifa::MetadataProvider;
@@ -75,3 +74,106 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
     }
     return_result(problems)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+	use fontspector_checkapi::{Context, StatusCode, CheckResult};
+    use serde_json::Map;
+    //use crate::constants::OFL_BODY_TEXT;
+
+    const CHECK: fontspector_checkapi::Check<'_> = super::name_rfn;
+
+    fn run_check(font: Testable) -> std::option::Option<CheckResult> {
+        let ctx: fontspector_checkapi::Context = Context {
+            skip_network: false,
+            network_timeout: Some(10),
+            configuration: Map::new(),
+        };
+        let section: &str = "Licensing Checks";
+        CHECK.run(&TestableType::Single(&font), &ctx, section)
+    }
+
+    macro_rules! TEST_FILE {($fname:expr) => (
+        Testable::new(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/resources/test/", $fname)
+        ).unwrap()
+    )}
+
+    fn assert_pass(check_result: std::option::Option<CheckResult>) {
+        let subresults = check_result.unwrap().subresults;
+        assert_eq!(subresults.len(), 1);
+        assert_eq!(StatusCode::Pass, subresults[0].severity);
+    }
+
+    #[test]
+    fn pass_with_good_font(){
+        let font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
+        assert_pass(run_check(font));
+    }
+
+    #[test]
+    fn pass_with_good_font_containing_ofl_full_text(){
+        /* The OFL text contains the term 'Reserved Font Name',
+           which should not cause a FAIL: */
+        let font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
+
+/* FIXME:
+        let f = testfont!(font);
+        f.font().name().setName(
+            OFL_BODY_TEXT,
+            NameId::LICENSE_DESCRIPTION,
+            3,      // PlatformID.WINDOWS
+            1,      // WindowsEncodingID.UNICODE_BMP
+            0x0409, // WindowsLanguageID.ENGLISH_USA
+        );
+*/
+        assert_pass(run_check(font));
+    }
+}
+
+/* TODO:
+
+    # NOTE: This is not a real copyright statement. It is only meant to test the check.
+    with_nunito_rfn = (
+        "Copyright 2022 The Nunito Project Authors"
+        " (https://github.com/googlefonts/NunitoSans),"
+        " with Reserved Font Name Nunito."
+    )
+    ttFont["name"].setName(
+        with_nunito_rfn,
+        NameID.VERSION_STRING,
+        PlatformID.WINDOWS,
+        WindowsEncodingID.UNICODE_BMP,
+        WindowsLanguageID.ENGLISH_USA,
+    )
+    assert_results_contain(
+        check(ttFont),
+        FAIL,
+        "rfn",
+        'with "Reserved Font Name Nunito" on a name table entry...',
+    )
+
+    # NOTE: This is not a real copyright statement. It is only meant to test the check.
+    with_other_familyname_rfn = (
+        "Copyright 2022 The FooBar Project Authors"
+        " (https://github.com/foo/bar),"
+        " with Reserved Font Name FooBar."
+    )
+    ttFont["name"].setName(
+        with_other_familyname_rfn,
+        NameID.VERSION_STRING,
+        PlatformID.WINDOWS,
+        WindowsEncodingID.UNICODE_BMP,
+        WindowsLanguageID.ENGLISH_USA,
+    )
+    msg = assert_results_contain(
+        check(ttFont),
+        WARN,
+        "legacy-familyname",
+        'with "Reserved Font Name" that references an older'
+        " familyname not being used in this font project...",
+    )
+    assert "(FooBar)" in msg
+
+    } */

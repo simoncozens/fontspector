@@ -1,4 +1,5 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
+pub mod constants;
 mod description;
 mod family;
 mod license;
