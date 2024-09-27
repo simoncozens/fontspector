@@ -16,6 +16,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
         cr.register_check(checks::hhea::caret_slope);
         cr.register_check(checks::hhea::maxadvancewidth);
+        cr.register_check(checks::name::check_name_no_copyright_on_description);
         cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::stat_axis_record);
@@ -45,6 +46,7 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/glyf_unused_data",
     "opentype/points_out_of_bounds",
     "opentype/glyf_non_transformed_duplicate_components",
+    "opentype/name/no_copyright_on_description",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -86,7 +88,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/monospace",
     "opentype/name/italic_names",
     "opentype/name/match_familyname_fullfont",
-    "opentype/name/no_copyright_on_description",
     "opentype/name/postscript_name_consistency",
     "opentype/name/postscript_vs_cff",
     "opentype/postscript_name",

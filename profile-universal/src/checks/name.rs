@@ -97,6 +97,6 @@ fn check_name_match_familyname_fullfont(t: &Testable, _context: &Context) -> Che
         .font()
         .localized_strings(NameId::TYPOGRAPHIC_FAMILY_NAME);
     let wws_names = font.font().localized_strings(NameId::WWS_FAMILY_NAME);
-    if full_names.len() {}
+    // if full_names.len() {}
     return_result(vec![])
 }
