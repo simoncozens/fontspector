@@ -77,22 +77,10 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-	use fontspector_checkapi::{Context, StatusCode, CheckResult};
+
+// --- CODETESTING ---
+    use fontspector_checkapi::{Context, StatusCode, CheckResult};
     use serde_json::Map;
-    //use crate::constants::OFL_BODY_TEXT;
-
-    const CHECK: fontspector_checkapi::Check<'_> = super::name_rfn;
-
-    fn run_check(font: Testable) -> std::option::Option<CheckResult> {
-        let ctx: fontspector_checkapi::Context = Context {
-            skip_network: false,
-            network_timeout: Some(10),
-            configuration: Map::new(),
-        };
-        let section: &str = "Licensing Checks";
-        CHECK.run(&TestableType::Single(&font), &ctx, section)
-    }
 
     macro_rules! TEST_FILE {($fname:expr) => (
         Testable::new(
@@ -100,16 +88,30 @@ mod tests {
         ).unwrap()
     )}
 
+    fn run_check(check: fontspector_checkapi::Check<'_>, font: Testable) -> std::option::Option<CheckResult> {
+        let ctx: fontspector_checkapi::Context = Context {
+            skip_network: false,
+            network_timeout: Some(10),
+            configuration: Map::new(),
+        };
+        let section: &str = "Licensing Checks";
+        check.run(&TestableType::Single(&font), &ctx, section)
+    }
+
     fn assert_pass(check_result: std::option::Option<CheckResult>) {
         let subresults = check_result.unwrap().subresults;
         assert_eq!(subresults.len(), 1);
         assert_eq!(StatusCode::Pass, subresults[0].severity);
     }
+// --- end of CODETESTING ---
+
+    use super::*;
+    //use crate::constants::OFL_BODY_TEXT;
 
     #[test]
     fn pass_with_good_font(){
         let font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
-        assert_pass(run_check(font));
+        assert_pass(run_check(super::name_rfn, font));
     }
 
     #[test]
@@ -128,7 +130,7 @@ mod tests {
             0x0409, // WindowsLanguageID.ENGLISH_USA
         );
 */
-        assert_pass(run_check(font));
+        assert_pass(run_check(super::name_rfn, font));
     }
 }
 
