@@ -99,9 +99,8 @@ mod tests {
     }
 
     fn assert_pass(check_result: std::option::Option<CheckResult>) {
-        let subresults = check_result.unwrap().subresults;
-        assert_eq!(subresults.len(), 1);
-        assert_eq!(StatusCode::Pass, subresults[0].severity);
+        let status = check_result.unwrap().worst_status();
+        assert_eq!(status, StatusCode::Pass);
     }
 // --- end of CODETESTING ---
 
