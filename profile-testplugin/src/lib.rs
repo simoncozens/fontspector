@@ -32,12 +32,31 @@ fn validate_toml(c: &Testable, _context: &Context) -> CheckFnResult {
     })
 }
 
+#[check(
+    id = "test/test_check_metadata",
+    title = "Check we can pass metadata from the check definition into the check",
+    rationale = "This check is part of the example of how to create plugins.",
+    proposal = "https://github.com/simoncozens/fontspector/commit/5fdf9750991176c8e2776557ce6c17c642c24a73",
+    applies_to = "TTF",
+    metadata = r#"{"foo": "bar"}"#
+)]
+fn check_metadata(_c: &Testable, context: &Context) -> CheckFnResult {
+    if context.check_metadata.get("foo") == Some(&serde_json::Value::String("bar".to_string())) {
+        Ok(Status::just_one_pass())
+    } else {
+        Ok(Status::just_one_fail(
+            "metadata-mismatch",
+            "Metadata mismatch",
+        ))
+    }
+}
+
 impl fontspector_checkapi::Plugin for Test {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         let toml = FileType::new("*.toml");
         cr.register_filetype("TOML", toml);
 
-        cr.register_simple_profile("test", vec![validate_toml, say_hello])
+        cr.register_simple_profile("test", vec![validate_toml, say_hello, check_metadata])
     }
 }
 

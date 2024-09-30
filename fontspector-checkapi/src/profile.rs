@@ -97,15 +97,15 @@ impl Profile {
                     .filter(|checkname| {
                         included_excluded(checkname, include_checks, exclude_checks)
                     })
-                    .map(|checkname| {
-                        (
-                            sectionname.clone(),
-                            registry.checks.get(checkname),
-                            general_context.specialize(checkname, &configuration),
-                        )
-                    })
-                    .flat_map(|(sectionname, check, context)| {
-                        check.map(|c| (sectionname, c, context))
+                    .map(|checkname| (sectionname.clone(), registry.checks.get(checkname)))
+                    .filter_map(|(sectionname, check)| {
+                        check.map(|check| {
+                            (
+                                sectionname,
+                                check,
+                                general_context.specialize(check, &configuration),
+                            )
+                        })
                     })
             })
             .flat_map(|(sectionname, check, context): (String, &Check, Context)| {

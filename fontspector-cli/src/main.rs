@@ -130,6 +130,7 @@ fn main() {
             skip_network: args.skip_network,
             network_timeout: Some(10), // XXX
             configuration: Map::new(),
+            check_metadata: serde_json::Value::Null,
         },
         configuration,
         &testables,

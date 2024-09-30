@@ -1,7 +1,6 @@
 use std::str::FromStr;
 
-use darling::Error;
-use darling::{ast::NestedMeta, FromMeta};
+use darling::{ast::NestedMeta, Error, FromMeta};
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
@@ -47,6 +46,7 @@ struct CheckParams {
     applies_to: Option<String>,
     hotfix: Option<Ident>,
     fix_source: Option<Ident>,
+    metadata: Option<String>,
 }
 
 pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
@@ -106,7 +106,10 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
         Implementation::CheckOne => quote!(CheckImplementation::CheckOne(&#impl_ident)),
         Implementation::CheckAll => quote!(CheckImplementation::CheckAll(&#impl_ident)),
     };
-
+    let metadata = match params.metadata {
+        Some(metadata) => quote!(Some(&#metadata)),
+        None => quote!(None),
+    };
     quote!(
         #(#attrs)*
         #vis #new_sig {
@@ -124,6 +127,7 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
             hotfix: #hotfix,
             fix_source: #fix_source,
             flags: CheckFlags::default(),
+            _metadata: #metadata,
         };
     )
     .into()

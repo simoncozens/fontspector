@@ -42,6 +42,7 @@ pub struct Check<'a> {
     pub fix_source: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     pub applies_to: &'a str,
     pub flags: CheckFlags,
+    pub _metadata: Option<&'static str>,
 }
 
 // Are we? Really? I don't know. Let's find out...
@@ -60,6 +61,17 @@ impl<'a> Check<'a> {
                 .map_or(false, |ft| ft.applies(f)),
             _ => false,
         }
+    }
+
+    /// Get the metadata for this check
+    ///
+    /// Each check definition can declare associated metadata; this is
+    /// interpreted as a JSON string and returned as a serde_json::Value.
+    pub fn metadata(&self) -> serde_json::Value {
+        #[allow(clippy::expect_used)]
+        self._metadata
+            .map(|s| serde_json::from_str(s).unwrap_or_else(|_| panic!("Bad JSON in {}", self.id)))
+            .unwrap_or_default()
     }
 
     fn clarify_result(
