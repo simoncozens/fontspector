@@ -159,6 +159,7 @@ mod tests {
 
         let f = TTF.from_testable(&font).unwrap();
         let name = f.font().name().unwrap();
+
         let new_record = NameRecord::new(
             3,
             1,
@@ -188,26 +189,11 @@ mod tests {
             .collect();
         new_records.insert(new_record);
         let new_nametable = Name::new(new_records);
-        /* FIXME:
-                f.font().name().setName(
-                    OFL_BODY_TEXT,
-                    NameId::LICENSE_DESCRIPTION,
-                    3,      // PlatformID.WINDOWS
-                    1,      // WindowsEncodingID.UNICODE_BMP
-                    0x0409, // WindowsLanguageID.ENGLISH_USA
-                );
-        */
-        let mut new_font = FontBuilder::new();
-        new_font.add_table(&new_nametable).unwrap();
-        for table in f.font().table_directory.table_records() {
-            let tag = table.tag.get();
-            if tag == *b"name" {
-                continue;
-            } else if let Some(table) = f.font().table_data(tag) {
-                new_font.add_raw(tag, table);
-            }
-        }
-        let new_bytes = new_font.build();
+        let mut new_bytes = FontBuilder::new()
+            .add_table(&new_nametable)
+            .unwrap()
+            .copy_missing_tables(font)
+            .build();
 
         font.contents = new_bytes;
         assert_pass(run_check(super::name_rfn, font));
