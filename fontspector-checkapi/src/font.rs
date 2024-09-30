@@ -8,11 +8,7 @@ use read_fonts::{
     types::Version16Dot16,
     TableProvider,
 };
-use skrifa::{
-    font::FontRef,
-    string::{LocalizedStrings, StringId},
-    GlyphId, MetadataProvider, Tag,
-};
+use skrifa::{font::FontRef, string::StringId, GlyphId, MetadataProvider, Tag};
 use std::{
     cell::RefCell,
     collections::{HashMap, HashSet},
