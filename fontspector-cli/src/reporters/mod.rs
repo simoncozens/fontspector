@@ -42,7 +42,6 @@ impl RunResults {
     pub fn organize(&self) -> OrganisedResults {
         let mut organised_results: OrganisedResults = HashMap::new();
         for checkresult in self.iter() {
-            // let filename = testable.filename.clone();
             let section = organised_results
                 .entry(
                     checkresult
@@ -51,7 +50,14 @@ impl RunResults {
                         .unwrap_or("All fonts".to_string()),
                 )
                 .or_default();
-            let results = section.entry(checkresult.section.clone()).or_default();
+            let results = section
+                .entry(
+                    checkresult
+                        .section
+                        .clone()
+                        .unwrap_or("No section".to_string()),
+                )
+                .or_default();
             results.push(checkresult.clone());
         }
         organised_results

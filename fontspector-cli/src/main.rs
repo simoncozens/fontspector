@@ -192,7 +192,11 @@ fn main() {
     #[allow(clippy::unwrap_used)] // We check for is_some before unwrapping
     let results: RunResults = checkorder_iterator
         .map(|(sectionname, testable, check, context)| {
-            (testable, check, check.run(testable, context, sectionname))
+            (
+                testable,
+                check,
+                check.run(testable, context, Some(sectionname)),
+            )
         })
         .filter(|(_, _, result)| result.is_some())
         .map(|(testable, check, result)| (testable, check, result.unwrap()))

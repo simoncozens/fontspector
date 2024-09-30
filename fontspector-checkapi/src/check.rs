@@ -66,7 +66,7 @@ impl<'a> Check<'a> {
         &'a self,
         fn_result: CheckFnResult,
         file: Option<&'a Testable>,
-        section: &str,
+        section: Option<&str>,
     ) -> CheckResult {
         let subresults = match fn_result {
             Ok(results) => results.collect::<Vec<_>>(),
@@ -88,7 +88,7 @@ impl<'a> Check<'a> {
         &'a self,
         testable: &'a TestableType,
         context: &Context,
-        section: &str,
+        section: Option<&str>,
     ) -> Option<CheckResult> {
         match (&self.implementation, testable) {
             (CheckImplementation::CheckAll(_), TestableType::Single(_)) => None,
