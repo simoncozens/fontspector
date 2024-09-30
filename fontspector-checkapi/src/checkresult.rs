@@ -32,7 +32,7 @@ pub struct CheckResult {
     /// The file which was checked; if None, the check was run on all files
     pub filename: Option<String>,
     /// The section of the profile this check belongs to
-    pub section: String,
+    pub section: Option<String>,
     /// The individual results of the check
     pub subresults: Vec<Status>,
     /// If hotfixing was attempted, the result of the hotfix
@@ -68,7 +68,7 @@ impl CheckResult {
     pub fn new(
         check: &Check,
         filename: Option<&str>,
-        section: &str,
+        section: Option<&str>,
         subresults: Vec<Status>,
     ) -> Self {
         Self {
@@ -76,7 +76,7 @@ impl CheckResult {
             check_name: check.title.to_string(),
             check_rationale: check.rationale.to_string(),
             filename: filename.map(|x| x.to_string()),
-            section: section.to_string(),
+            section: section.map(|x| x.to_string()),
             subresults,
             hotfix_result: None,
             sourcefix_result: None,

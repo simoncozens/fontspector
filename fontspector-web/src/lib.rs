@@ -56,7 +56,11 @@ pub fn check_fonts(fonts: &JsValue) -> Result<String, JsValue> {
     let results: Vec<CheckResult> = checkorder
         .iter()
         .map(|(sectionname, testable, check, context)| {
-            (testable, check, check.run(testable, context, sectionname))
+            (
+                testable,
+                check,
+                check.run(testable, context, Some(sectionname)),
+            )
         })
         .flat_map(|(_, _, result)| result)
         .collect();
