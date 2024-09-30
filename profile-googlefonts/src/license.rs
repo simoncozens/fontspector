@@ -102,6 +102,13 @@ mod tests {
         let status = check_result.unwrap().worst_status();
         assert_eq!(status, StatusCode::Pass);
     }
+
+
+    fn assert_results_contain(check_result: std::option::Option<CheckResult>, severity: StatusCode, code: Option<String>) {
+        let subresults = check_result.unwrap().subresults;
+        assert!(subresults.iter().any(|subresult| subresult.severity == severity && subresult.code == code));
+    }
+
 // --- end of CODETESTING ---
 
     use super::*;
