@@ -89,8 +89,6 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
 #[allow(clippy::unwrap_used)]
 mod tests {
 
-    use std::collections::BTreeSet;
-
     // --- CODETESTING ---
     use fontspector_checkapi::{CheckResult, Context, StatusCode};
     use serde_json::Map;
@@ -115,9 +113,9 @@ mod tests {
             skip_network: false,
             network_timeout: Some(10),
             configuration: Map::new(),
+            check_metadata: check.metadata(),
         };
-        let section: &str = "Licensing Checks";
-        check.run(&TestableType::Single(&font), &ctx, section)
+        check.run(&TestableType::Single(&font), &ctx, None)
     }
 
     fn assert_pass(check_result: std::option::Option<CheckResult>) {
@@ -137,40 +135,23 @@ mod tests {
             .any(|subresult| subresult.severity == severity && subresult.code == code));
     }
 
-    // --- end of CODETESTING ---
-
-    use crate::constants::OFL_BODY_TEXT;
-    use write_fonts::tables::name::Name;
-
-    use super::*;
-    //use crate::constants::OFL_BODY_TEXT;
-
-    #[test]
-    fn pass_with_good_font() {
-        let font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
-        assert_pass(run_check(super::name_rfn, font));
-    }
-
-    #[test]
-    fn pass_with_good_font_containing_ofl_full_text() {
-        /* The OFL text contains the term 'Reserved Font Name',
-        which should not cause a FAIL: */
-        let mut font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
+    fn set_name_entry(font: &mut Testable, platform: u16, encoding: u16, language: u16, nameid: NameId, new_string: String){
+        use std::collections::BTreeSet;
 
         let f = TTF.from_testable(&font).unwrap();
         let name = f.font().name().unwrap();
 
         let new_record = NameRecord::new(
-            3,
-            1,
-            0x0409,
-            NameId::LICENSE_DESCRIPTION,
-            OFL_BODY_TEXT.to_string().into(),
+            platform,
+            encoding,
+            language,
+            nameid,
+            new_string.to_string().into(),
         );
         let mut new_records: BTreeSet<NameRecord> = name
             .name_record()
             .iter()
-            .filter(|record| record.name_id() != NameId::LICENSE_DESCRIPTION)
+            .filter(|record| record.name_id() != nameid)
             .map(|r| {
                 #[allow(clippy::unwrap_used)]
                 NameRecord::new(
@@ -189,38 +170,64 @@ mod tests {
             .collect();
         new_records.insert(new_record);
         let new_nametable = Name::new(new_records);
-        let mut new_bytes = FontBuilder::new()
+        let new_bytes = FontBuilder::new()
             .add_table(&new_nametable)
             .unwrap()
-            .copy_missing_tables(font)
+            .copy_missing_tables(f.font())
             .build();
 
         font.contents = new_bytes;
+    }
+
+    // --- end of CODETESTING ---
+
+    use crate::constants::OFL_BODY_TEXT;
+    use write_fonts::tables::name::Name;
+    use super::*;
+
+    #[test]
+    fn pass_with_good_font() {
+        let font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
         assert_pass(run_check(super::name_rfn, font));
     }
+
+    #[test]
+    fn pass_with_good_font_containing_ofl_full_text() {
+        /* The OFL text contains the term 'Reserved Font Name',
+        which should not cause a FAIL: */
+        let mut font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
+
+        set_name_entry(&mut font,
+                       3,  // PlatformID.WINDOWS
+                       1,  // WindowsEncodingID.UNICODE_BMP
+                       0x0409,  // WindowsLanguageID.ENGLISH_USA,
+                       NameId::LICENSE_DESCRIPTION,
+                       OFL_BODY_TEXT.to_string().into());
+        assert_pass(run_check(super::name_rfn, font));
+    }
+
+/*
+    #[test]
+    fn fail_with_rfn_on_a_name_table_entry() {
+        /* NOTE: This is not a real copyright statement.
+           It is only meant to test the check. */
+        let mut font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
+
+        let with_nunito_rfn: String = "Copyright 2022 The Nunito Project Authors \
+                                       (https://github.com/googlefonts/NunitoSans), \
+                                       with Reserved Font Name Nunito.".to_string();
+        set_name_entry(&mut font,
+                       3,  // PlatformID.WINDOWS
+                       1,  // WindowsEncodingID.UNICODE_BMP
+                       0x0409,  // WindowsLanguageID.ENGLISH_USA,
+                       NameId::VERSION_STRING,
+                       with_nunito_rfn);
+        assert_results_contain(run_check(super::name_rfn, font),
+                               StatusCode::Fail, Some("rfn".to_string()));
+    }
+*/
 }
-
 /* TODO:
-
-# NOTE: This is not a real copyright statement. It is only meant to test the check.
-with_nunito_rfn = (
-    "Copyright 2022 The Nunito Project Authors"
-    " (https://github.com/googlefonts/NunitoSans),"
-    " with Reserved Font Name Nunito."
-)
-ttFont["name"].setName(
-    with_nunito_rfn,
-    NameID.VERSION_STRING,
-    PlatformID.WINDOWS,
-    WindowsEncodingID.UNICODE_BMP,
-    WindowsLanguageID.ENGLISH_USA,
-)
-assert_results_contain(
-    check(ttFont),
-    FAIL,
-    "rfn",
-    'with "Reserved Font Name Nunito" on a name table entry...',
-)
 
 # NOTE: This is not a real copyright statement. It is only meant to test the check.
 with_other_familyname_rfn = (
