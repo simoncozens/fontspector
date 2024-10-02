@@ -1,4 +1,11 @@
-use crate::{prelude::*, CheckResult, StatusCode, FileTypeConvert};
+use crate::{
+    prelude::*,
+    Check,
+    CheckResult,
+    Context,
+    FileTypeConvert,
+    StatusCode,
+};
 use font_types::NameId;
 use read_fonts::TableProvider;
 use serde_json::Map;
@@ -19,10 +26,10 @@ use write_fonts::{
 }
 
 pub fn run_check(
-    check: crate::Check<'_>,
+    check: Check<'_>,
     font: Testable,
 ) -> std::option::Option<CheckResult> {
-    let ctx: crate::Context = Context {
+    let ctx: Context = Context {
         skip_network: false,
         network_timeout: Some(10),
         configuration: Map::new(),

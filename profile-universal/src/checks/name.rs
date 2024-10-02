@@ -99,3 +99,58 @@ should be removed (perhaps these were added by a longstanding FontLab Studio
 //     // if full_names.len() {}
 //     return_result(vec![])
 // }
+
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod tests {
+    use super::*;
+    use fontspector_checkapi::{
+        StatusCode,
+        TEST_FILE,
+        codetesting::{
+            assert_pass,
+            assert_results_contain,
+            run_check,
+            set_name_entry,
+        }
+    };
+
+    #[test]
+    fn pass_opentype_name_empty_records_with_fully_populated_name_records() {
+        let font: Testable = TEST_FILE!("source-sans-pro/TTF/SourceSansPro-Regular.ttf");
+        assert_pass(run_check(super::name_empty_records, font));
+    }
+
+    #[test]
+    fn fail_with_a_completely_empty_string() {
+        let mut font: Testable = TEST_FILE!("source-sans-pro/TTF/SourceSansPro-Regular.ttf");
+
+        set_name_entry(&mut font,
+                       3,  // PlatformID.WINDOWS
+                       1,  // WindowsEncodingID.UNICODE_BMP
+                       0x0409,  // WindowsLanguageID.ENGLISH_USA,
+                       NameId::FAMILY_NAME,
+                       "".to_string());
+
+        assert_results_contain(
+            run_check(super::name_empty_records, font),
+            StatusCode::Fail, Some("empty-record".to_string()));
+    }
+
+    #[test]
+    fn fail_with_a_string_that_only_has_whitespace() {
+        let mut font: Testable = TEST_FILE!("source-sans-pro/TTF/SourceSansPro-Regular.ttf");
+
+        set_name_entry(&mut font,
+                       3,  // PlatformID.WINDOWS
+                       1,  // WindowsEncodingID.UNICODE_BMP
+                       0x0409,  // WindowsLanguageID.ENGLISH_USA,
+                       NameId::FAMILY_NAME,
+                       " ".to_string());
+
+        assert_results_contain(
+            run_check(super::name_empty_records, font),
+            StatusCode::Fail, Some("empty-record".to_string()));
+    }
+}

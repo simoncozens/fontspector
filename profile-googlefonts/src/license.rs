@@ -91,6 +91,7 @@ mod tests {
     use super::*;
     use fontspector_checkapi::{
         TEST_FILE,
+        // StatusCode,
         codetesting::{
             assert_pass,
             // assert_results_contain,
