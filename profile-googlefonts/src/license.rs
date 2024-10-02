@@ -225,30 +225,25 @@ mod tests {
         assert_results_contain(run_check(super::name_rfn, font),
                                StatusCode::Fail, Some("rfn".to_string()));
     }
+
+    #[test]
+    fn warn_with_rfn_referencing_an_older_familyname_not_being_used_in_this_font_project(){
+        /* NOTE: This is not a real copyright statement.
+           It is only meant to test the check. */
+        let mut font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
+        let with_other_familyname_rfn: String = "Copyright 2022 The FooBar Project \
+                                                 Authors (https://github.com/foo/bar), \
+                                                 with Reserved Font Name FooBar.\
+                                                 ".to_string();
+        set_name_entry(&mut font,
+                       3,  // PlatformID.WINDOWS
+                       1,  // WindowsEncodingID.UNICODE_BMP
+                       0x0409,  // WindowsLanguageID.ENGLISH_USA,
+                       NameId::VERSION_STRING,
+                       with_other_familyname_rfn);
+        assert_results_contain(run_check(super::name_rfn, font),
+                               StatusCode::Warn, Some("legacy-familyname".to_string()));
+        // TODO: assert "(FooBar)" in msg
+    }
 */
 }
-/* TODO:
-
-# NOTE: This is not a real copyright statement. It is only meant to test the check.
-with_other_familyname_rfn = (
-    "Copyright 2022 The FooBar Project Authors"
-    " (https://github.com/foo/bar),"
-    " with Reserved Font Name FooBar."
-)
-ttFont["name"].setName(
-    with_other_familyname_rfn,
-    NameID.VERSION_STRING,
-    PlatformID.WINDOWS,
-    WindowsEncodingID.UNICODE_BMP,
-    WindowsLanguageID.ENGLISH_USA,
-)
-msg = assert_results_contain(
-    check(ttFont),
-    WARN,
-    "legacy-familyname",
-    'with "Reserved Font Name" that references an older'
-    " familyname not being used in this font project...",
-)
-assert "(FooBar)" in msg
-
-} */
