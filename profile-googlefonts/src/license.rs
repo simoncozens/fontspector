@@ -88,102 +88,16 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
 #[cfg(test)]
 #[allow(clippy::unwrap_used)]
 mod tests {
-
-    // --- CODETESTING ---
-    use fontspector_checkapi::{CheckResult, Context, StatusCode};
-    use serde_json::Map;
-    use write_fonts::{tables::name::NameRecord, FontBuilder};
-
-    macro_rules! TEST_FILE {
-        ($fname:expr) => {
-            Testable::new(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/resources/test/",
-                $fname
-            ))
-            .unwrap()
-        };
-    }
-
-    fn run_check(
-        check: fontspector_checkapi::Check<'_>,
-        font: Testable,
-    ) -> std::option::Option<CheckResult> {
-        let ctx: fontspector_checkapi::Context = Context {
-            skip_network: false,
-            network_timeout: Some(10),
-            configuration: Map::new(),
-            check_metadata: check.metadata(),
-        };
-        check.run(&TestableType::Single(&font), &ctx, None)
-    }
-
-    fn assert_pass(check_result: std::option::Option<CheckResult>) {
-        let status = check_result.unwrap().worst_status();
-        assert_eq!(status, StatusCode::Pass);
-    }
-
-    #[allow(dead_code)]
-    fn assert_results_contain(
-        check_result: std::option::Option<CheckResult>,
-        severity: StatusCode,
-        code: Option<String>,
-    ) {
-        let subresults = check_result.unwrap().subresults;
-        assert!(subresults
-            .iter()
-            .any(|subresult| subresult.severity == severity && subresult.code == code));
-    }
-
-    fn set_name_entry(font: &mut Testable, platform: u16, encoding: u16, language: u16, nameid: NameId, new_string: String){
-        use std::collections::BTreeSet;
-
-        let f = TTF.from_testable(&font).unwrap();
-        let name = f.font().name().unwrap();
-
-        let new_record = NameRecord::new(
-            platform,
-            encoding,
-            language,
-            nameid,
-            new_string.to_string().into(),
-        );
-        let mut new_records: BTreeSet<NameRecord> = name
-            .name_record()
-            .iter()
-            .filter(|record| record.name_id() != nameid)
-            .map(|r| {
-                #[allow(clippy::unwrap_used)]
-                NameRecord::new(
-                    r.platform_id(),
-                    r.encoding_id(),
-                    r.language_id(),
-                    r.name_id(),
-                    r.string(name.string_data())
-                        .unwrap()
-                        .chars()
-                        .collect::<String>()
-                        .to_string()
-                        .into(),
-                )
-            })
-            .collect();
-        new_records.insert(new_record);
-        let new_nametable = Name::new(new_records);
-        let new_bytes = FontBuilder::new()
-            .add_table(&new_nametable)
-            .unwrap()
-            .copy_missing_tables(f.font())
-            .build();
-
-        font.contents = new_bytes;
-    }
-
-    // --- end of CODETESTING ---
-
-    use crate::constants::OFL_BODY_TEXT;
-    use write_fonts::tables::name::Name;
     use super::*;
+    use fontspector_checkapi::{
+        TEST_FILE,
+        codetesting::{
+            assert_pass,
+            // assert_results_contain,
+            run_check,
+            set_name_entry,
+        }
+    };
 
     #[test]
     fn pass_with_good_font() {
@@ -195,6 +109,7 @@ mod tests {
     fn pass_with_good_font_containing_ofl_full_text() {
         /* The OFL text contains the term 'Reserved Font Name',
         which should not cause a FAIL: */
+        use crate::constants::OFL_BODY_TEXT;
         let mut font: Testable = TEST_FILE!("nunito/Nunito-Regular.ttf");
 
         set_name_entry(&mut font,
