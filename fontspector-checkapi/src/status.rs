@@ -31,6 +31,18 @@ impl StatusCode {
         ]
         .into_iter()
     }
+
+    pub fn from_string(s: &str) -> Option<StatusCode> {
+        match s {
+            "SKIP" => Some(StatusCode::Skip),
+            "INFO" => Some(StatusCode::Info),
+            "PASS" => Some(StatusCode::Pass),
+            "WARN" => Some(StatusCode::Warn),
+            "FAIL" => Some(StatusCode::Fail),
+            "ERROR" => Some(StatusCode::Error),
+            _ => None,
+        }
+    }
 }
 impl std::fmt::Display for StatusCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -130,6 +142,7 @@ impl Status {
 /// Reflects the result of some kind of early return from a check function
 ///
 /// This may be because there was an error, or because the check was skipped.
+#[derive(Debug)]
 pub enum CheckError {
     Error(String),
     Skip { message: String, code: String },

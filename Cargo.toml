@@ -7,6 +7,7 @@ members = [
     "fontspector-checkhelper",
     "profile-universal", "profile-testplugin", "profile-googlefonts",
     "fontspector-web",
+    "fontbakery-bridge",
 ]
 
 default-members = [ "fontspector-cli" ]

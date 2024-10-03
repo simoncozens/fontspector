@@ -1,5 +1,5 @@
 [package]
-name = "profile-testplugin"
+name = "fontbakery-bridge"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,8 +8,7 @@ crate-type=["cdylib"]
 
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
-toml = "0.8.14"
-serde_json = "1.0.68"
+pyo3 = "0.22"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 # Plugin architecture
