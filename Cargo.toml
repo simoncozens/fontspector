@@ -5,12 +5,14 @@ members = [
     "fontspector-cli",
     "fontspector-checkapi",
     "fontspector-checkhelper",
-    "profile-universal", "profile-testplugin", "profile-googlefonts",
+    "profile-universal",
+    "profile-testplugin",
+    "profile-googlefonts",
     "fontspector-web",
     "fontbakery-bridge",
 ]
 
-default-members = [ "fontspector-cli" ]
+default-members = ["fontspector-cli"]
 
 [workspace.dependencies]
 pluginator = "1.0.1"
@@ -22,5 +24,8 @@ write-fonts = "0.27.0"
 font-types = "0.5.5"
 
 # Serialization
-serde =  {version = "1.0.130", features=["derive"] }
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0"
 fontspector-checkhelper = { path = "./fontspector-checkhelper" }
+
+log = "0.4.14"

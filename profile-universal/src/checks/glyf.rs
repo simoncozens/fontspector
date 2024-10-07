@@ -28,7 +28,7 @@ fn glyf_unused_data(t: &Testable, _context: &Context) -> CheckFnResult {
         .font()
         .loca(None)
         .map_err(|_| CheckError::Error("No loca table".to_string()))?;
-    if let Some(last_index) = loca.get_raw(loca.len() + 1) {
+    if let Some(last_index) = loca.get_raw(loca.len()) {
         Ok(match glyf.len().cmp(&(last_index as usize)) {
             Ordering::Greater => Status::just_one_fail(
                 "unreachable-data",

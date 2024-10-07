@@ -1,0 +1,3 @@
+[submodule "fontbakery-bridge/fontbakery"]
+	path = fontbakery-bridge/fontbakery
+	url = https://github.com/googlefonts/fontbakery

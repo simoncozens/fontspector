@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 /// At this stage we do not care about the file type; this is sorted out later.
 /// Testables should be provided to fontspector wrapped in a TestableCollection object,
 /// for which see below.
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Hash, PartialEq, Eq)]
 pub struct Testable {
     /// The filename of the binary.
     pub filename: PathBuf,
@@ -13,6 +13,12 @@ pub struct Testable {
     pub source: Option<PathBuf>,
     /// The binary contents.
     pub contents: Vec<u8>,
+}
+
+impl std::fmt::Debug for Testable {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Testable({:?})", self.filename)
+    }
 }
 
 impl Testable {
@@ -113,6 +119,7 @@ impl TestableCollection {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum TestableType<'a> {
     Single(&'a Testable),
     Collection(&'a TestableCollection),

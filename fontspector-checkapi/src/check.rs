@@ -102,6 +102,7 @@ impl<'a> Check<'a> {
         context: &Context,
         section: Option<&str>,
     ) -> Option<CheckResult> {
+        log::debug!("Running check {} on {:?}", self.id, testable);
         match (&self.implementation, testable) {
             (CheckImplementation::CheckAll(_), TestableType::Single(_)) => None,
             (CheckImplementation::CheckOne(_), TestableType::Collection(_)) => None,

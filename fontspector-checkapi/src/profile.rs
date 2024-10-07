@@ -66,7 +66,7 @@ impl Profile {
 
         #[cfg(debug_assertions)]
         for missing in missing_checks {
-            eprintln!("Missing check: {}", missing);
+            log::warn!("Missing check: {}", missing);
         }
 
         for check in registry.checks.values() {

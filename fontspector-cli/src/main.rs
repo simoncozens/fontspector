@@ -8,6 +8,7 @@ use std::path::PathBuf;
 
 use args::Args;
 use clap::Parser;
+use fontbakery_bridge::FontbakeryBridge;
 use fontspector_checkapi::{
     Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
 };
@@ -45,6 +46,13 @@ fn main() {
 
     // Set up the check registry
     let mut registry = Registry::new();
+
+    // Python implementations first, I want to override them
+    #[allow(clippy::expect_used)] // If this fails, I *want* to panic
+    FontbakeryBridge
+        .register(&mut registry)
+        .expect("Couldn't register fontbakery bridge, fontspector bug");
+
     #[allow(clippy::expect_used)] // If this fails, I *want* to panic
     Universal
         .register(&mut registry)

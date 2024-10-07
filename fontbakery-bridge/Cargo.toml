@@ -4,12 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type=["cdylib"]
+# When running as a plugin:
+# crate-type = ["cdylib"]
+# When running as a library:
+crate-type = ["lib"]
 
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 pyo3 = "0.22"
+serde_json = { workspace = true }
+log = { workspace = true }
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 # Plugin architecture
-pluginator = {workspace = true}
+pluginator = { workspace = true }

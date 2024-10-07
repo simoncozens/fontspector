@@ -10,12 +10,13 @@ license = "Apache-2.0"
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 # These profiles are baked-in
+fontbakery-bridge = { path = "../fontbakery-bridge" }
 profile-universal = { path = "../profile-universal" }
 profile-googlefonts = { path = "../profile-googlefonts" }
 pluginator = { workspace = true }
 clap = { version = "3.2.5", features = ["derive"] }
 itertools = "0.10.0"
-log = "0.4.14"
+log = { workspace = true }
 env_logger = "0.8"
 rayon = "1.0.1"
 
@@ -25,7 +26,7 @@ colored = "2.1.0"
 
 # JSON reporter
 serde = { workspace = true }
-serde_json = "1.0"
+serde_json = { workspace = true }
 
 # Markdown/HTML reporters
 tera = "1.20.0"
