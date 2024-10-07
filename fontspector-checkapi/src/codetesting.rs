@@ -56,7 +56,7 @@ pub fn set_name_entry(
 ) {
     use std::collections::BTreeSet;
 
-    let f = TTF.from_testable(&font).unwrap();
+    let f = TTF.from_testable(font).unwrap();
     let name = f.font().name().unwrap();
 
     let new_record = NameRecord::new(
