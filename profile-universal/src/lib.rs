@@ -10,7 +10,12 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::bold_italic_unique::bold_italic_unique);
         cr.register_check(checks::code_pages::code_pages);
         cr.register_check(checks::fvar::axis_ranges_correct);
+        cr.register_check(checks::fvar::distinct_instance_records);
+        cr.register_check(checks::fvar::family_axis_ranges);
         cr.register_check(checks::fvar::regular_coords_correct);
+        cr.register_check(checks::fvar::same_size_instance_records);
+        cr.register_check(checks::fvar::varfont_foundry_defined_tag_name);
+        cr.register_check(checks::fvar::varfont_valid_nameids);
         cr.register_check(checks::glyf::glyf_unused_data);
         cr.register_check(checks::glyf::check_point_out_of_bounds);
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
@@ -47,6 +52,11 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/points_out_of_bounds",
     "opentype/glyf_non_transformed_duplicate_components",
     "opentype/name/no_copyright_on_description",
+    "opentype/varfont/distinct_instance_records",
+    "opentype/varfont/family_axis_ranges",
+    "opentype/varfont/foundry_defined_tag_name",
+    "opentype/varfont/same_size_instance_records",
+    "opentype/varfont/valid_nameids",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -70,6 +80,9 @@ impl fontspector_checkapi::Plugin for Universal {
     # "opentype/varfont/regular_wdth_coord",
     # "opentype/varfont/regular_wght_coord",
     # "opentype/fsselection_matches_macstyle", (merged into opentype/fsselection)
+    # "opentype/varfont/valid_axis_nameid", (merged into opentype/varfont/valid_nameids)
+    # "opentype/varfont/valid_postscript_nameid", (above)
+    # "opentype/varfont/valid_subfamily_nameid", (above)
 
     # Checks I haven't got around to classifying yet
     "opentype/gdef_mark_chars",
@@ -93,14 +106,7 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/postscript_name",
     "opentype/slant_direction",
     "opentype/stat_has_axis_value_tables",
-    "opentype/varfont/distinct_instance_records",
-    "opentype/varfont/family_axis_ranges",
-    "opentype/varfont/foundry_defined_tag_name",
-    "opentype/varfont/same_size_instance_records",
-    "opentype/varfont/valid_axis_nameid",
     "opentype/varfont/valid_default_instance_nameids",
-    "opentype/varfont/valid_postscript_nameid",
-    "opentype/varfont/valid_subfamily_nameid",
     "opentype/vendor_id",
     "opentype/weight_class_fvar",
     "opentype/xavgcharwidth",

@@ -1,3 +1,6 @@
+use std::collections::HashSet;
+
+use font_types::NameId;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use skrifa::MetadataProvider;
 
@@ -7,6 +10,8 @@ const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
     ("slnt", 0.0),
     ("ital", 0.0),
 ];
+
+const REGISTERED_AXIS_TAGS: [&str; 5] = ["ital", "opsz", "slnt", "wdth", "wght"];
 
 #[check(
     id = "opentype/fvar/regular_coords_correct",
@@ -131,6 +136,244 @@ fn axis_ranges_correct(t: &Testable, _context: &Context) -> CheckFnResult {
                     indicating that this may be a back slanted design, which is rare. If that's not the case, then
                     the \"slnt\" axis should be a range of negative values instead.",
                     slnt.min_value(), slnt.max_value()
+                ),
+            ));
+        }
+    }
+    return_result(problems)
+}
+
+#[check(
+    id = "opentype/varfont/distinct_instance_records",
+    title = "Validates that all of the instance records in a given font have distinct data",
+    rationale = "According to the 'fvar' documentation in OpenType spec v1.9
+        https://docs.microsoft.com/en-us/typography/opentype/spec/fvar
+
+        All of the instance records in a font should have distinct coordinates
+        and distinct subfamilyNameID and postScriptName ID values. If two or more
+        records share the same coordinates, the same nameID values or the same
+        postScriptNameID values, then all but the first can be ignored.",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3706"
+)]
+fn distinct_instance_records(t: &Testable, _context: &Context) -> CheckFnResult {
+    let f = testfont!(t);
+    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
+
+    let mut problems = vec![];
+    let mut unique_records = HashSet::new();
+    // We want to get at subfamily and postscript name IDs, so we use the lower-level
+    // Skrifa API here.
+    for instance in f.font().named_instances().iter() {
+        let loc = instance.location();
+        let coords: Vec<_> = loc.coords().to_vec();
+        let subfamily_name_id = instance.subfamily_name_id();
+        let postscript_name_id = instance.postscript_name_id();
+        let instance_data = (coords.clone(), subfamily_name_id, postscript_name_id);
+        if unique_records.contains(&instance_data) {
+            let subfamily = f
+                .get_name_entry_strings(subfamily_name_id)
+                .next()
+                .unwrap_or_else(|| format!("ID {}", subfamily_name_id));
+            problems.push(Status::warn(
+                "duplicate-instance",
+                &format!(
+                    "Instance {} with coordinates {:?} is duplicated",
+                    subfamily, coords
+                ),
+            ));
+        } else {
+            unique_records.insert(instance_data);
+        }
+    }
+    return_result(problems)
+}
+
+#[check(
+    id = "opentype/varfont/family_axis_ranges",
+    title = "Check that family axis ranges are identical",
+    rationale = "Between members of a family (such as Roman & Italic), the ranges of variable axes must be identical.",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4445",
+    implementation = "all"
+)]
+fn family_axis_ranges(c: &TestableCollection, context: &Context) -> CheckFnResult {
+    let mut fonts = TTF.from_collection(c);
+    fonts.retain(|f| f.is_variable_font());
+    skip!(
+        fonts.len() < 2,
+        "not-enough-fonts",
+        "Not enough variable fonts to compare"
+    );
+    let values: Vec<_> = fonts
+        .iter()
+        .map(|f| {
+            let label = f
+                .filename
+                .file_name()
+                .map(|x| x.to_string_lossy())
+                .map(|x| x.to_string())
+                .unwrap_or("Unknown file".to_string());
+            let comparable = f
+                .axis_ranges()
+                .map(|(ax, min, def, max)| format!("{}={:.2}:{:.2}:{:.2}", ax, min, def, max))
+                .collect::<Vec<String>>()
+                .join(", ");
+            (comparable.clone(), comparable, label)
+        })
+        .collect();
+    assert_all_the_same(
+        context,
+        &values,
+        "axis-range-mismatch",
+        "Variable axis ranges not matching between font files",
+    )
+}
+
+#[check(
+    id = "opentype/varfont/foundry_defined_tag_name",
+    title = "Validate foundry-defined design-variation axis tag names.",
+    rationale = "According to the OpenType spec's syntactic requirements for
+    foundry-defined design-variation axis tags available at
+    https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg
+
+    Foundry-defined tags must begin with an uppercase letter
+    and must use only uppercase letters or digits.",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4043"
+)]
+fn varfont_foundry_defined_tag_name(t: &Testable, _context: &Context) -> CheckFnResult {
+    let f = testfont!(t);
+    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
+    let mut problems = vec![];
+    for axis in f.font().axes().iter() {
+        let tag = axis.tag().to_string();
+        if REGISTERED_AXIS_TAGS.contains(&tag.as_str()) {
+            continue;
+        }
+        if REGISTERED_AXIS_TAGS.contains(&tag.to_lowercase().as_str()) {
+            problems.push(Status::warn("foundry-defined-similar-registered-name",
+                &format!("Foundry-defined axis tag {} is similar to a registered tag name {}, consider renaming. If this tag was meant to be a registered tag, please use all lowercase letters in the tag name.", tag, tag.to_lowercase())
+            ));
+        }
+        // Axis tag must be uppercase and contain only uppercase letters or digits
+        if !tag
+            .chars()
+            .next()
+            .map(|c| c.is_ascii_uppercase())
+            .unwrap_or(false)
+        {
+            problems.push(Status::fail(
+                "invalid-foundry-defined-tag-first-letter",
+                &format!(
+                    "Foundry-defined axis tag {} must begin with an uppercase letter",
+                    tag
+                ),
+            ))
+        } else if !tag
+            .chars()
+            .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit())
+        {
+            problems.push(Status::fail("invalid-foundry-defined-tag-chars",
+                &format!("Foundry-defined axis tag {} must begin with an uppercase letter and contain only uppercase letters or digits.", tag)
+            ));
+        }
+    }
+    return_result(problems)
+}
+
+#[check(
+    id = "opentype/varfont/same_size_instance_records",
+    title = "Validates that all of the instance records in a given font have the same size",
+    rationale = "According to the 'fvar' documentation in OpenType spec v1.9
+        https://docs.microsoft.com/en-us/typography/opentype/spec/fvar
+
+        All of the instance records in a given font must be the same size, with
+        all either including or omitting the postScriptNameID field. [...]
+        If the value is 0xFFFF, then the value is ignored, and no PostScript name
+        equivalent is provided for the instance.",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3705"
+)]
+fn same_size_instance_records(t: &Testable, _context: &Context) -> CheckFnResult {
+    let f = testfont!(t);
+    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
+    let has_a_postscriptname: HashSet<bool> = f
+        .font()
+        .named_instances()
+        .iter()
+        .map(|ni| ni.postscript_name_id().is_none())
+        .collect();
+    Ok(if has_a_postscriptname.len() > 1 {
+        Status::just_one_fail(
+            "different-size-instance-records",
+            "Instance records don't all have the same size.",
+        )
+    } else {
+        Status::just_one_pass()
+    })
+}
+
+#[check(
+    id = "opentype/varfont/valid_nameids",
+    title = "Validates that all of the name IDs in an instance record are within the correct range",
+    rationale = r#"
+        According to the 'fvar' documentation in OpenType spec v1.9
+        https://docs.microsoft.com/en-us/typography/opentype/spec/fvar
+
+        The axisNameID field provides a name ID that can be used to obtain strings
+        from the 'name' table that can be used to refer to the axis in application
+        user interfaces. The name ID must be greater than 255 and less than 32768.
+
+        The postScriptNameID field provides a name ID that can be used to obtain
+        strings from the 'name' table that can be treated as equivalent to name
+        ID 6 (PostScript name) strings for the given instance. Values of 6 and
+        "undefined" can be used; otherwise, values must be greater than 255 and
+        less than 32768.
+
+        The subfamilyNameID field provides a name ID that can be used to obtain
+        strings from the 'name' table that can be treated as equivalent to name
+        ID 17 (typographic subfamily) strings for the given instance. Values of
+        2 or 17 can be used; otherwise, values must be greater than 255 and less
+        than 32768.
+    "#,
+    proposal = "https://github.com/fonttools/fontbakery/issues/3703"
+)]
+fn varfont_valid_nameids(t: &Testable, _context: &Context) -> CheckFnResult {
+    let f = testfont!(t);
+    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
+    let mut problems = vec![];
+    let valid_nameid = |n: NameId| (255..32768).contains(&n.to_u16());
+
+    // Do the axes first
+    for axis in f.font().axes().iter() {
+        let axis_name_id = axis.name_id();
+        if !valid_nameid(axis_name_id) {
+            problems.push(Status::fail(
+                "invalid-axis-name-id",
+                &format!(
+                    "Axis name ID {} ({}) is out of range. It must be greater than 255 and less than 32768.",
+                    axis_name_id, f.get_name_entry_strings(axis_name_id).next().unwrap_or_default()
+                ),
+            ));
+        }
+    }
+
+    for instance in f.font().named_instances().iter() {
+        let subfamily_name_id = instance.subfamily_name_id();
+        if let Some(n) = instance.postscript_name_id() {
+            if n != NameId::new(6) && !valid_nameid(n) {
+                problems.push(Status::fail(
+                        "invalid-postscript-name-id",
+                        &format!(
+                            "PostScript name ID {} ({}) is out of range. It must be greater than 255 and less than 32768, or 6 or 0xFFFF.",
+                            n, f.get_name_entry_strings(n).next().unwrap_or_default()
+                        ),
+                    ));
+            }
+        }
+        if !valid_nameid(subfamily_name_id) {
+            problems.push(Status::fail(
+                "invalid-subfamily-name-id",
+                &format!(
+                    "Instance subfamily name ID {} ({}) is out of range. It must be greater than 255 and less than 32768.",
+                    subfamily_name_id, f.get_name_entry_strings(subfamily_name_id).next().unwrap_or_default()
                 ),
             ));
         }

@@ -218,4 +218,14 @@ impl TestFont<'_> {
             (instance_name, coords.collect())
         })
     }
+
+    pub fn axis_ranges(&self) -> impl Iterator<Item = (String, f32, f32, f32)> + '_ {
+        self.font().axes().iter().map(|axis| {
+            let tag = axis.tag().to_string();
+            let min = axis.min_value();
+            let max = axis.max_value();
+            let def = axis.default_value();
+            (tag, min, def, max)
+        })
+    }
 }
