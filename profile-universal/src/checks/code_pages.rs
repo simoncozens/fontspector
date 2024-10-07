@@ -39,3 +39,38 @@ fn code_pages(t: &Testable, _context: &Context) -> CheckFnResult {
         Ok(Status::just_one_pass())
     }
 }
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod tests {
+    use super::*;
+    use fontspector_checkapi::{
+//        StatusCode,
+        TEST_FILE,
+        codetesting::{
+            assert_pass,
+//            assert_results_contain,
+            run_check,
+        }
+    };
+
+    #[test]
+    fn pass_opentype_code_pages() {
+        let font: Testable = TEST_FILE!("merriweather/Merriweather-Regular.ttf");
+        assert_pass(run_check(super::code_pages, font));
+    }
+
+/*
+    #[test]
+    fn fail_with_no_code_page_declared() {
+        let mut font: Testable = TEST_FILE!("merriweather/Merriweather-Regular.ttf");
+
+//      ttFont["OS/2"].ulCodePageRange1 = 0  # remove all code pages to make the check FAIL
+//      ttFont["OS/2"].ulCodePageRange2 = 0
+
+        assert_results_contain(
+            run_check(super::code_pages, font),
+            StatusCode::Fail, Some("no-code-pages".to_string()));
+    }
+*/
+}
