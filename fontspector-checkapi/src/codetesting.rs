@@ -1,20 +1,15 @@
-use crate::{
-    prelude::*,
-    Check,
-    CheckResult,
-    Context,
-    FileTypeConvert,
-    StatusCode,
-};
+#![allow(clippy::unwrap_used, clippy::expect_used)] // No bad thing if we panic in tests
+use crate::{prelude::*, Check, CheckResult, Context, FileTypeConvert, StatusCode};
 use font_types::NameId;
 use read_fonts::TableProvider;
 use serde_json::Map;
 use write_fonts::{
+    tables::name::{Name, NameRecord},
     FontBuilder,
-    tables::name::{Name, NameRecord}
 };
 
-#[macro_export] macro_rules! TEST_FILE {
+#[macro_export]
+macro_rules! TEST_FILE {
     ($fname:expr) => {
         Testable::new(concat!(
             env!("CARGO_MANIFEST_DIR"),
@@ -25,10 +20,7 @@ use write_fonts::{
     };
 }
 
-pub fn run_check(
-    check: Check<'_>,
-    font: Testable,
-) -> std::option::Option<CheckResult> {
+pub fn run_check(check: Check<'_>, font: Testable) -> std::option::Option<CheckResult> {
     let ctx: Context = Context {
         skip_network: false,
         network_timeout: Some(10),
@@ -54,7 +46,14 @@ pub fn assert_results_contain(
         .any(|subresult| subresult.severity == severity && subresult.code == code));
 }
 
-pub fn set_name_entry(font: &mut Testable, platform: u16, encoding: u16, language: u16, nameid: NameId, new_string: String){
+pub fn set_name_entry(
+    font: &mut Testable,
+    platform: u16,
+    encoding: u16,
+    language: u16,
+    nameid: NameId,
+    new_string: String,
+) {
     use std::collections::BTreeSet;
 
     let f = TTF.from_testable(&font).unwrap();
