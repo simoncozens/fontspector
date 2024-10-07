@@ -52,10 +52,5 @@ fn arabic_spacing_symbols(t: &Testable, _context: &Context) -> CheckFnResult {
             }
         }
     }
-
-    if problems.is_empty() {
-        Ok(Status::just_one_pass())
-    } else {
-        return_result(problems)
-    }
+    return_result(problems)
 }
