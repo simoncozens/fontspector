@@ -25,6 +25,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::stat_axis_record);
+        cr.register_check(checks::stat::stat_has_axis_value_tables);
         cr.register_check(checks::os2::fsselection);
         cr.register_check(checks::os2::panose_familytype);
 
@@ -57,6 +58,7 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/varfont/foundry_defined_tag_name",
     "opentype/varfont/same_size_instance_records",
     "opentype/varfont/valid_nameids",
+    "opentype/stat_has_axis_value_tables",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -105,7 +107,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/name/postscript_vs_cff",
     "opentype/postscript_name",
     "opentype/slant_direction",
-    "opentype/stat_has_axis_value_tables",
     "opentype/varfont/valid_default_instance_nameids",
     "opentype/vendor_id",
     "opentype/weight_class_fvar",
