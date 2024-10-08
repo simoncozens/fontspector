@@ -2,7 +2,10 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 
 use fontspector_checkapi::{prelude::*, StatusCode};
-use pyo3::{prelude::*, types::PyList};
+use pyo3::{
+    prelude::*,
+    types::{PyList, PyTuple},
+};
 use serde_json::json;
 pub struct FontbakeryBridge;
 
@@ -40,8 +43,16 @@ fn python_checkrunner_impl(
             ));
         };
 
-        let checkresult = check.call1((arg,))?;
+        let mut checkresult = check.call1((arg,))?;
         let mut messages: Vec<Status> = vec![];
+
+        // If the checkresult is a single tuple, turn it into a list of tuples, and get a generator
+        if checkresult.is_instance_of::<PyTuple>() {
+            let checkresults = vec![checkresult];
+            checkresult = PyList::new_bound(py, checkresults)
+                .getattr("__iter__")?
+                .call0()?;
+        }
 
         // Now convert the Fontbakery status to our StatusList
         while let Ok(value) = checkresult.getattr("__next__")?.call0() {
@@ -218,6 +229,31 @@ impl fontspector_checkapi::Plugin for FontbakeryBridge {
         register_python_checks(
             "fontbakery.checks.opentype.hhea",
             include_str!("../fontbakery/Lib/fontbakery/checks/opentype/hhea.py"),
+            cr,
+        )?;
+        register_python_checks(
+            "fontbakery.checks.opentype.os2",
+            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/os2.py"),
+            cr,
+        )?;
+        register_python_checks(
+            "fontbakery.checks.some_other_checks",
+            include_str!("../fontbakery/Lib/fontbakery/checks/some_other_checks.py"),
+            cr,
+        )?;
+        register_python_checks(
+            "fontbakery.checks.glyphset",
+            include_str!("../fontbakery/Lib/fontbakery/checks/glyphset.py"),
+            cr,
+        )?;
+        register_python_checks(
+            "fontbakery.checks.metrics",
+            include_str!("../fontbakery/Lib/fontbakery/checks/metrics.py"),
+            cr,
+        )?;
+        register_python_checks(
+            "fontbakery.checks.hinting",
+            include_str!("../fontbakery/Lib/fontbakery/checks/hinting.py"),
             cr,
         )?;
         cr.register_profile(
