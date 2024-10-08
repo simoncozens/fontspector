@@ -8,7 +8,13 @@ use read_fonts::{
     types::Version16Dot16,
     TableProvider,
 };
-use skrifa::{font::FontRef, string::StringId, GlyphId, MetadataProvider, Tag};
+use skrifa::{
+    font::FontRef, setting::VariationSetting, string::StringId, GlyphId, MetadataProvider, Tag,
+};
+use skrifa::{
+    outline::{DrawSettings, OutlinePen},
+    prelude::Size,
+};
 use std::{
     cell::RefCell,
     collections::{HashMap, HashSet},
@@ -227,5 +233,29 @@ impl TestFont<'_> {
             let def = axis.default_value();
             (tag, min, def, max)
         })
+    }
+
+    pub fn draw_glyph<I>(
+        &self,
+        gid: GlyphId,
+        pen: &mut impl OutlinePen,
+        settings: I,
+    ) -> Result<(), CheckError>
+    where
+        I: IntoIterator,
+        I::Item: Into<VariationSetting>,
+    {
+        let glyph = self
+            .font()
+            .outline_glyphs()
+            .get(gid)
+            .ok_or_else(|| CheckError::skip("no-H", "No H glyph in font"))?;
+        let location = self.font().axes().location(settings);
+        let settings = DrawSettings::unhinted(Size::unscaled(), &location);
+
+        glyph
+            .draw(settings, pen)
+            .map_err(|_| CheckError::Error("Failed to draw glyph".to_string()))?;
+        Ok(())
     }
 }

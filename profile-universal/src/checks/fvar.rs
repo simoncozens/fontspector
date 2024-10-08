@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use font_types::NameId;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
-use skrifa::MetadataProvider;
+use skrifa::{outline::OutlinePen, MetadataProvider};
 
 const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
     ("wght", 400.0),
@@ -379,4 +379,104 @@ fn varfont_valid_nameids(t: &Testable, _context: &Context) -> CheckFnResult {
         }
     }
     return_result(problems)
+}
+
+struct XDeltaPen {
+    highest_point: Option<(f32, f32)>,
+    lowest_point: Option<(f32, f32)>,
+}
+
+impl XDeltaPen {
+    fn new() -> Self {
+        XDeltaPen {
+            highest_point: None,
+            lowest_point: None,
+        }
+    }
+
+    fn update(&mut self, x: f32, y: f32) {
+        if let Some((_hx, hy)) = self.highest_point {
+            if y > hy {
+                self.highest_point = Some((x, y));
+            }
+        } else {
+            self.highest_point = Some((x, y));
+        }
+        if let Some((_lx, ly)) = self.lowest_point {
+            if y < ly {
+                self.lowest_point = Some((x, y));
+            }
+        } else {
+            self.lowest_point = Some((x, y));
+        }
+    }
+
+    fn x_delta(&self) -> f32 {
+        if let (Some((hx, _)), Some((lx, _))) = (self.highest_point, self.lowest_point) {
+            hx - lx
+        } else {
+            0.0
+        }
+    }
+}
+
+impl OutlinePen for XDeltaPen {
+    fn move_to(&mut self, x: f32, y: f32) {
+        self.update(x, y);
+    }
+    fn line_to(&mut self, x: f32, y: f32) {
+        self.update(x, y);
+    }
+    fn quad_to(&mut self, cx0: f32, cy0: f32, x: f32, y: f32) {
+        self.update(cx0, cy0);
+        self.update(x, y);
+    }
+    fn curve_to(&mut self, cx0: f32, cy0: f32, cx1: f32, cy1: f32, x: f32, y: f32) {
+        self.update(cx0, cy0);
+        self.update(cx1, cy1);
+        self.update(x, y);
+    }
+    fn close(&mut self) {}
+}
+
+#[check(
+    id = "opentype/slant_direction",
+    rationale = "
+        The 'slnt' axis values are defined as negative values for a clockwise (right)
+        lean, and positive values for counter-clockwise lean. This is counter-intuitive
+        for many designers who are used to think of a positive slant as a lean to
+        the right.
+
+        This check ensures that the slant axis direction is consistent with the specs.
+
+        https://docs.microsoft.com/en-us/typography/opentype/spec/dvaraxistag_slnt
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/pull/3910",
+    title = "Checking direction of slnt axis angles"
+)]
+fn slant_direction(t: &Testable, _context: &Context) -> CheckFnResult {
+    let f = testfont!(t);
+    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
+    let (_a, slnt_min, _dflt, slnt_max) = f
+        .axis_ranges()
+        .find(|(a, _min, _dflt, _max)| a == "slnt")
+        .ok_or_else(|| CheckError::skip("no-slnt", "No 'slnt' axis found"))?;
+    let h_id = f
+        .font()
+        .charmap()
+        .map('H')
+        .ok_or_else(|| CheckError::skip("no-H", "No H glyph in font"))?;
+    // Get outline at slnt_max
+    let mut max_pen = XDeltaPen::new();
+    f.draw_glyph(h_id, &mut max_pen, vec![("slnt", slnt_max)])?;
+    let mut min_pen = XDeltaPen::new();
+    f.draw_glyph(h_id, &mut min_pen, vec![("slnt", slnt_min)])?;
+    if min_pen.x_delta() > max_pen.x_delta() {
+        Ok(Status::just_one_pass())
+    } else {
+        Ok(Status::just_one_fail(
+            "positive-value-for-clockwise-lean",
+            "The right-leaning glyphs have a positive 'slnt' axis value, which is likely a mistake. It needs to be negative to lean rightwards.",
+        ))
+    }
 }
