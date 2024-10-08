@@ -1,6 +1,6 @@
 use serde_json::{Map, Value};
 
-use crate::Check;
+use crate::{Check, Profile};
 
 #[derive(Debug, Clone)]
 pub struct Context {
@@ -20,15 +20,21 @@ impl Context {
         &self,
         check: &Check,
         configuration: &Map<String, serde_json::Value>,
+        profile: &Profile,
     ) -> Self {
+        let mut check_config: Map<String, Value> = profile.defaults(check.id).into_iter().collect();
+        // Overlay user-provided configuration on top of that.
+        if let Some(user_config) = configuration.get(check.id) {
+            if let Some(user_config) = user_config.as_object() {
+                for (k, v) in user_config {
+                    check_config.insert(k.clone(), v.clone());
+                }
+            }
+        }
         Context {
             skip_network: self.skip_network,
             network_timeout: self.network_timeout,
-            configuration: configuration
-                .get(check.id)
-                .and_then(|x| x.as_object())
-                .cloned()
-                .unwrap_or_default(),
+            configuration: check_config,
             check_metadata: check.metadata(),
         }
     }

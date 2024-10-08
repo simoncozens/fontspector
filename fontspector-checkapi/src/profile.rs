@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Map;
+use serde_json::{Map, Value};
 
 use crate::{Check, CheckId, Context, Registry, StatusCode, TestableType};
 use std::collections::HashMap;
@@ -21,7 +21,7 @@ pub struct Profile {
     #[serde(default)]
     overrides: HashMap<CheckId, Vec<Override>>,
     #[serde(default)]
-    configuration_defaults: HashMap<CheckId, HashMap<String, String>>,
+    configuration_defaults: HashMap<CheckId, HashMap<String, serde_json::Value>>,
 }
 
 impl Profile {
@@ -64,10 +64,10 @@ impl Profile {
         //     return Err(format!("Missing checks: {}", missing_checks.join(", ")));
         // }
 
-        #[cfg(debug_assertions)]
-        for missing in missing_checks {
-            log::warn!("Missing check: {}", missing);
-        }
+        // #[cfg(debug_assertions)]
+        // for missing in missing_checks {
+        //     log::warn!("Missing check: {}", missing);
+        // }
 
         for check in registry.checks.values() {
             if !registry.filetypes.contains_key(check.applies_to) {
@@ -97,15 +97,25 @@ impl Profile {
                     .filter(|checkname| {
                         included_excluded(checkname, include_checks, exclude_checks)
                     })
-                    .map(|checkname| (sectionname.clone(), registry.checks.get(checkname)))
-                    .filter_map(|(sectionname, check)| {
-                        check.map(|check| {
+                    .map(|checkname| {
+                        (
+                            sectionname.clone(),
+                            registry.checks.get(checkname),
+                            checkname,
+                        )
+                    })
+                    .filter_map(|(sectionname, check, checkname)| {
+                        let ck = check.map(|check| {
                             (
                                 sectionname,
                                 check,
-                                general_context.specialize(check, &configuration),
+                                general_context.specialize(check, &configuration, self),
                             )
-                        })
+                        });
+                        if ck.is_none() {
+                            log::warn!("Unknown check: {}", checkname);
+                        }
+                        ck
                     })
             })
             .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
@@ -115,6 +125,13 @@ impl Profile {
                     .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
             })
             .collect()
+    }
+
+    pub fn defaults(&self, check_id: &str) -> HashMap<String, Value> {
+        self.configuration_defaults
+            .get(check_id)
+            .unwrap_or(&HashMap::new())
+            .clone()
     }
 }
 
