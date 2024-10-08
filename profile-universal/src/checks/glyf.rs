@@ -1,6 +1,7 @@
+use font_types::Point;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::{
-    tables::glyf::{Anchor, Glyph},
+    tables::glyf::{Anchor, Glyph, PointFlags},
     TableProvider,
 };
 use skrifa::{GlyphId, Tag};
@@ -64,25 +65,33 @@ fn check_point_out_of_bounds(t: &Testable, context: &Context) -> CheckFnResult {
     for gid in 0..font.maxp()?.num_glyphs() {
         let gid = GlyphId::new(gid);
         if let Some(Glyph::Simple(glyph)) = loca.get_glyf(gid, &glyf)? {
-            for point in glyph.points() {
-                if point.x < glyph.x_min() || point.x > glyph.x_max() {
+            let point_count = glyph.num_points();
+            let mut points: Vec<Point<i32>> = vec![Point::default(); point_count];
+            let mut flags = vec![PointFlags::default(); point_count];
+            glyph.read_points_fast(&mut points, &mut flags)?;
+            let x_min: i32 = glyph.x_min().into();
+            let x_max: i32 = glyph.x_max().into();
+            let y_min: i32 = glyph.y_min().into();
+            let y_max: i32 = glyph.y_max().into();
+            for point in points {
+                if point.x < x_min || point.x > x_max {
                     #[allow(clippy::unwrap_used)] // Synthesise is true so this will never fail
                     messages.push(format!(
                         "{} (x={}, bounds are {}<->{})",
                         ttf.glyph_name_for_id(gid, true).unwrap(),
                         point.x,
-                        glyph.x_min(),
-                        glyph.x_max()
+                        x_min,
+                        x_max
                     ));
                 }
-                if point.y < glyph.y_min() || point.y > glyph.y_max() {
+                if point.y < y_min || point.y > y_max {
                     #[allow(clippy::unwrap_used)] // Synthesise is true so this will never fail
                     messages.push(format!(
                         "{} (y={}, bounds are {}<->{})",
                         ttf.glyph_name_for_id(gid, true).unwrap(),
                         point.y,
-                        glyph.y_min(),
-                        glyph.y_max()
+                        y_min,
+                        y_max
                     ));
                 }
             }
