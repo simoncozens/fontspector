@@ -31,6 +31,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::layout::layout_valid_language_tags);
         cr.register_check(checks::layout::layout_valid_script_tags);
         cr.register_check(checks::name::check_name_no_copyright_on_description);
+        cr.register_check(checks::name::check_name_match_familyname_fullfont);
         cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::stat_axis_record);
@@ -39,6 +40,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::os2::fsselection);
         cr.register_check(checks::os2::panose_familytype);
         cr.register_check(checks::os2::check_vendor_id);
+        cr.register_check(checks::os2::xavgcharwidth);
 
         let opentype_profile = Profile::from_toml(
             r#"
@@ -76,6 +78,8 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/weight_class_fvar",
     "opentype/vendor_id",
     "opentype/name/match_familyname_fullfont",
+    "opentype/varfont/valid_default_instance_nameids",
+    "opentype/xavgcharwidth",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -120,8 +124,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/name/postscript_vs_cff",
     "opentype/postscript_name",
     "opentype/slant_direction",
-    "opentype/varfont/valid_default_instance_nameids",
-    "opentype/xavgcharwidth",
 ]
 "#,
         )
