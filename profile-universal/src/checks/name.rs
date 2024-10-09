@@ -136,31 +136,39 @@ mod tests {
     fn fail_with_a_completely_empty_string() {
         let mut font: Testable = TEST_FILE!("source-sans-pro/TTF/SourceSansPro-Regular.ttf");
 
-        set_name_entry(&mut font,
-                       3,  // PlatformID.WINDOWS
-                       1,  // WindowsEncodingID.UNICODE_BMP
-                       0x0409,  // WindowsLanguageID.ENGLISH_USA,
-                       NameId::FAMILY_NAME,
-                       "".to_string());
+        set_name_entry(
+            &mut font,
+            3,      // PlatformID.WINDOWS
+            1,      // WindowsEncodingID.UNICODE_BMP
+            0x0409, // WindowsLanguageID.ENGLISH_USA,
+            NameId::FAMILY_NAME,
+            "".to_string(),
+        );
 
         assert_results_contain(
             run_check(super::name_empty_records, font),
-            StatusCode::Fail, Some("empty-record".to_string()));
+            StatusCode::Fail,
+            Some("empty-record".to_string()),
+        );
     }
 
     #[test]
     fn fail_with_a_string_that_only_has_whitespace() {
         let mut font: Testable = TEST_FILE!("source-sans-pro/TTF/SourceSansPro-Regular.ttf");
 
-        set_name_entry(&mut font,
-                       3,  // PlatformID.WINDOWS
-                       1,  // WindowsEncodingID.UNICODE_BMP
-                       0x0409,  // WindowsLanguageID.ENGLISH_USA,
-                       NameId::FAMILY_NAME,
-                       " ".to_string());
+        set_name_entry(
+            &mut font,
+            3,      // PlatformID.WINDOWS
+            1,      // WindowsEncodingID.UNICODE_BMP
+            0x0409, // WindowsLanguageID.ENGLISH_USA,
+            NameId::FAMILY_NAME,
+            " ".to_string(),
+        );
 
         assert_results_contain(
             run_check(super::name_empty_records, font),
-            StatusCode::Fail, Some("empty-record".to_string()));
+            StatusCode::Fail,
+            Some("empty-record".to_string()),
+        );
     }
 }
