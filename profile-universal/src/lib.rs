@@ -17,6 +17,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::fvar::slant_direction);
         cr.register_check(checks::fvar::varfont_foundry_defined_tag_name);
         cr.register_check(checks::fvar::varfont_valid_nameids);
+        cr.register_check(checks::fvar::varfont_valid_default_instance_nameids);
         cr.register_check(checks::glyf::glyf_unused_data);
         cr.register_check(checks::glyf::check_point_out_of_bounds);
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);

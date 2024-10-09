@@ -207,11 +207,6 @@ impl fontspector_checkapi::Plugin for FontbakeryBridge {
             cr,
         )?;
         register_python_checks(
-            "fontbakery.checks.opentype.fvar",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/fvar.py"),
-            cr,
-        )?;
-        register_python_checks(
             "fontbakery.checks.opentype.gdef",
             include_str!("../fontbakery/Lib/fontbakery/checks/opentype/gdef.py"),
             cr,
