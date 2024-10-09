@@ -87,6 +87,10 @@ impl Status {
         Box::new(vec![Status::warn(code, message)].into_iter())
     }
 
+    pub fn just_one_info(code: &str, message: &str) -> Box<dyn Iterator<Item = Status>> {
+        Box::new(vec![Status::info(code, message)].into_iter())
+    }
+
     pub fn just_one_fail(code: &str, message: &str) -> Box<dyn Iterator<Item = Status>> {
         Box::new(vec![Status::fail(code, message)].into_iter())
     }
