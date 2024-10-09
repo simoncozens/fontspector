@@ -4,7 +4,7 @@ use read_fonts::{tables::head::MacStyle, ReadError, TableProvider};
 use skrifa::MetadataProvider;
 
 #[check(
-    id = "font_version",
+    id = "opentype/font_version",
     proposal = "legacy:check/044",
     title = "Checking font version fields (head and name table).",
     rationale = "
