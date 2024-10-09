@@ -18,15 +18,26 @@ use skrifa::MetadataProvider;
 fn font_version(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let head_version = font.font().head()?.font_revision().to_f32();
-    let name_id_5_version_str = font
+    let name_id_5_version = font
         .font()
         .localized_strings(NameId::VERSION_STRING)
         .english_or_first()
         .ok_or(CheckError::Error("No name ID 5".to_string()))?
         .chars()
-        .skip_while(|c| !c.is_ascii_digit())
-        .take_while(|c| c.is_ascii_digit() || *c == '.')
-        .collect::<String>();
+        .skip_while(|c| !c.is_ascii_digit());
+    let mut name_id_5_version_str = String::new();
+    let mut periods = 0;
+    for c in name_id_5_version {
+        if c.is_ascii_digit() {
+            name_id_5_version_str.push(c);
+        } else if c == '.' {
+            periods += 1;
+            if periods > 1 {
+                break;
+            }
+            name_id_5_version_str.push(c);
+        }
+    }
     if name_id_5_version_str.is_empty() {
         return Err(CheckError::Error(
             "No version string in name table".to_string(),
