@@ -16,11 +16,11 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::fvar::same_size_instance_records);
         cr.register_check(checks::fvar::slant_direction);
         cr.register_check(checks::fvar::varfont_foundry_defined_tag_name);
-        cr.register_check(checks::fvar::varfont_valid_nameids);
         cr.register_check(checks::fvar::varfont_valid_default_instance_nameids);
-        cr.register_check(checks::glyf::glyf_unused_data);
-        cr.register_check(checks::glyf::check_point_out_of_bounds);
+        cr.register_check(checks::fvar::varfont_valid_nameids);
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
+        cr.register_check(checks::glyf::check_point_out_of_bounds);
+        cr.register_check(checks::glyf::glyf_unused_data);
         cr.register_check(checks::head::equal_font_versions);
         cr.register_check(checks::head::font_version);
         cr.register_check(checks::head::mac_style);
@@ -30,17 +30,21 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::layout::layout_valid_feature_tags);
         cr.register_check(checks::layout::layout_valid_language_tags);
         cr.register_check(checks::layout::layout_valid_script_tags);
-        cr.register_check(checks::name::check_name_no_copyright_on_description);
         cr.register_check(checks::name::check_name_match_familyname_fullfont);
+        cr.register_check(checks::name::check_name_no_copyright_on_description);
+        cr.register_check(checks::name::family_max_4_fonts_per_family_name);
+        cr.register_check(checks::name::family_naming_recommendations);
+        cr.register_check(checks::name::name_italic_names);
+        cr.register_check(checks::name::postscript_name);
+        cr.register_check(checks::os2::check_vendor_id);
+        cr.register_check(checks::os2::fsselection);
+        cr.register_check(checks::os2::panose_familytype);
+        cr.register_check(checks::os2::xavgcharwidth);
         cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::stat_axis_record);
         cr.register_check(checks::stat::stat_has_axis_value_tables);
         cr.register_check(checks::stat::weight_class_fvar);
-        cr.register_check(checks::os2::fsselection);
-        cr.register_check(checks::os2::panose_familytype);
-        cr.register_check(checks::os2::check_vendor_id);
-        cr.register_check(checks::os2::xavgcharwidth);
 
         let opentype_profile = Profile::from_toml(
             r#"
@@ -80,6 +84,10 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/name/match_familyname_fullfont",
     "opentype/varfont/valid_default_instance_nameids",
     "opentype/xavgcharwidth",
+    "opentype/family/max_4_fonts_per_family_name",
+    "opentype/postscript_name",
+    "opentype/family_naming_recommendations",
+    "opentype/name/italic_names",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -88,8 +96,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/cff_deprecated_operators",
     "opentype/code_pages",
     "opentype/family/consistent_family_name",
-    "opentype/family/max_4_fonts_per_family_name",
-    "opentype/family_naming_recommendations",
 
     # Checks we don't need because they have been integrated into other checks
     # "opentype/dsig", (unwanted_tables)
@@ -119,10 +125,8 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/kern_table",
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
-    "opentype/name/italic_names",
     "opentype/name/postscript_name_consistency",
     "opentype/name/postscript_vs_cff",
-    "opentype/postscript_name",
     "opentype/slant_direction",
 ]
 "#,

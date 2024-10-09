@@ -258,4 +258,10 @@ impl TestFont<'_> {
             .map_err(|_| CheckError::Error("Failed to draw glyph".to_string()))?;
         Ok(())
     }
+
+    pub fn filename_suggests_italic(&self) -> bool {
+        self.filename
+            .to_str()
+            .map_or(false, |f| f.contains("-Italic"))
+    }
 }

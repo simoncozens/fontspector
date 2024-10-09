@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use font_types::NameId;
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
 #[check(
@@ -115,6 +117,170 @@ fn check_name_match_familyname_fullfont(t: &Testable, _context: &Context) -> Che
         }
     }
     return_result(vec![])
+}
+
+#[check(
+    id = "opentype/family/max_4_fonts_per_family_name",
+    rationale = "
+        Per the OpenType spec:
+
+        'The Font Family name [...] should be shared among at most four fonts that
+        differ only in weight or style [...]'
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/pull/2372",
+    title = "Verify that each group of fonts with the same nameID 1 has maximum of 4 fonts.",
+    implementation = "all"
+)]
+fn family_max_4_fonts_per_family_name(t: &TestableCollection, _context: &Context) -> CheckFnResult {
+    let fonts = TTF.from_collection(t);
+    let mut counter = HashMap::new();
+    let mut problems = vec![];
+    for font in fonts {
+        let family_name = font
+            .get_name_entry_strings(NameId::FAMILY_NAME)
+            .next()
+            .ok_or_else(|| {
+                CheckError::Error(format!(
+                    "Font {} is missing a Family Name entry",
+                    font.filename.to_string_lossy()
+                ))
+            })?;
+        *counter.entry(family_name).or_insert(0) += 1;
+    }
+    for (family_name, count) in counter {
+        if count > 4 {
+            problems.push(Status::fail(
+                "too-many-fonts",
+                &format!(
+                    "Family name '{}' has {} fonts, which is more than the maximum of 4",
+                    family_name, count
+                ),
+            ));
+        }
+    }
+
+    return_result(problems)
+}
+
+#[check(
+    id = "opentype/postscript_name",
+    title = "PostScript name follows OpenType specification requirements?",
+    rationale = "The PostScript name is used by some applications to identify the font. It should only consist of characters from the set A-Z, a-z, 0-9, and hyphen.",
+    proposal = "https://github.com/miguelsousa/openbakery/issues/62"
+)]
+fn postscript_name(t: &Testable, _context: &Context) -> CheckFnResult {
+    let font = testfont!(t);
+    let mut problems = vec![];
+    for name in font.get_name_entry_strings(NameId::POSTSCRIPT_NAME) {
+        if !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
+            problems.push(Status::fail(
+                "invalid-postscript-name",
+                &format!("PostScript name '{}' contains invalid characters", name),
+            ));
+        }
+    }
+    return_result(problems)
+}
+
+const NAME_LIMITS: [(NameId, usize); 6] = [
+    (NameId::FULL_NAME, 63),
+    (NameId::POSTSCRIPT_NAME, 63),
+    (NameId::FAMILY_NAME, 31),
+    (NameId::SUBFAMILY_NAME, 31),
+    (NameId::TYPOGRAPHIC_FAMILY_NAME, 31),
+    (NameId::TYPOGRAPHIC_SUBFAMILY_NAME, 31),
+];
+
+#[check(
+    id = "opentype/family_naming_recommendations",
+    rationale = "
+        This check ensures that the length of various family name and style
+        name strings in the name table are within the maximum length
+        recommended by the OpenType specification.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",
+    title = "Font follows the family naming recommendations?"
+)]
+fn family_naming_recommendations(t: &Testable, _context: &Context) -> CheckFnResult {
+    let font = testfont!(t);
+
+    let mut problems = vec![];
+    for (name_id, max_length) in NAME_LIMITS.iter() {
+        for name in font.get_name_entry_strings(*name_id) {
+            if name.len() > *max_length {
+                problems.push(Status::warn(
+                    "name-too-long",
+                    &format!(
+                        "{:?} (\"{}\") is too long ({} > {})",
+                        name_id,
+                        name,
+                        name.len(),
+                        max_length
+                    ),
+                ));
+            }
+        }
+    }
+    return_result(problems)
+}
+
+#[check(
+    id = "opentype/name/italic_names",
+    rationale = "
+        This check ensures that several entries in the name table
+        conform to the font's Upright or Italic style,
+        namely IDs 1 & 2 as well as 16 & 17 if they're present.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3666",
+    title = "Check name table IDs 1, 2, 16, 17 to conform to Italic style."
+)]
+fn name_italic_names(t: &Testable, _context: &Context) -> CheckFnResult {
+    let font = testfont!(t);
+    let mut problems = vec![];
+    skip!(
+        !font.filename_suggests_italic(),
+        "not-italic",
+        "Font is not italic"
+    );
+    if let Some(family_name) = font.get_name_entry_strings(NameId::FAMILY_NAME).next() {
+        if family_name.contains("Italic") {
+            problems.push(Status::fail(
+                "bad-familyname",
+                "Name ID 1 (Family Name) must not contain 'Italic'.",
+            ));
+        }
+    }
+    if let Some(subfamily_name) = font.get_name_entry_strings(NameId::SUBFAMILY_NAME).next() {
+        if subfamily_name != "Italic" && subfamily_name != "Bold Italic" {
+            problems.push(Status::fail(
+                "bad-subfamilyname",
+                &format!("Name ID 2 (Subfamily Name) does not conform to specs. Only R/I/B/BI are allowed, found {}", subfamily_name)
+            ));
+        }
+    }
+    if let Some(typo_family_name) = font
+        .get_name_entry_strings(NameId::TYPOGRAPHIC_FAMILY_NAME)
+        .next()
+    {
+        if typo_family_name.contains("Italic") {
+            problems.push(Status::fail(
+                "bad-typographicfamilyname",
+                "Name ID 16 (Typographic Family Name) must not contain 'Italic'.",
+            ));
+        }
+    }
+    if let Some(typo_subfamily_name) = font
+        .get_name_entry_strings(NameId::TYPOGRAPHIC_SUBFAMILY_NAME)
+        .next()
+    {
+        if !typo_subfamily_name.ends_with("Italic") {
+            problems.push(Status::fail(
+                "bad-typographicsubfamilyname",
+                "Name ID 16 (Typographic Family Name) must contain 'Italic'.",
+            ));
+        }
+    }
+    return_result(problems)
 }
 
 #[cfg(test)]
