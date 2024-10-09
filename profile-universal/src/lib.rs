@@ -75,6 +75,7 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/layout_valid_script_tags",
     "opentype/weight_class_fvar",
     "opentype/vendor_id",
+    "opentype/name/match_familyname_fullfont",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -115,7 +116,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
     "opentype/name/italic_names",
-    "opentype/name/match_familyname_fullfont",
     "opentype/name/postscript_name_consistency",
     "opentype/name/postscript_vs_cff",
     "opentype/postscript_name",
