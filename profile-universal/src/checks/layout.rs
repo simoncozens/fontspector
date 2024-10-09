@@ -17,21 +17,18 @@ use read_fonts::TableProvider;
 fn layout_valid_language_tags(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let mut bad_tag = HashSet::new();
+    let gsub_script_list = font
+        .font()
+        .gsub()
+        .ok()
+        .and_then(|gsub| gsub.script_list().ok());
+    let gpos_script_list = font
+        .font()
+        .gsub()
+        .ok()
+        .and_then(|gsub| gsub.script_list().ok());
 
-    if let Ok(gpos) = font.font().gpos() {
-        let scriptlist = gpos.script_list()?;
-        for script in scriptlist.script_records() {
-            for lang in script.script(scriptlist.offset_data())?.lang_sys_records() {
-                let tag = lang.lang_sys_tag().to_string();
-                if !VALID_LANG_TAGS.contains(&tag.as_str()) {
-                    bad_tag.insert(tag);
-                }
-            }
-        }
-    }
-
-    if let Ok(gsub) = font.font().gsub() {
-        let scriptlist = gsub.script_list()?;
+    for scriptlist in [gsub_script_list, gpos_script_list].iter().flatten() {
         for script in scriptlist.script_records() {
             for lang in script.script(scriptlist.offset_data())?.lang_sys_records() {
                 let tag = lang.lang_sys_tag().to_string();
@@ -69,19 +66,18 @@ fn layout_valid_script_tags(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let mut bad_tag = HashSet::new();
 
-    if let Ok(gpos) = font.font().gpos() {
-        let scriptlist = gpos.script_list()?;
-        for script in scriptlist.script_records() {
-            let tag = script.script_tag().to_string();
-            if !VALID_SCRIPT_TAGS.contains(&tag.as_str()) {
-                bad_tag.insert(tag);
-            }
-        }
-    }
-
-    if let Ok(gsub) = font.font().gsub() {
-        let scriptlist = gsub.script_list()?;
-        for script in scriptlist.script_records() {
+    let gsub_script_list = font
+        .font()
+        .gsub()
+        .ok()
+        .and_then(|gsub| gsub.script_list().ok());
+    let gpos_script_list = font
+        .font()
+        .gsub()
+        .ok()
+        .and_then(|gsub| gsub.script_list().ok());
+    for script_list in [gsub_script_list, gpos_script_list].iter().flatten() {
+        for script in script_list.script_records() {
             let tag = script.script_tag().to_string();
             if !VALID_SCRIPT_TAGS.contains(&tag.as_str()) {
                 bad_tag.insert(tag);
@@ -118,21 +114,25 @@ fn layout_valid_script_tags(f: &Testable, _context: &Context) -> CheckFnResult {
 fn layout_valid_feature_tags(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let mut bad_tag = HashSet::new();
-
-    if let Ok(gpos) = font.font().gpos() {
-        for feature_record in gpos.feature_list()?.feature_records() {
+    let gsub_feature_list = font
+        .font()
+        .gsub()
+        .ok()
+        .and_then(|gsub| gsub.feature_list().ok());
+    let gpos_feature_list = font
+        .font()
+        .gsub()
+        .ok()
+        .and_then(|gsub| gsub.feature_list().ok());
+    for feature_list in [gsub_feature_list, gpos_feature_list].iter().flatten() {
+        for feature_record in feature_list.feature_records() {
             let tag = feature_record.feature_tag().to_string();
-            if !VALID_FEATURE_TAGS.contains(&tag.as_str())
-                && (tag.len() != 4 || !tag.chars().all(|c| c.is_ascii_uppercase()))
+            // ssXX and cvXX are OK.
+            if (tag.starts_with("ss") || tag.starts_with("cv"))
+                && tag[2..].chars().all(|c| c.is_ascii_digit())
             {
-                bad_tag.insert(tag);
+                continue;
             }
-        }
-    }
-
-    if let Ok(gsub) = font.font().gsub() {
-        for feature_record in gsub.feature_list()?.feature_records() {
-            let tag = feature_record.feature_tag().to_string();
             if !VALID_FEATURE_TAGS.contains(&tag.as_str())
                 && (tag.len() != 4 || !tag.chars().all(|c| c.is_ascii_uppercase()))
             {
