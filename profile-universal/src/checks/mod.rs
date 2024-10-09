@@ -6,6 +6,7 @@ pub mod glyf;
 pub mod glyphnames;
 pub mod head;
 pub mod hhea;
+pub mod layout;
 pub mod name;
 pub mod name_trailing_spaces;
 pub mod os2;

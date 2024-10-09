@@ -127,3 +127,36 @@ fn panose_familytype(c: &TestableCollection, _context: &Context) -> CheckFnResul
         "PANOSE family type is not the same across this family. In order to fix this, please make sure that the panose.bFamilyType value is the same in the OS/2 table of all of this family's font files.",
     )
 }
+
+#[check(
+    id = "opentype/vendor_id",
+    rationale = "
+        When a font project's Vendor ID is specified explicitly on FontBakery's
+        configuration file, all binaries must have a matching vendor identifier
+        value in the OS/2 table.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/pull/3941",
+    title = "Check OS/2 achVendID against configuration"
+)]
+fn check_vendor_id(f: &Testable, context: &Context) -> CheckFnResult {
+    let font = testfont!(f);
+    let vendor_id = context
+        .check_metadata
+        .get("vendor_id")
+        .ok_or(CheckError::skip(
+            "no-vendor-id",
+            "Add the `vendor_id` key to a `fontspector.yaml` file on your font project directory to enable this check.\nYou'll also need to use the `--configuration` flag when invoking fontspector",
+        ))?;
+    let os2_vendor_id = font.font().os2()?.ach_vend_id().to_string();
+    if os2_vendor_id.as_str() == vendor_id {
+        Ok(Status::just_one_pass())
+    } else {
+        Ok(Status::just_one_fail(
+            "bad-vendor-id",
+            &format!(
+                "OS/2 achVendID value '{}' does not match configuration value '{}'",
+                os2_vendor_id, vendor_id
+            ),
+        ))
+    }
+}

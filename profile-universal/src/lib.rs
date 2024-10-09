@@ -26,13 +26,18 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::head::unitsperem);
         cr.register_check(checks::hhea::caret_slope);
         cr.register_check(checks::hhea::maxadvancewidth);
+        cr.register_check(checks::layout::layout_valid_feature_tags);
+        cr.register_check(checks::layout::layout_valid_language_tags);
+        cr.register_check(checks::layout::layout_valid_script_tags);
         cr.register_check(checks::name::check_name_no_copyright_on_description);
         cr.register_check(checks::post::post_table_version);
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::stat_axis_record);
         cr.register_check(checks::stat::stat_has_axis_value_tables);
+        cr.register_check(checks::stat::weight_class_fvar);
         cr.register_check(checks::os2::fsselection);
         cr.register_check(checks::os2::panose_familytype);
+        cr.register_check(checks::os2::check_vendor_id);
 
         let opentype_profile = Profile::from_toml(
             r#"
@@ -64,6 +69,11 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/varfont/same_size_instance_records",
     "opentype/varfont/valid_nameids",
     "opentype/stat_has_axis_value_tables",
+    "opentype/layout_valid_feature_tags",
+    "opentype/layout_valid_language_tags",
+    "opentype/layout_valid_script_tags",
+    "opentype/weight_class_fvar",
+    "opentype/vendor_id",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -101,9 +111,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/italic_axis_in_stat_is_boolean", # Merge into above
     "opentype/italic_axis_last", # Merge into above
     "opentype/kern_table",
-    "opentype/layout_valid_feature_tags",
-    "opentype/layout_valid_language_tags",
-    "opentype/layout_valid_script_tags",
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
     "opentype/name/italic_names",
@@ -113,8 +120,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/postscript_name",
     "opentype/slant_direction",
     "opentype/varfont/valid_default_instance_nameids",
-    "opentype/vendor_id",
-    "opentype/weight_class_fvar",
     "opentype/xavgcharwidth",
 ]
 "#,
