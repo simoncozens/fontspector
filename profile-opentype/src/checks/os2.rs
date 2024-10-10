@@ -258,5 +258,5 @@ fn xavgcharwidth(f: &Testable, _context: &Context) -> CheckFnResult {
                 actual, expected, rule
             )
         )
-    }    )
+    })
 }

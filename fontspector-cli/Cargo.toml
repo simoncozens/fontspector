@@ -12,6 +12,7 @@ fontspector-checkapi = { path = "../fontspector-checkapi" }
 # These profiles are baked-in
 fontbakery-bridge = { path = "../fontbakery-bridge" }
 profile-universal = { path = "../profile-universal" }
+profile-opentype = { path = "../profile-opentype" }
 profile-googlefonts = { path = "../profile-googlefonts" }
 pluginator = { workspace = true }
 clap = { version = "3.2.5", features = ["derive"] }
