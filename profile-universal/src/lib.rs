@@ -18,6 +18,8 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::fvar::varfont_foundry_defined_tag_name);
         cr.register_check(checks::fvar::varfont_valid_default_instance_nameids);
         cr.register_check(checks::fvar::varfont_valid_nameids);
+        cr.register_check(checks::gdef::gdef_mark_chars);
+        cr.register_check(checks::gdef::gdef_spacing_marks);
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
         cr.register_check(checks::glyf::check_point_out_of_bounds);
         cr.register_check(checks::glyf::glyf_unused_data);
@@ -32,6 +34,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::layout::layout_valid_script_tags);
         cr.register_check(checks::name::check_name_match_familyname_fullfont);
         cr.register_check(checks::name::check_name_no_copyright_on_description);
+        cr.register_check(checks::name::consistent_family_name);
         cr.register_check(checks::name::family_max_4_fonts_per_family_name);
         cr.register_check(checks::name::family_naming_recommendations);
         cr.register_check(checks::name::name_italic_names);
@@ -44,6 +47,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::stat_axis_record);
         cr.register_check(checks::stat::stat_has_axis_value_tables);
+        cr.register_check(checks::stat::ital_axis);
         cr.register_check(checks::stat::weight_class_fvar);
 
         let opentype_profile = Profile::from_toml(
@@ -88,6 +92,8 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/postscript_name",
     "opentype/family_naming_recommendations",
     "opentype/name/italic_names",
+    "opentype/stat/ital_axis",
+    "opentype/family/consistent_family_name",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -95,7 +101,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/cff_call_depth",
     "opentype/cff_deprecated_operators",
     "opentype/code_pages",
-    "opentype/family/consistent_family_name",
 
     # Checks we don't need because they have been integrated into other checks
     # "opentype/dsig", (unwanted_tables)
@@ -112,6 +117,9 @@ impl fontspector_checkapi::Plugin for Universal {
     # "opentype/varfont/valid_axis_nameid", (merged into opentype/varfont/valid_nameids)
     # "opentype/varfont/valid_postscript_nameid", (above)
     # "opentype/varfont/valid_subfamily_nameid", (above)
+    # "opentype/italic_axis_in_stat", (merged into opentype/stat/ital_axis)
+    # "opentype/italic_axis_in_stat_is_boolean", (above)
+    # "opentype/italic_axis_last", (above)
 
     # Checks I haven't got around to classifying yet
     "opentype/gdef_mark_chars",
@@ -119,9 +127,6 @@ impl fontspector_checkapi::Plugin for Universal {
     "opentype/gdef_spacing_marks",
     "opentype/gpos_kerning_info",
     "opentype/italic_angle",
-    "opentype/italic_axis_in_stat",
-    "opentype/italic_axis_in_stat_is_boolean", # Merge into above
-    "opentype/italic_axis_last", # Merge into above
     "opentype/kern_table",
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
