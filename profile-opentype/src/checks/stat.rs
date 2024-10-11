@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
-use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
 use font_types::Fixed;
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
 use read_fonts::{
     tables::stat::{AxisValue, AxisValueTableFlags},
     ReadError, TableProvider,
@@ -30,7 +30,8 @@ fn stat_axis_record(t: &Testable, context: &Context) -> CheckFnResult {
         .collect();
     let stat_axis_tags: HashSet<_> = f
         .font()
-        .stat()?
+        .stat()
+        .map_err(|_| CheckError::skip("no-stat", "No STAT table"))?
         .design_axes()?
         .iter()
         .map(|axis_record| axis_record.axis_tag().to_string())
