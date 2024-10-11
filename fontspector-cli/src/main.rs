@@ -12,6 +12,7 @@ use fontbakery_bridge::FontbakeryBridge;
 use fontspector_checkapi::{
     Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
 };
+use itertools::Either;
 use profile_googlefonts::GoogleFonts;
 use profile_universal::Universal;
 use reporters::{
@@ -20,6 +21,8 @@ use reporters::{
 };
 use serde_json::Map;
 
+#[cfg(debug_assertions)]
+use indicatif::ProgressIterator;
 #[cfg(not(debug_assertions))]
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
@@ -196,7 +199,13 @@ fn main() {
 
     // Do this in parallel for release, serial for debug
     #[cfg(debug_assertions)]
-    let checkorder_iterator = checkorder.iter();
+    let checkorder_iterator = if args.quiet {
+        Either::Left(checkorder.iter())
+    } else {
+        Either::Right(checkorder.iter().progress())
+    };
+    // No progress bar for parallel, for psychological reasons.
+    // (Progress bars make slow tasks seem faster, but make fast tasks seem slower. ;-)
     #[cfg(not(debug_assertions))]
     let checkorder_iterator = checkorder.par_iter();
 
