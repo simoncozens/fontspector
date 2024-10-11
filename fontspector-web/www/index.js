@@ -23,16 +23,16 @@ const BABELFONT = NOWASM(
 );
 const EXCUSES = {
   // Needs dependencies
-  "freetype_rasterizer": CANT_COMPILE("Freetype"),
-  "ots": CANT_COMPILE("OpenType Sanitizer"),
+  freetype_rasterizer: CANT_COMPILE("Freetype"),
+  ots: CANT_COMPILE("OpenType Sanitizer"),
   "alt_caron:googlefonts": BABELFONT,
-  "alt_caron": BABELFONT,
-  "arabic_high_hamza": BABELFONT,
-  "arabic_spacing_symbols": BABELFONT,
-  "legacy_accents": BABELFONT,
+  alt_caron: BABELFONT,
+  arabic_high_hamza: BABELFONT,
+  arabic_spacing_symbols: BABELFONT,
+  legacy_accents: BABELFONT,
   // Needs network
   "googlefonts/vendor_id": NEEDS_NETWORK,
-  "fontdata_namecheck": NEEDS_NETWORK,
+  fontdata_namecheck: NEEDS_NETWORK,
   "googlefonts/vertical_metrics_regressions": NEEDS_NETWORK,
   "googlefonts/metadata/includes_production_subsets": NEEDS_NETWORK,
   "googlefonts/metadata/designer_profiles": NEEDS_NETWORK,
@@ -41,8 +41,8 @@ const EXCUSES = {
   "googlefonts/version_bump": NEEDS_NETWORK,
   "googlefonts/production_glyphs_similarity": NEEDS_NETWORK,
   // Shaping checks
-  "render_own_name": CANT_COMPILE("Freetype"),
-  "dotted_circle": CANT_COMPILE("cffsubr [required by ufo2ft]"),
+  render_own_name: CANT_COMPILE("Freetype"),
+  dotted_circle: CANT_COMPILE("cffsubr [required by ufo2ft]"),
   "googlefonts/metadata/can_render_samples": CANT_COMPILE("Harfbuzz"),
   "opentype/slant_direction": CANT_COMPILE("Harfbuzz"),
   "googlefonts/glyphsets/shape_languages": CANT_COMPILE("Harfbuzz"),
@@ -51,7 +51,7 @@ const EXCUSES = {
   "googlefonts/metadata/family_directory_name": NOWASM(
     "there are no directories in the WASM environment"
   ),
-  "ttx_roundtrip": NOWASM(
+  ttx_roundtrip: NOWASM(
     "the WASM environment does not support calling other processes"
   ),
 };
@@ -200,11 +200,11 @@ const PROFILES = {
   opentype: "OpenType (standards compliance)",
   universal: "Universal (community best practices)",
   googlefonts: "Google Fonts",
-  adobefonts: "Adobe Fonts",
-  fontbureau: "Font Bureau",
-  typenetwork: "Type Network",
-  fontwerk: "Fontwerk",
-  microsoft: "Microsoft",
+  // adobefonts: "Adobe Fonts",
+  // fontbureau: "Font Bureau",
+  // typenetwork: "Type Network",
+  // fontwerk: "Fontwerk",
+  // microsoft: "Microsoft",
 };
 
 function addProfile(profilename, col) {

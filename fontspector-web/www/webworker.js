@@ -49,7 +49,7 @@ async function init() {
     self.fulllists = fulllists;
     self.exclude_checks = EXCLUDE_CHECKS;
     try {
-      const results = JSON.parse(wasm.check_fonts(files));
+      const results = JSON.parse(wasm.check_fonts(files, profile));
       self.postMessage(results);
     } catch (error) {
       self.postMessage({ error: error.message, id });

@@ -14,7 +14,7 @@ pub fn version() -> String {
 }
 
 #[wasm_bindgen]
-pub fn check_fonts(fonts: &JsValue) -> Result<String, JsValue> {
+pub fn check_fonts(fonts: &JsValue, profile: &str) -> Result<String, JsValue> {
     let mut registry = Registry::new();
     OpenType
         .register(&mut registry)
@@ -40,7 +40,9 @@ pub fn check_fonts(fonts: &JsValue) -> Result<String, JsValue> {
         .collect();
     let collection = TestableCollection::from_testables(testables);
 
-    let profile = registry.get_profile("googlefonts").unwrap();
+    let profile = registry
+        .get_profile(profile)
+        .ok_or_else(|| format!("Could not find profile {:?}", profile))?;
     let context = Context {
         skip_network: true,
         network_timeout: None,
