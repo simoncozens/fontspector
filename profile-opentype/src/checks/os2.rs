@@ -243,7 +243,7 @@ fn xavgcharwidth(f: &Testable, _context: &Context) -> CheckFnResult {
         )
     };
     let actual = os2.x_avg_char_width();
-    let difference = (expected as i16 - actual).abs();
+    let difference = (expected as i16).abs_diff(actual);
     Ok(match difference {
         0|1 => Status::just_one_pass(),
         2|3|4|5|6|7|8|9|20 => Status::just_one_info(
