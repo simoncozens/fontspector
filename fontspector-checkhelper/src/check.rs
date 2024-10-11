@@ -35,6 +35,39 @@ impl FromMeta for Implementation {
     }
 }
 
+fn dedent_and_unwrap_rationale(rationale: &str) -> String {
+    let mut new_rationale = String::new();
+    let paras = rationale.split("\n\n");
+    for para in paras {
+        // If the para is empty, skip it
+        if para.is_empty() {
+            continue;
+        }
+        // Find the indent of the first line of the para.
+        let mut lines = para.lines();
+        let mut first_line = lines.next().unwrap_or("");
+        // If the first line is empty, try again
+        if first_line.is_empty() {
+            first_line = lines.next().unwrap_or("");
+        }
+        let first_line_indent = first_line.chars().take_while(|c| c.is_whitespace()).count();
+        // Dedent the para
+        let lines = para.lines();
+        for line in lines {
+            for (ix, char) in line.chars().enumerate() {
+                if ix < first_line_indent && char.is_whitespace() {
+                    continue;
+                }
+                new_rationale.push(char);
+            }
+            new_rationale.push('\n');
+        }
+        new_rationale.push('\n');
+    }
+    new_rationale.pop(); // Remove the last newline
+    new_rationale
+}
+
 #[derive(FromMeta)]
 struct CheckParams {
     id: String,
@@ -86,7 +119,10 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let proposal = syn::LitStr::new(&params.proposal, Span::call_site());
     let title = syn::LitStr::new(&params.title, Span::call_site());
-    let rationale = syn::LitStr::new(&params.rationale, Span::call_site());
+    // println!("Old rationale: |{}|", params.rationale);
+    let new_rationale = dedent_and_unwrap_rationale(&params.rationale);
+    // println!("New rationale: |{}|", new_rationale);
+    let rationale = syn::LitStr::new(&new_rationale, Span::call_site());
     let id = syn::LitStr::new(&params.id, Span::call_site());
     let applies_to: syn::LitStr = syn::LitStr::new(
         &params.applies_to.unwrap_or("TTF".to_string()),
