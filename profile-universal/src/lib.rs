@@ -44,7 +44,7 @@ include_profiles = ["opentype"]
     # Checks left to port
 
     # Checks we don't need because they have been integrated into other checks
-    "whitespace_glyphnames", # integrated into valid_glyphnames
+    # "whitespace_glyphnames", integrated into valid_glyphnames
 
     # Checks I haven't got around to classifying yet
 

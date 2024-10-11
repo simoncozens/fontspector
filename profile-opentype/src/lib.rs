@@ -9,10 +9,13 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::bold_italic_unique::bold_italic_unique);
         cr.register_check(checks::code_pages::code_pages);
         cr.register_check(checks::fvar::axis_ranges_correct);
+        cr.register_check(checks::fvar::distinct_instance_records);
         cr.register_check(checks::fvar::regular_coords_correct);
+        cr.register_check(checks::fvar::same_size_instance_records);
         cr.register_check(checks::fvar::varfont_foundry_defined_tag_name);
         cr.register_check(checks::fvar::varfont_valid_default_instance_nameids);
         cr.register_check(checks::fvar::varfont_valid_nameids);
+        cr.register_check(checks::fvar::slant_direction);
         cr.register_check(checks::gdef::gdef_mark_chars);
         cr.register_check(checks::gdef::gdef_spacing_marks);
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
@@ -51,29 +54,64 @@ impl fontspector_checkapi::Plugin for OpenType {
 [sections]
 "OpenType Specification Checks" = [
     # Checks which we have definitely ported already
-    "opentype/fvar/regular_coords_correct",
-    "opentype/maxadvancewidth",
+    "name/trailing_spaces",
     "opentype/caret_slope",
-    "opentype/name/empty_records",
-    "opentype/family/underline_thickness",
-    "opentype/post_table_version",
-    "opentype/varfont/stat_axis_record_for_each_axis",
+    "opentype/family_naming_recommendations",
     "opentype/family/bold_italic_unique_for_nameid1",
-    "opentype/font_version",
-    "opentype/mac_style",
+    "opentype/family/consistent_family_name",
     "opentype/family/equal_font_versions",
-    "opentype/unitsperem",
+    "opentype/family/max_4_fonts_per_family_name",
+    "opentype/family/panose_familytype",
+    "opentype/family/underline_thickness",
+    "opentype/font_version",
     "opentype/fsselection",
+    "opentype/fvar/axis_ranges_correct",
+    "opentype/fvar/regular_coords_correct",
+    "opentype/gdef_mark_chars",
+    "opentype/gdef_spacing_marks",
+    "opentype/glyf_unused_data",
+    "opentype/layout_valid_feature_tags",
+    "opentype/layout_valid_language_tags",
+    "opentype/layout_valid_script_tags",
+    "opentype/mac_style",
+    "opentype/maxadvancewidth",
+    "opentype/name/empty_records",
+    "opentype/name/italic_names",
+    "opentype/name/match_familyname_fullfont",
+    "opentype/points_out_of_bounds",
+    "opentype/postscript_name",
+    "opentype/post_table_version",
+    "opentype/slant_direction",
+    "opentype/stat_has_axis_value_tables",
+    "opentype/stat/ital_axis",
+    "opentype/unitsperem",
+    "opentype/varfont/distinct_instance_records",
+    "opentype/varfont/family_axis_ranges",
+    "opentype/varfont/foundry_defined_tag_name",
+    "opentype/varfont/same_size_instance_records",
+    "opentype/varfont/stat_axis_record_for_each_axis",
+    "opentype/varfont/valid_nameids",
+    "opentype/varfont/valid_default_instance_nameids",
+    "opentype/vendor_id",
+    "opentype/weight_class_fvar",
+    "opentype/xavgcharwidth",
+    "opentype/code_pages",
 
     # Checks left to port
     "opentype/cff2_call_depth",
     "opentype/cff_ascii_strings",
     "opentype/cff_call_depth",
     "opentype/cff_deprecated_operators",
-    "opentype/code_pages",
-    "opentype/family/consistent_family_name",
-    "opentype/family/max_4_fonts_per_family_name",
-    "opentype/family_naming_recommendations",
+    "opentype/gdef_non_mark_chars",
+    "opentype/glyf_non_transformed_duplicate_components",
+    "opentype/gpos_kerning_info",
+    "opentype/italic_angle",
+    "opentype/kern_table",
+    "opentype/loca/maxp_num_glyphs",
+    "opentype/monospace",
+    "opentype/name/no_copyright_on_description",
+    "opentype/name/postscript_name_consistency",
+    "opentype/name/postscript_vs_cff",
 
     # Checks we don't need because they have been integrated into other checks
     # "opentype/dsig", (unwanted_tables)
@@ -84,50 +122,16 @@ impl fontspector_checkapi::Plugin for OpenType {
     # "opentype/varfont/regular_slnt_coord",
     # "opentype/varfont/regular_wdth_coord",
     # "opentype/varfont/regular_wght_coord",
-    # "opentype/fsselection_matches_macstyle", (merged into opentype/fsselection)
-
-    # Checks I haven't got around to classifying yet
-    "opentype/family/panose_familytype",
-    "opentype/fvar/axis_ranges_correct",
-    "opentype/gdef_mark_chars",
-    "opentype/gdef_non_mark_chars",
-    "opentype/gdef_spacing_marks",
-    "opentype/glyf_non_transformed_duplicate_components",
-    "opentype/glyf_unused_data",
-    "opentype/gpos_kerning_info",
-    "opentype/italic_angle",
-    "opentype/italic_axis_in_stat",
-    "opentype/italic_axis_in_stat_is_boolean", # Merge into above
-    "opentype/italic_axis_last", # Merge into above
-    "opentype/kern_table",
-    "opentype/layout_valid_feature_tags",
-    "opentype/layout_valid_language_tags",
-    "opentype/layout_valid_script_tags",
-    "opentype/loca/maxp_num_glyphs",
-    "opentype/monospace",
-    "opentype/name/italic_names",
-    "opentype/name/match_familyname_fullfont",
-    "opentype/name/no_copyright_on_description",
-    "opentype/name/postscript_name_consistency",
-    "opentype/name/postscript_vs_cff",
-    "opentype/points_out_of_bounds",
-    "opentype/postscript_name",
-    "opentype/slant_direction",
-    "opentype/stat_has_axis_value_tables",
-    "opentype/varfont/distinct_instance_records",
-    "opentype/varfont/family_axis_ranges",
-    "opentype/varfont/foundry_defined_tag_name",
-    "opentype/varfont/same_size_instance_records",
-    "opentype/varfont/valid_axis_nameid",
-    "opentype/varfont/valid_default_instance_nameids",
-    "opentype/varfont/valid_postscript_nameid",
-    "opentype/varfont/valid_subfamily_nameid",
-    "opentype/varfont/wdth_valid_range",
-    "opentype/varfont/wght_valid_range",
-    "opentype/vendor_id",
-    "opentype/weight_class_fvar",
-    "opentype/xavgcharwidth",
-]
+    # "opentype/varfont/valid_axis_nameid", (now in valid_nameids)
+    # "opentype/varfont/valid_postscript_nameid", (now in valid_nameids)
+    # "opentype/varfont/valid_subfamily_nameid", (above)
+    # "opentype/varfont/wdth_valid_range", (now in opentype/fvar/axis_ranges_correct)
+    # "opentype/varfont/wght_valid_range", (above)
+    # "opentype/fsselection_matches_macstyle" (merged into opentype/fsselection)
+    # "opentype/italic_axis_in_stat", (now opentype/stat/ital_axis)
+    # "opentype/italic_axis_in_stat_is_boolean", # (above)
+    # "opentype/italic_axis_last", # (above)
+ ]
 "#,
         )
         .map_err(|_| "Couldn't parse profile")?;

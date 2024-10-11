@@ -1,6 +1,6 @@
-pub mod fvar;
 pub mod bold_italic_unique;
 pub mod code_pages;
+pub mod fvar;
 pub mod gdef;
 pub mod glyf;
 pub mod head;

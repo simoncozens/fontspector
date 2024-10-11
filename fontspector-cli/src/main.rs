@@ -14,6 +14,7 @@ use fontspector_checkapi::{
 };
 use itertools::Either;
 use profile_googlefonts::GoogleFonts;
+use profile_opentype::OpenType;
 use profile_universal::Universal;
 use reporters::{
     json::JsonReporter, markdown::MarkdownReporter, terminal::TerminalReporter, Reporter,
@@ -59,9 +60,14 @@ fn main() {
     }
 
     #[allow(clippy::expect_used)] // If this fails, I *want* to panic
+    OpenType
+        .register(&mut registry)
+        .expect("Couldn't register opentype profile, fontspector bug");
+    #[allow(clippy::expect_used)] // If this fails, I *want* to panic
     Universal
         .register(&mut registry)
-        .expect("Couldn't register universal/opentype profile, fontspector bug");
+        .expect("Couldn't register universal profile, fontspector bug");
+
     #[allow(clippy::expect_used)] // If this fails, I *want* to panic
     GoogleFonts
         .register(&mut registry)
