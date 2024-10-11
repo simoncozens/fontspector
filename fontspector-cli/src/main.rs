@@ -4,7 +4,7 @@
 mod args;
 mod reporters;
 
-use std::path::PathBuf;
+use std::{path::PathBuf, time::Instant};
 
 use args::Args;
 use clap::Parser;
@@ -29,6 +29,8 @@ use indicatif::ProgressIterator;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 fn main() {
+    let start_time = Instant::now();
+
     // Command line handling
     let args = Args::parse();
 
@@ -248,7 +250,13 @@ fn main() {
         reporter.report(&results, &args, &registry);
     }
 
-    // if !args.quiet {
+    if !args.quiet {
+        println!(
+            "Ran {} checks in {:.3}s",
+            checkorder.len(),
+            start_time.elapsed().as_secs_f32()
+        );
+    }
     TerminalReporter::summary_report(results.summary());
     // }
     if worst_status >= args.error_code_on {
