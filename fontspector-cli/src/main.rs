@@ -107,6 +107,7 @@ fn main() {
         .inputs
         .iter()
         .map(PathBuf::from)
+        .filter(|x| x.is_file())
         .filter(|x| x.parent().is_some())
         .fold(Vec::new(), |mut acc: Vec<Vec<PathBuf>>, path| {
             #[allow(clippy::unwrap_used)] // We checked for is_some above
