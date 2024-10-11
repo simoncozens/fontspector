@@ -5,6 +5,7 @@ members = [
     "fontspector-cli",
     "fontspector-checkapi",
     "fontspector-checkhelper",
+    "profile-opentype",
     "profile-universal",
     "profile-testplugin",
     "profile-googlefonts",

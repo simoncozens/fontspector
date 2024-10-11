@@ -115,35 +115,6 @@ fn mac_style(f: &Testable, _context: &Context) -> CheckFnResult {
 }
 
 #[check(
-    id = "opentype/family/equal_font_versions",
-    title = "Make sure all font files have the same version value.",
-    rationale = "Within a family released at the same time, all members of the family should have the same version number in the head table.",
-    proposal = "legacy:check/014",
-    implementation = "all"
-)]
-fn equal_font_versions(c: &TestableCollection, context: &Context) -> CheckFnResult {
-    let fonts = TTF.from_collection(c);
-    let versions_names: Result<Vec<_>, ReadError> = fonts
-        .iter()
-        .map(|f| {
-            f.font().head().map(|head| {
-                (
-                    head.font_revision(),
-                    format!("{:.03}", head.font_revision().to_f32()),
-                    f.filename.to_string_lossy(),
-                )
-            })
-        })
-        .collect();
-    assert_all_the_same(
-        context,
-        &versions_names?,
-        "mismatch",
-        "Version info differs among font files of the same font project.",
-    )
-}
-
-#[check(
     id = "opentype/unitsperem",
     proposal = "legacy:check/043",
     title = "Checking unitsPerEm value is reasonable.",
@@ -179,4 +150,33 @@ fn unitsperem(f: &Testable, _context: &Context) -> CheckFnResult {
             &format!("In order to optimize performance on some legacy renderers, the value of unitsPerEm at the head table should ideally be a power of 2 between 16 to 16384. And values of 1000 and 2000 are also common and may be just fine as well. But we got {} instead.", upem),
         )),
     }
+}
+
+#[check(
+    id = "opentype/family/equal_font_versions",
+    title = "Make sure all font files have the same version value.",
+    rationale = "Within a family released at the same time, all members of the family should have the same version number in the head table.",
+    proposal = "legacy:check/014",
+    implementation = "all"
+)]
+fn equal_font_versions(c: &TestableCollection, context: &Context) -> CheckFnResult {
+    let fonts = TTF.from_collection(c);
+    let versions_names: Result<Vec<_>, ReadError> = fonts
+        .iter()
+        .map(|f| {
+            f.font().head().map(|head| {
+                (
+                    head.font_revision(),
+                    format!("{:.03}", head.font_revision().to_f32()),
+                    f.filename.to_string_lossy(),
+                )
+            })
+        })
+        .collect();
+    assert_all_the_same(
+        context,
+        &versions_names?,
+        "mismatch",
+        "Version info differs among font files of the same font project.",
+    )
 }
