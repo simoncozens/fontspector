@@ -35,7 +35,6 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::name::family_max_4_fonts_per_family_name);
         cr.register_check(checks::name::family_naming_recommendations);
         cr.register_check(checks::name::name_empty_records);
-        cr.register_check(checks::name::name_italic_names);
         cr.register_check(checks::name::postscript_name);
         cr.register_check(checks::os2::check_vendor_id);
         cr.register_check(checks::os2::fsselection);
@@ -74,7 +73,6 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/mac_style",
     "opentype/maxadvancewidth",
     "opentype/name/empty_records",
-    "opentype/name/italic_names",
     "opentype/name/match_familyname_fullfont",
     "opentype/points_out_of_bounds",
     "opentype/postscript_name",
