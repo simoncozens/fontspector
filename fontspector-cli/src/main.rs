@@ -12,6 +12,7 @@ use fontbakery_bridge::FontbakeryBridge;
 use fontspector_checkapi::{
     Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
 };
+#[cfg(debug_assertions)]
 use itertools::Either;
 use profile_googlefonts::GoogleFonts;
 use profile_opentype::OpenType;
