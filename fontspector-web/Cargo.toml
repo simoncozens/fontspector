@@ -8,6 +8,7 @@ wasm-bindgen = { version = "0.2.63" }
 console_error_panic_hook = { version = "0.1.6" }
 js-sys = { version = "0.3.68" }
 fontspector-checkapi = { path = "../fontspector-checkapi" }
+profile-opentype = { path = "../profile-opentype" }
 profile-universal = { path = "../profile-universal" }
 profile-googlefonts = { path = "../profile-googlefonts" }
 serde_json = { version = "1.0.96", features = ["preserve_order"] }

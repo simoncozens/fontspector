@@ -5,6 +5,7 @@ use fontspector_checkapi::{
     Check, CheckResult, Context, Plugin, Registry, Testable, TestableCollection, TestableType,
 };
 use profile_googlefonts::GoogleFonts;
+use profile_opentype::OpenType;
 use profile_universal::Universal;
 
 #[wasm_bindgen]
@@ -15,6 +16,9 @@ pub fn version() -> String {
 #[wasm_bindgen]
 pub fn check_fonts(fonts: &JsValue) -> Result<String, JsValue> {
     let mut registry = Registry::new();
+    OpenType
+        .register(&mut registry)
+        .expect("Couldn't register opentype profile, fontspector bug");
     Universal
         .register(&mut registry)
         .expect("Couldn't register universal profile, fontspector bug");
