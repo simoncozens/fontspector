@@ -73,6 +73,9 @@ impl Reporter for MarkdownReporter {
         let all_fonts = "All fonts".to_string();
         for result in results.iter() {
             let filename = result.filename.as_ref().unwrap_or(&all_fonts).as_str();
+            if result.worst_status() < args.loglevel {
+                continue;
+            }
             if registry.is_experimental(&result.check_id) {
                 experimental_checks
                     .entry(filename)
