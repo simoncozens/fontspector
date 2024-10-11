@@ -31,7 +31,6 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::layout::layout_valid_language_tags);
         cr.register_check(checks::layout::layout_valid_script_tags);
         cr.register_check(checks::name::check_name_match_familyname_fullfont);
-        cr.register_check(checks::name::check_name_no_copyright_on_description);
         cr.register_check(checks::name::consistent_family_name);
         cr.register_check(checks::name::family_max_4_fonts_per_family_name);
         cr.register_check(checks::name::family_naming_recommendations);
@@ -54,7 +53,6 @@ impl fontspector_checkapi::Plugin for OpenType {
 [sections]
 "OpenType Specification Checks" = [
     # Checks which we have definitely ported already
-    "name/trailing_spaces",
     "opentype/caret_slope",
     "opentype/family_naming_recommendations",
     "opentype/family/bold_italic_unique_for_nameid1",
@@ -109,7 +107,6 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/kern_table",
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
-    "opentype/name/no_copyright_on_description",
     "opentype/name/postscript_name_consistency",
     "opentype/name/postscript_vs_cff",
 

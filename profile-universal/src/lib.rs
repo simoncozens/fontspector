@@ -8,6 +8,7 @@ impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
         cr.register_check(checks::glyphnames::valid_glyphnames);
+        cr.register_check(checks::name_no_copyright_on_description::name_no_copyright_on_description);
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
@@ -38,6 +39,7 @@ include_profiles = ["opentype"]
     # Checks which we have definitely ported already
     "arabic_spacing_symbols",
     "valid_glyphnames",
+    "name/no_copyright_on_description",
     "name/trailing_spaces",
     "required_tables",
 
