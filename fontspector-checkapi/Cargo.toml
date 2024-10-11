@@ -18,6 +18,7 @@ skrifa = { workspace = true }
 fontspector-checkhelper = { workspace = true }
 log = { workspace = true }
 
+indexmap = { version = "2", features = ["serde"] }
 # Filetype
 glob-match = "0.2.1"
 glob = "0.3.1"

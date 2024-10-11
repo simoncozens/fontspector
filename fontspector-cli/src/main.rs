@@ -89,12 +89,17 @@ fn main() {
 
     if args.list_checks {
         for (section, checks) in profile.sections.iter() {
-            termimad::print_text(&format!("# {:}\n\n", section));
+            let checks: Vec<&Check> = checks
+                .iter()
+                .flat_map(|check| registry.checks.get(check))
+                .collect();
+            if checks.is_empty() {
+                continue;
+            }
+            termimad::print_text(&format!("\n# {:}\n\n", section));
             let mut table = "|Check ID|Title|\n|---|---|\n".to_string();
             for check in checks {
-                if let Some(check) = registry.checks.get(check) {
-                    table.push_str(&format!("|{:}|{:}|\n", check.id, check.title));
-                }
+                table.push_str(&format!("|{:}|{:}|\n", check.id, check.title));
             }
             termimad::print_text(&table);
         }

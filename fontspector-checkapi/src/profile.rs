@@ -1,3 +1,4 @@
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
@@ -13,7 +14,7 @@ pub struct Override {
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct Profile {
-    pub sections: HashMap<CheckId, Vec<String>>,
+    pub sections: IndexMap<String, Vec<CheckId>>,
     #[serde(default)]
     include_profiles: Vec<String>,
     #[serde(default)]
@@ -33,15 +34,19 @@ impl Profile {
         // Resolve "include_profiles" and "exclude_checks" here
         for included_profile_str in self.include_profiles.iter() {
             if let Some(profile) = registry.profiles.get(included_profile_str) {
+                // I want any new included sections to be at the top
+                for section in profile.sections.keys().rev() {
+                    if !self.sections.contains_key(section) {
+                        self.sections.insert_before(0, section.clone(), vec![]);
+                    }
+                }
                 for (section, checks) in &profile.sections {
-                    if let Some(existing_checks) = self.sections.get_mut(section) {
-                        for check in checks {
-                            if !existing_checks.contains(check) {
-                                existing_checks.push(check.clone());
-                            }
+                    #[allow(clippy::unwrap_used)] // We added all new sections just now
+                    let existing_checks = self.sections.get_mut(section).unwrap();
+                    for check in checks {
+                        if !existing_checks.contains(check) {
+                            existing_checks.push(check.clone());
                         }
-                    } else {
-                        self.sections.insert(section.clone(), checks.clone());
                     }
                 }
             } else {
