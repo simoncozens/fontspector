@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use font_types::NameId;
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 use skrifa::MetadataProvider;
 
@@ -269,6 +269,48 @@ fn consistent_family_name(c: &TestableCollection, context: &Context) -> CheckFnR
         ));
     }
     return_result(problems)
+}
+
+#[check(
+    id = "opentype/name/postscript_vs_cff",
+    rationale = "
+        The PostScript name entries in the font's 'name' table should match
+        the FontName string in the 'CFF ' table.
+
+        The 'CFF ' table has a lot of information that is duplicated in other tables.
+        This information should be consistent across tables, because there's
+        no guarantee which table an app will get the data from.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/pull/2229",
+    title = "CFF table FontName must match name table ID 6 (PostScript name)."
+)]
+fn name_postscript_vs_cff(t: &Testable, _context: &Context) -> CheckFnResult {
+    let font = testfont!(t);
+    skip!(
+        !font.has_table(b"CFF "),
+        "no-cff",
+        "This check only applies to CFF fonts."
+    );
+    let cff_name = String::from_utf8_lossy(
+        font.font()
+            .cff()?
+            .names()
+            .get(0)
+            .map_err(|e| CheckError::Error(format!("Error reading CFF table: {}", e)))?,
+    );
+    let name = font.get_name_entry_strings(NameId::POSTSCRIPT_NAME).next();
+    if let Some(name) = name {
+        if cff_name != name {
+            return Ok(Status::just_one_fail(
+                "mismatch",
+                &format!(
+                    "CFF table FontName '{}' does not match name table PostScript name '{}'",
+                    cff_name, name
+                ),
+            ));
+        }
+    }
+    Ok(Status::just_one_pass())
 }
 
 #[cfg(test)]

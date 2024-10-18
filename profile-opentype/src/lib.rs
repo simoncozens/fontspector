@@ -36,6 +36,7 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::name::family_naming_recommendations);
         cr.register_check(checks::name::name_empty_records);
         cr.register_check(checks::name::postscript_name);
+        cr.register_check(checks::name::name_postscript_vs_cff);
         cr.register_check(checks::os2::check_vendor_id);
         cr.register_check(checks::os2::fsselection);
         cr.register_check(checks::os2::panose_familytype);
@@ -66,6 +67,7 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/fvar/regular_coords_correct",
     "opentype/gdef_mark_chars",
     "opentype/gdef_spacing_marks",
+    "opentype/glyf_non_transformed_duplicate_components",
     "opentype/glyf_unused_data",
     "opentype/layout_valid_feature_tags",
     "opentype/layout_valid_language_tags",
@@ -92,6 +94,7 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/weight_class_fvar",
     "opentype/xavgcharwidth",
     "opentype/code_pages",
+    "opentype/name/postscript_vs_cff",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -99,14 +102,12 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/cff_call_depth",
     "opentype/cff_deprecated_operators",
     "opentype/gdef_non_mark_chars",
-    "opentype/glyf_non_transformed_duplicate_components",
     "opentype/gpos_kerning_info",
     "opentype/italic_angle",
     "opentype/kern_table",
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
     "opentype/name/postscript_name_consistency",
-    "opentype/name/postscript_vs_cff",
 
     # Checks we don't need because they have been integrated into other checks
     # "opentype/dsig", (unwanted_tables)
