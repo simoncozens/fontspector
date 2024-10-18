@@ -31,7 +31,9 @@ pub struct TestFont<'a> {
     _glyphnames: RefCell<Vec<Option<String>>>,
 }
 
-pub const TTF: FileType = FileType { pattern: "*.ttf" };
+pub const TTF: FileType = FileType {
+    pattern: "*.[ot]tf",
+};
 
 impl<'a> FileTypeConvert<'a, TestFont<'a>> for FileType<'a> {
     fn from_testable(&self, t: &'a Testable) -> Option<TestFont<'a>> {
