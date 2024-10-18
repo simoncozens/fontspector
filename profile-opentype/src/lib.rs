@@ -12,6 +12,7 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::fvar::distinct_instance_records);
         cr.register_check(checks::fvar::regular_coords_correct);
         cr.register_check(checks::fvar::same_size_instance_records);
+        cr.register_check(checks::fvar::family_axis_ranges);
         cr.register_check(checks::fvar::varfont_foundry_defined_tag_name);
         cr.register_check(checks::fvar::varfont_valid_default_instance_nameids);
         cr.register_check(checks::fvar::varfont_valid_nameids);
