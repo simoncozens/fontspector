@@ -37,6 +37,11 @@ pub mod prelude {
             TTF.from_testable($f).ok_or("Not a TTF file")?
         };
     }
+    /// Return a skip status with a code and message
+    ///
+    /// This macro has two forms:
+    /// `skip!(code, message)` which will always return a skip status, and
+    /// `skip!(condition, code, message)` which will return a skip status if the condition is true
     #[macro_export]
     macro_rules! skip {
         ($code: expr, $message: expr) => {
