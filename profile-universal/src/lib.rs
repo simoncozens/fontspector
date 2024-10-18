@@ -8,8 +8,11 @@ impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
         cr.register_check(checks::glyphnames::valid_glyphnames);
+        cr.register_check(checks::glyphset::check_rupee);
         cr.register_check(checks::name_italic_names::name_italic_names);
-        cr.register_check(checks::name_no_copyright_on_description::name_no_copyright_on_description);
+        cr.register_check(
+            checks::name_no_copyright_on_description::name_no_copyright_on_description,
+        );
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
@@ -44,6 +47,7 @@ include_profiles = ["opentype"]
     "name/no_copyright_on_description",
     "name/trailing_spaces",
     "required_tables",
+    "rupee",
 
     # Checks left to port
 
@@ -95,7 +99,6 @@ include_profiles = ["opentype"]
     "os2_metrics_match_hhea",
     "ots",
     "render_own_name",
-    "rupee",
     "sfnt_version",
     "smart_dropout",
     "soft_hyphen",
