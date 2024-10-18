@@ -1,5 +1,5 @@
 use font_types::Point;
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::{
     tables::glyf::{Anchor, Glyph, PointFlags},
     TableProvider,
@@ -59,6 +59,7 @@ fn glyf_unused_data(t: &Testable, _context: &Context) -> CheckFnResult {
 fn check_point_out_of_bounds(t: &Testable, context: &Context) -> CheckFnResult {
     let ttf = testfont!(t);
     let font = ttf.font();
+    skip!(!ttf.has_table(b"glyf"), "no-glyf", "No glyf table");
     let glyf = font.glyf()?;
     let loca = font.loca(None)?;
     let mut messages = vec![];
@@ -126,6 +127,7 @@ fn check_glyf_non_transformed_duplicate_components(
 ) -> CheckFnResult {
     let ttf = testfont!(t);
     let font = ttf.font();
+    skip!(!ttf.has_table(b"glyf"), "no-glyf", "No glyf table");
     let glyf = font.glyf()?;
     let loca = font.loca(None)?;
     let mut messages = vec![];
