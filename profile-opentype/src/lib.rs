@@ -36,6 +36,7 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::name::family_naming_recommendations);
         cr.register_check(checks::name::name_empty_records);
         cr.register_check(checks::name::postscript_name);
+        cr.register_check(checks::name::postscript_name_consistency);
         cr.register_check(checks::name::name_postscript_vs_cff);
         cr.register_check(checks::os2::check_vendor_id);
         cr.register_check(checks::os2::fsselection);
@@ -76,6 +77,8 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/maxadvancewidth",
     "opentype/name/empty_records",
     "opentype/name/match_familyname_fullfont",
+    "opentype/name/postscript_name_consistency",
+    "opentype/name/postscript_vs_cff",
     "opentype/points_out_of_bounds",
     "opentype/postscript_name",
     "opentype/post_table_version",
@@ -94,7 +97,6 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/weight_class_fvar",
     "opentype/xavgcharwidth",
     "opentype/code_pages",
-    "opentype/name/postscript_vs_cff",
 
     # Checks left to port
     "opentype/cff2_call_depth",
@@ -104,10 +106,11 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/gdef_non_mark_chars",
     "opentype/gpos_kerning_info",
     "opentype/italic_angle",
-    "opentype/kern_table",
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
-    "opentype/name/postscript_name_consistency",
+
+    # Blocked
+    "opentype/kern_table", # https://github.com/googlefonts/fontations/issues/1183
 
     # Checks we don't need because they have been integrated into other checks
     # "opentype/dsig", (unwanted_tables)
