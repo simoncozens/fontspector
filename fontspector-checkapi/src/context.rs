@@ -2,7 +2,7 @@ use serde_json::{Map, Value};
 
 use crate::{Check, Profile};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Context {
     pub skip_network: bool,
     pub network_timeout: Option<u64>,

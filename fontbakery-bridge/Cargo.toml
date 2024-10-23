@@ -11,6 +11,12 @@ crate-type = ["lib"]
 
 [dependencies]
 fontspector-checkapi = { path = "../fontspector-checkapi" }
+
+# Needed for tests
+profile-universal = { path = "../profile-universal" }
+profile-opentype = { path = "../profile-opentype" }
+profile-googlefonts = { path = "../profile-googlefonts" }
+
 pyo3 = "0.22"
 serde_json = { workspace = true }
 log = { workspace = true }

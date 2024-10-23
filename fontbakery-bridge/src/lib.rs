@@ -7,6 +7,7 @@ use pyo3::{
     types::{PyList, PyTuple},
 };
 use serde_json::json;
+mod test;
 pub struct FontbakeryBridge;
 
 // We isolate the Python part to avoid type/result madness.
