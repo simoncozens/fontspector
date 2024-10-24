@@ -294,13 +294,22 @@ fn varfont_foundry_defined_tag_name(t: &Testable, _context: &Context) -> CheckFn
 fn same_size_instance_records(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
-    let has_a_postscriptname: HashSet<bool> = f
+    skip!(
+        f.font().named_instances().is_empty(),
+        "no-instance-records",
+        "Font has no instance records."
+    );
+    let has_or_hasnt_postscriptname: HashSet<bool> = f
         .font()
         .named_instances()
         .iter()
-        .map(|ni| ni.postscript_name_id().is_none())
+        .map(|ni| {
+            ni.postscript_name_id().is_none() ||
+            // Work around https://github.com/googlefonts/fontations/issues/1204
+            ni.postscript_name_id() == Some(NameId::new(0xFFFF))
+        })
         .collect();
-    Ok(if has_a_postscriptname.len() > 1 {
+    Ok(if has_or_hasnt_postscriptname.len() > 1 {
         Status::just_one_fail(
             "different-size-instance-records",
             "Instance records don't all have the same size.",
