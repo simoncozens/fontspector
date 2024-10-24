@@ -8,6 +8,7 @@ use pyo3::{
 };
 use serde_json::json;
 mod test;
+pub use test::run_python_test;
 pub struct FontbakeryBridge;
 
 // We isolate the Python part to avoid type/result madness.

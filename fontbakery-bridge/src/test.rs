@@ -1,6 +1,10 @@
 #![allow(clippy::expect_used)]
 #![allow(clippy::unwrap_used)]
-use std::{env, path::Path};
+use std::{
+    env,
+    path::{Path, PathBuf},
+    sync::Mutex,
+};
 
 // Provide an environment where we can run fontbakery tests
 // as-is, but have them call a Rust implementation underneath
@@ -10,8 +14,7 @@ use profile_opentype::OpenType;
 use profile_universal::Universal;
 use pyo3::{
     prelude::*,
-    types::{PyCFunction, PyDict, PyList, PyTuple},
-    PyClass,
+    types::{PyCFunction, PyList, PyTuple},
 };
 
 #[pyclass]
@@ -24,12 +27,11 @@ fn checktester(check: &str) -> PyResult<Py<CheckTester>> {
 
 #[pymethods]
 impl CheckTester {
-    #[pyo3(signature = (*args, kwargs=None))]
+    #[pyo3(signature = (*args))]
     fn __call__<'a>(
         &self,
         py: Python<'a>,
         args: &Bound<'a, PyTuple>,
-        kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Vec<Bound<'a, PyAny>>> {
         let ttfont_class = py.import_bound("fontTools.ttLib")?.getattr("TTFont")?;
 
@@ -96,7 +98,12 @@ impl CheckTester {
     }
 }
 
-fn python_testrunner_impl(module: &str, function: &str) {
+pub fn run_python_test(module: &str, function: &str) {
+    // Save cwd
+    let cwd = env::current_dir().unwrap();
+    setup_python();
+    // Change to the fontbakery directory
+    env::set_current_dir(fontbakery_directory()).unwrap();
     Python::with_gil(|py| {
         // First we import original fontbakery.codetesting.
         let codetesting =
@@ -117,29 +124,40 @@ fn python_testrunner_impl(module: &str, function: &str) {
             e.print_and_set_sys_last_vars(py);
             panic!("Test failed: {}", e);
         });
-    })
+    });
+    env::set_current_dir(cwd).unwrap();
+}
+
+static python_ready: Mutex<bool> = Mutex::new(false);
+
+fn fontbakery_directory() -> PathBuf {
+    let output = std::process::Command::new(env!("CARGO"))
+        .arg("locate-project")
+        .arg("--workspace")
+        .arg("--message-format=plain")
+        .output()
+        .unwrap()
+        .stdout;
+    let cargo_path = Path::new(std::str::from_utf8(&output).unwrap().trim());
+    let mut fb_dir = cargo_path.parent().unwrap().to_path_buf();
+    fb_dir.push("fontbakery-bridge/fontbakery");
+    fb_dir
 }
 
 fn setup_python() {
+    let mut _guard = python_ready.lock().unwrap();
+    if *_guard {
+        return;
+    }
     pyo3::prepare_freethreaded_python();
-    let fb_dir = std::env::var("CARGO_MANIFEST_DIR").expect("No cargo root?") + "/fontbakery";
-    std::env::set_current_dir(fb_dir.clone()).expect("Couldn't change directory");
     let _res: PyResult<()> = Python::with_gil(|py| {
         let sys = py
             .import_bound("sys")?
             .getattr("path")
             .expect("Can't find path");
         let sys: Bound<'_, PyList> = sys.downcast_into()?;
-        sys.insert(0, fb_dir)?;
+        sys.insert(0, fontbakery_directory())?;
         Ok(())
     });
-}
-
-#[test]
-fn test_python_testrunner() {
-    setup_python();
-    python_testrunner_impl(
-        "tests.test_checks_opentype_fvar",
-        "test_check_varfont_same_size_instance_records",
-    )
+    *_guard = true;
 }
