@@ -10,14 +10,26 @@ use write_fonts::{
 
 #[macro_export]
 macro_rules! TEST_FILE {
-    ($fname:expr) => {
-        Testable::new(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/resources/test/",
-            $fname
-        ))
-        .unwrap()
-    };
+    ($fname:expr) => {{
+        // The usual thing to use here is env!("CARGO_MANIFEST_DIR"), but that's a pain
+        // when we're in a workspace - if you're running `cargo test` inside a package,
+        // the manifest dir is the package root; if you're running `cargo test -p foo`,
+        // the manifest dir is the workspace root. So ask Cargo for the workspace root
+        // and go from there.
+        let mut output = std::process::Command::new(env!("CARGO"))
+            .arg("locate-project")
+            .arg("--workspace")
+            .arg("--message-format=plain")
+            .output()
+            .unwrap()
+            .stdout;
+        let cargo_path = std::path::Path::new(std::str::from_utf8(&output).unwrap().trim());
+        let mut workspace_root = cargo_path.parent().unwrap().to_path_buf();
+
+        workspace_root.push("resources/test/");
+        let file = workspace_root.join($fname);
+        Testable::new(file.clone()).expect(&format!("Couldn't read test file {:?}", file))
+    }};
 }
 
 pub fn run_check(check: Check<'_>, font: Testable) -> std::option::Option<CheckResult> {
