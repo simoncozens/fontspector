@@ -31,8 +31,6 @@ impl CheckTester {
         args: &Bound<'a, PyTuple>,
         kwargs: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Vec<Bound<'a, PyAny>>> {
-        println!("Running check: {}", self.0);
-
         let ttfont_class = py.import_bound("fontTools.ttLib")?.getattr("TTFont")?;
 
         // Spin up a new fontspector (each time, how extravagant)
@@ -117,7 +115,7 @@ fn python_testrunner_impl(module: &str, function: &str) {
             .expect("Failed to find test function");
         test.call0().unwrap_or_else(|e| {
             e.print_and_set_sys_last_vars(py);
-            panic!("Failed to run test");
+            panic!("Test failed: {}", e);
         });
     })
 }
@@ -132,7 +130,6 @@ fn setup_python() {
             .getattr("path")
             .expect("Can't find path");
         let sys: Bound<'_, PyList> = sys.downcast_into()?;
-        println!("FB DIR: {}", fb_dir);
         sys.insert(0, fb_dir)?;
         Ok(())
     });
