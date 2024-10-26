@@ -22,6 +22,7 @@ from fontbakery.codetesting import (
 )
 from fontspector import CheckTester
 
+
 def test_check_name_empty_records():
     check = CheckTester("opentype/name/empty_records")
 
@@ -264,27 +265,15 @@ def test_check_name_match_familyname_fullfont():
     # no longer starts with the family_name string.
     msg = assert_results_contain(check(ttFont), FAIL, "mismatch-font-names")
     assert msg == (
-        f"On the 'name' table, the full font name {full_name_after!r}"
-        f" does not begin with the font family name {family_name!r}"
-        f" in platformID {platform_id},"
-        f" encodingID {encoding_id},"
-        f" languageID {language_id}({language_id:04X}),"
-        f" and nameID {family_name_id}."
+        f"Full font name {full_name_after!r}"
+        f" does not start with the family name {family_name!r}"
     )
 
     # Remove the modified full name record and re-run the check.
     # It should yield FAIL because the name table won't contain a full name string
     # to compare with the family name string.
     name_table.removeNames(full_name_id, platform_id, encoding_id, language_id)
-    msg = assert_results_contain(check(ttFont), FAIL, "missing-font-names")
-    assert msg == (
-        f"The font's 'name' table lacks a pair of records with"
-        f" nameID {NameID.FULL_FONT_NAME} (Full name),"
-        f" and at least one of"
-        f" nameID {NameID.FONT_FAMILY_NAME} (Font Family name),"
-        f" {NameID.TYPOGRAPHIC_FAMILY_NAME} (Typographic Family name),"
-        f" or {NameID.WWS_FAMILY_NAME} (WWS Family name)."
-    )
+    msg = assert_results_contain(check(ttFont), FAIL, "missing-full-name")
 
     # Run the check on a CJK font. The font's 'name' table contains
     # English-US (1033/0x0409) and Japanese (1041/0x0411) records. It should PASS.

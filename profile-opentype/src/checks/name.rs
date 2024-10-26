@@ -63,6 +63,12 @@ fn check_name_match_familyname_fullfont(t: &Testable, _context: &Context) -> Che
     let font = testfont!(t);
     // We actually care about localization here, so don't just want
     // a vec of String.
+    if font.get_name_entry_strings(NameId::FULL_NAME).count() == 0 {
+        return Ok(Status::just_one_fail(
+            "missing-full-name",
+            "Font is missing a Full Name entry",
+        ));
+    }
     let full_names = font.get_name_entry_strings(NameId::FULL_NAME);
     let family_names = font
         .get_name_entry_strings(NameId::FAMILY_NAME)
@@ -81,8 +87,9 @@ fn check_name_match_familyname_fullfont(t: &Testable, _context: &Context) -> Che
             return return_result(vec![Status::fail(
                 "mismatch-font-names",
                 &format!(
-                    "Full font name '{}' does not start with the Family Name",
-                    name
+                    "Full font name '{}' does not start with the family name '{}'",
+                    name,
+                    family_names.join(", ")
                 ),
             )]);
         }
