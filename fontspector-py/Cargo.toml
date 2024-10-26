@@ -1,0 +1,20 @@
+[package]
+name = "fontspector-py"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "fontspector"
+crate-type = ["cdylib"]
+
+[dependencies]
+fontspector-checkapi = { path = "../fontspector-checkapi" }
+
+# Needed for tests
+profile-universal = { path = "../profile-universal" }
+profile-opentype = { path = "../profile-opentype" }
+profile-googlefonts = { path = "../profile-googlefonts" }
+
+
+pyo3 = { workspace = true}
