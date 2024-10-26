@@ -571,14 +571,3 @@ fn slant_direction(t: &Testable, _context: &Context) -> CheckFnResult {
         ))
     }
 }
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_check_varfont_same_size_instance_records() {
-        fontbakery_bridge::run_python_test(
-            "tests.test_checks_opentype_fvar",
-            "test_check_varfont_same_size_instance_records",
-        )
-    }
-}
