@@ -10,6 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          # 1.82 turned on reference types and wasm-opt can't cope
+          # with that yet
+          # (https://github.com/webpack/webpack/issues/15566)
+          toolchain: "1.81.0"
       - name: Install protoc
         run: sudo apt-get install protobuf-compiler
       - name: Install wasm-pack
