@@ -186,8 +186,8 @@ fn family_naming_recommendations(t: &Testable, _context: &Context) -> CheckFnRes
     for (name_id, max_length) in NAME_LIMITS.iter() {
         for name in font.get_name_entry_strings(*name_id) {
             if name.len() > *max_length {
-                problems.push(Status::warn(
-                    "name-too-long",
+                problems.push(Status::info(
+                    "bad-entries",
                     &format!(
                         "{:?} (\"{}\") is too long ({} > {})",
                         name_id,
@@ -264,7 +264,7 @@ fn consistent_family_name(c: &TestableCollection, context: &Context) -> CheckFnR
             context,
             family_names
                 .iter()
-                .map(|(name, fonts)| format!("{} (found in fonts {})", name, fonts.join(", "))),
+                .map(|(name, fonts)| format!("'{}' (found in fonts {})", name, fonts.join(", "))),
         );
         problems.push(Status::fail(
             "inconsistent-family-name",

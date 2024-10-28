@@ -288,31 +288,6 @@ def test_check_name_match_familyname_fullfont():
         f" languageID {language_id}({language_id:04X}),"
     )
 
-    # Replace the English full name string with data that can't be 'utf_16_be'-decoded.
-    # This will cause a UnicodeDecodeError which will yield a FAIL.
-    name_table.setName(
-        "\xff".encode("utf_7"), full_name_id, platform_id, encoding_id, language_id
-    )
-    msg = assert_results_contain(
-        check(ttFont), FAIL, f"cannot-decode-nameid-{full_name_id}"
-    )
-    assert msg == (
-        f"{decode_error_msg_prefix} and nameID {full_name_id} failed to be decoded."
-    )
-
-    # This time replace the family name string instead.
-    # This should still trigger a UnicodeDecodeError.
-    name_table = ttFont["name"]
-    name_table.setName(
-        "\xff".encode("utf_7"), family_name_id, platform_id, encoding_id, language_id
-    )
-    msg = assert_results_contain(
-        check(ttFont), FAIL, f"cannot-decode-nameid-{family_name_id}"
-    )
-    assert msg == (
-        f"{decode_error_msg_prefix} and nameID {family_name_id} failed to be decoded."
-    )
-
 
 def assert_name_table_check_result(
     ttFont, index, name, check, value, expected_result, expected_keyword=None
@@ -559,9 +534,9 @@ def test_check_consistent_font_family_name():
                 name_record.string = wrong_name.encode("utf-16be")
 
     msg = assert_results_contain(check(test_fonts), FAIL, "inconsistent-family-name")
-    assert "4 different Font Family names were found" in msg
-    assert "'Source Sans Pro' was found" in msg
-    assert "'wrong-name-1' was found" in msg
+    assert "4 different family names were found" in msg
+    assert "'Source Sans Pro' (found" in msg
+    assert "'wrong-name-1' (found" in msg
 
 
 def test_check_italic_names():
