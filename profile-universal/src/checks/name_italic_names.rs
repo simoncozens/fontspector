@@ -14,11 +14,14 @@ use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 fn name_italic_names(t: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(t);
     let mut problems = vec![];
-    skip!(
-        !font.filename_suggests_italic(),
-        "not-italic",
-        "Font is not italic"
-    );
+    let style = font.style();
+    if let Some(style) = style {
+        if !style.contains("Italic") {
+            skip!("not-italic", "Font is not italic");
+        }
+    } else {
+        skip!("not-italic", "Font is not italic");
+    }
     if let Some(family_name) = font.get_name_entry_strings(NameId::FAMILY_NAME).next() {
         if family_name.contains("Italic") {
             problems.push(Status::fail(

@@ -49,7 +49,7 @@ def test_check_name_no_copyright_on_description():
     """Description strings in the name table
     must not contain copyright info.
     """
-    check = CheckTester("opentype/name/no_copyright_on_description")
+    check = CheckTester("name/no_copyright_on_description")
 
     # Our reference Mada Regular is know to be good here.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -538,7 +538,7 @@ def test_check_consistent_font_family_name():
 
 
 def test_check_italic_names():
-    check = CheckTester("opentype/name/italic_names")
+    check = CheckTester("name/italic_names")
 
     def get_name(font, nameID):
         for entry in font["name"].names:

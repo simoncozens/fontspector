@@ -9,11 +9,12 @@ use read_fonts::{
     TableProvider,
 };
 use skrifa::{
-    font::FontRef, setting::VariationSetting, string::StringId, GlyphId, MetadataProvider, Tag,
-};
-use skrifa::{
+    font::FontRef,
     outline::{DrawSettings, OutlinePen},
     prelude::Size,
+    setting::VariationSetting,
+    string::StringId,
+    GlyphId, MetadataProvider, Tag,
 };
 use std::{
     cell::RefCell,
@@ -66,18 +67,20 @@ impl TestFont<'_> {
     }
 
     pub fn style(&self) -> Option<&str> {
-        if let Some(default_location) = self.default_location() {
-            if default_location.get("wght") == Some(&700.0) {
-                if self.filename.to_str()?.contains("Italic") {
-                    return Some("BoldItalic");
+        if self.is_variable_font() {
+            if let Some(default_location) = self.default_location() {
+                if default_location.get("wght") == Some(&700.0) {
+                    if self.filename.to_str()?.contains("Italic") {
+                        return Some("BoldItalic");
+                    } else {
+                        return Some("Bold");
+                    }
                 } else {
-                    return Some("Bold");
+                    if self.filename.to_str()?.contains("Italic") {
+                        return Some("Italic");
+                    }
+                    return Some("Regular");
                 }
-            } else {
-                if self.filename.to_str()?.contains("Italic") {
-                    return Some("Italic");
-                }
-                return Some("Regular");
             }
         }
         if let Some(style_part) = self.filename.file_stem()?.to_str()?.split('-').last() {
@@ -259,11 +262,5 @@ impl TestFont<'_> {
             .draw(settings, pen)
             .map_err(|_| CheckError::Error("Failed to draw glyph".to_string()))?;
         Ok(())
-    }
-
-    pub fn filename_suggests_italic(&self) -> bool {
-        self.filename
-            .to_str()
-            .map_or(false, |f| f.contains("-Italic"))
     }
 }
