@@ -128,7 +128,7 @@ fn family_max_4_fonts_per_family_name(t: &TestableCollection, _context: &Context
     for (family_name, count) in counter {
         if count > 4 {
             problems.push(Status::fail(
-                "too-many-fonts",
+                "too-many",
                 &format!(
                     "Family name '{}' has {} fonts, which is more than the maximum of 4",
                     family_name, count
@@ -152,7 +152,7 @@ fn postscript_name(t: &Testable, _context: &Context) -> CheckFnResult {
     for name in font.get_name_entry_strings(NameId::POSTSCRIPT_NAME) {
         if !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
             problems.push(Status::fail(
-                "invalid-postscript-name",
+                "bad-psname-entries",
                 &format!("PostScript name '{}' contains invalid characters", name),
             ));
         }
@@ -298,6 +298,12 @@ fn name_postscript_vs_cff(t: &Testable, _context: &Context) -> CheckFnResult {
         "no-cff",
         "This check only applies to CFF fonts."
     );
+    if font.font().cff()?.names().count() > 1 {
+        return Ok(Status::just_one_fail(
+            "cff-name-error",
+            "Unexpected number of font names in CFF table.",
+        ));
+    }
     let cff_name = String::from_utf8_lossy(
         font.font()
             .cff()?
@@ -309,10 +315,10 @@ fn name_postscript_vs_cff(t: &Testable, _context: &Context) -> CheckFnResult {
     if let Some(name) = name {
         if cff_name != name {
             return Ok(Status::just_one_fail(
-                "mismatch",
+                "ps-cff-name-mismatch",
                 &format!(
-                    "CFF table FontName '{}' does not match name table PostScript name '{}'",
-                    cff_name, name
+                    "Name table PostScript name '{}' does not match CFF table FontName '{}'.",
+                    name, cff_name,
                 ),
             ));
         }

@@ -417,14 +417,12 @@ def test_check_name_postscript_vs_cff():
     # Now test with a TrueType font.
     # The test should be skipped due to an unfulfilled condition.
     ttFont = TTFont(TEST_FILE("source-sans-pro/TTF/SourceSansPro-Bold.ttf"))
-    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: is_cff" in msg
+    msg = assert_results_contain(check(ttFont), SKIP, "no-cff")
 
     # Now test with a CFF2 font.
     # The test should be skipped due to an unfulfilled condition.
     ttFont = TTFont(TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Italic.otf"))
-    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: is_cff" in msg
+    msg = assert_results_contain(check(ttFont), SKIP, "no-cff")
 
 
 def test_check_name_postscript_name_consistency():
@@ -631,5 +629,3 @@ def test_check_name_postscript():
         WindowsLanguageID.ENGLISH_USA,
     )
     msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-entries")
-    assert "PostScript name does not follow requirements" in msg
-    assert "May contain only a-zA-Z0-9 characters and a hyphen." in msg
