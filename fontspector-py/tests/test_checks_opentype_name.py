@@ -1,5 +1,5 @@
 import os
-
+import pytest
 from fontTools.ttLib import TTFont
 
 from fontbakery.constants import (
@@ -65,7 +65,8 @@ def test_check_name_no_copyright_on_description():
     )
 
 
-def NOT_PORTED_YET_test_check_monospace():
+@pytest.mark.skip("Check not ported yet.")
+def test_check_monospace():
     """Checking correctness of monospaced metadata."""
     check = CheckTester("opentype/monospace")
     import string
