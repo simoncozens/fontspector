@@ -626,7 +626,6 @@ def test_check_metadata_undeclared_fonts():
     assert_PASS(check(font))
 
 
-@pytest.mark.skip("Check not ported yet.")
 def test_check_family_equal_codepoint_coverage(mada_ttFonts, cabin_ttFonts):
     """Fonts have equal codepoint coverage?"""
     check = CheckTester("googlefonts/family/equal_codepoint_coverage")
