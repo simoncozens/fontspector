@@ -14,7 +14,7 @@ dynamic = ["version"]
 
 dependencies = [
     "fontTools",
-    "fontbakery",
+    "fontbakery[all]>=0.13.0a3",
     "pytest",
 ]
 [tool.maturin]
