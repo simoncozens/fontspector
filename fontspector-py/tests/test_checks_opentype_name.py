@@ -65,7 +65,7 @@ def test_check_name_no_copyright_on_description():
     )
 
 
-def test_check_monospace():
+def NOT_PORTED_YET_test_check_monospace():
     """Checking correctness of monospaced metadata."""
     check = CheckTester("opentype/monospace")
     import string
