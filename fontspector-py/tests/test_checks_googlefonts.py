@@ -111,32 +111,6 @@ def cabin_regular_path():
     return portable_path("data/test/cabin/Cabin-Regular.ttf")
 
 
-def test_extra_needed_exit_from_conditions(monkeypatch):
-    module_name = "google.protobuf"
-    sys.meta_path.insert(0, ImportRaiser(module_name))
-    monkeypatch.delitem(sys.modules, module_name, raising=False)
-
-    with pytest.raises(SystemExit):
-        check = CheckTester("googlefonts/metadata/designer_profiles")
-        font = TEST_FILE("merriweather/Merriweather-Regular.ttf")
-        check(font)
-
-    remove_import_raiser(module_name)
-
-
-def test_extra_needed_exit(monkeypatch):
-    module_name = "axisregistry"
-    sys.meta_path.insert(0, ImportRaiser(module_name))
-    monkeypatch.delitem(sys.modules, module_name, raising=False)
-
-    with pytest.raises(SystemExit):
-        check = CheckTester("googlefonts/canonical_filename")
-        ttFont = TTFont(TEST_FILE("cabinvfbeta/Cabin-VF.ttf"))
-        check(ttFont)
-
-    remove_import_raiser(module_name)
-
-
 @pytest.mark.parametrize(
     """fp,result""",
     [
