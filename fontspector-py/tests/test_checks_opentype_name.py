@@ -20,11 +20,12 @@ from fontbakery.codetesting import (
     portable_path,
     TEST_FILE,
 )
-from fontspector import CheckTester
+from conftest import check_id
 
 
-def test_check_name_empty_records():
-    check = CheckTester("opentype/name/empty_records")
+@check_id("opentype/name/empty_records")
+def test_check_name_empty_records(check):
+    # check = CheckTester("opentype/name/empty_records")
 
     font_path = TEST_FILE("source-sans-pro/OTF/SourceSansPro-Regular.otf")
     test_font = TTFont(font_path)
@@ -45,12 +46,11 @@ def test_check_name_empty_records():
     )
 
 
-def test_check_name_no_copyright_on_description():
+@check_id("name/no_copyright_on_description")
+def test_check_name_no_copyright_on_description(check):
     """Description strings in the name table
     must not contain copyright info.
     """
-    check = CheckTester("name/no_copyright_on_description")
-
     # Our reference Mada Regular is know to be good here.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
     assert_PASS(check(ttFont), "with a good font...")
@@ -65,10 +65,9 @@ def test_check_name_no_copyright_on_description():
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-def test_check_monospace():
+@check_id("opentype/monospace")
+def test_check_monospace(check):
     """Checking correctness of monospaced metadata."""
-    check = CheckTester("opentype/monospace")
     import string
     from fontbakery.constants import PANOSE_Proportion, IsFixedWidth
 
@@ -82,9 +81,7 @@ def test_check_monospace():
     # Our reference Mada Regular is a non-monospace font
     # know to have good metadata for this check.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
-    assert_results_contain(
-        check(ttFont), PASS, "good", "with a good non-monospace font..."
-    )
+    assert_PASS(check(ttFont), "with a good non-monospace font...")
 
     # We'll mark it as monospaced on the post table and make sure it fails:
     ttFont["post"].isFixedPitch = 42  # *any* non-zero value means monospaced
@@ -119,9 +116,7 @@ def test_check_monospace():
         for code in list(map(ord, string.ascii_letters)):
             if subtable.cmap.get(code):
                 del subtable.cmap[code]
-    assert_results_contain(
-        check(ttFont), PASS, "good", "with a good non-monospace font..."
-    )
+    assert_PASS(check(ttFont), "with a good non-monospace font...")
 
     # --------------------------------------------
     # And now we test the monospaced code-paths:
@@ -136,7 +131,7 @@ def test_check_monospace():
     # WARN is emitted when there's at least one outlier.
     # I don't see a good reason to be picky and also test that one separately here...
     assert (subresult.status == WARN and subresult.message.code == "mono-outliers") or (
-        subresult.status == PASS and subresult.message.code == "mono-good"
+        subresult.status == PASS
     )
 
     # Mark it as a non-monospaced on the post table and it should
@@ -205,19 +200,16 @@ def test_check_monospace():
     status, message = subresult.status, subresult.message
     # WARN is emitted when there's at least one outlier.
     # I don't see a good reason to be picky and also test that one separately here...
-    assert (status == WARN and message.code == "mono-outliers") or (
-        status == PASS and message.code == "mono-good"
-    )
+    assert (status == WARN and message.code == "mono-outliers") or (status == PASS)
 
     # Confirm the check yields FAIL if the font doesn't have a required table
     del ttFont["OS/2"]
     assert_results_contain(check(ttFont), FAIL, "lacks-table")
 
 
-def test_check_name_match_familyname_fullfont():
+@check_id("opentype/name/match_familyname_fullfont")
+def test_check_name_match_familyname_fullfont(check):
     """Does full font name begin with the font family name?"""
-    check = CheckTester("opentype/name/match_familyname_fullfont")
-
     # Our reference Mada Regular is known to be good
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
 
@@ -311,10 +303,9 @@ def assert_name_table_check_result(
         assert message.code == expected_keyword
 
 
-def test_check_family_naming_recommendations():
+@check_id("opentype/family_naming_recommendations")
+def test_check_family_naming_recommendations(check):
     """Font follows the family naming recommendations ?"""
-    check = CheckTester("opentype/family_naming_recommendations")
-
     # Our reference Mada Medium is known to be good
     ttFont = TTFont(TEST_FILE("mada/Mada-Medium.ttf"))
 
@@ -388,9 +379,8 @@ def test_check_family_naming_recommendations():
             name_test("A" * 31, PASS)
 
 
-def test_check_name_postscript_vs_cff():
-    check = CheckTester("opentype/name/postscript_vs_cff")
-
+@check_id("opentype/name/postscript_vs_cff")
+def test_check_name_postscript_vs_cff(check):
     # Test a font that has matching names. Check should PASS.
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
     assert_PASS(check(ttFont))
@@ -426,9 +416,8 @@ def test_check_name_postscript_vs_cff():
     msg = assert_results_contain(check(ttFont), SKIP, "no-cff")
 
 
-def test_check_name_postscript_name_consistency():
-    check = CheckTester("opentype/name/postscript_name_consistency")
-
+@check_id("opentype/name/postscript_name_consistency")
+def test_check_name_postscript_name_consistency(check):
     base_path = portable_path("data/test/source-sans-pro/TTF")
     font_path = os.path.join(base_path, "SourceSansPro-Regular.ttf")
     test_font = TTFont(font_path)
@@ -455,9 +444,8 @@ def test_check_name_postscript_name_consistency():
     assert_results_contain(check(test_font), FAIL, "inconsistency")
 
 
-def test_check_family_max_4_fonts_per_family_name():
-    check = CheckTester("opentype/family/max_4_fonts_per_family_name")
-
+@check_id("opentype/family/max_4_fonts_per_family_name")
+def test_check_family_max_4_fonts_per_family_name(check):
     base_path = portable_path("data/test/source-sans-pro/OTF")
 
     font_names = [
@@ -493,9 +481,8 @@ def test_check_family_max_4_fonts_per_family_name():
     assert_results_contain(check(test_fonts), FAIL, "too-many")
 
 
-def test_check_consistent_font_family_name():
-    check = CheckTester("opentype/family/consistent_family_name")
-
+@check_id("opentype/family/consistent_family_name")
+def test_check_consistent_font_family_name(check):
     base_path = portable_path("data/test/source-sans-pro/OTF")
 
     font_names = [
@@ -538,9 +525,8 @@ def test_check_consistent_font_family_name():
     assert "'wrong-name-1' (found" in msg
 
 
-def test_check_italic_names():
-    check = CheckTester("name/italic_names")
-
+@check_id("name/italic_names")
+def test_check_italic_names(check):
     def get_name(font, nameID):
         for entry in font["name"].names:
             if entry.nameID == nameID:
@@ -613,9 +599,8 @@ def test_check_italic_names():
     assert_results_contain(check(ttFont), FAIL, "bad-typographicsubfamilyname")
 
 
-def test_check_name_postscript():
-    check = CheckTester("opentype/postscript_name")
-
+@check_id("opentype/postscript_name")
+def test_check_name_postscript(check):
     # Test a font that has OK psname. Check should PASS.
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
     assert_PASS(check(ttFont))

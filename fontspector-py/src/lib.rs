@@ -122,7 +122,23 @@ impl CheckTester {
     }
 }
 
+#[pyfunction]
+fn registered_checks() -> PyResult<Vec<String>> {
+    let mut registry = Registry::new();
+    OpenType.register(&mut registry).map_err(|_| {
+        PyValueError::new_err("Couldn't register opentype profile, fontspector bug")
+    })?;
+    Universal.register(&mut registry).map_err(|_| {
+        PyValueError::new_err("Couldn't register universal profile, fontspector bug")
+    })?;
+    GoogleFonts.register(&mut registry).map_err(|_| {
+        PyValueError::new_err("Couldn't register Google Fonts profile, fontspector bug")
+    })?;
+    Ok(registry.checks.keys().cloned().collect())
+}
+
 #[pymodule(name = "fontspector")]
 fn fonspector(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<CheckTester>()
+    m.add_class::<CheckTester>()?;
+    m.add_function(wrap_pyfunction!(registered_checks, m)?)
 }
