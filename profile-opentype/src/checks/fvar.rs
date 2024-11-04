@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, StatusCode, TestFont};
 use read_fonts::types::{F2Dot14, NameId};
 use skrifa::{outline::OutlinePen, MetadataProvider};
 
@@ -239,6 +239,7 @@ fn family_axis_ranges(c: &TestableCollection, context: &Context) -> CheckFnResul
         &values,
         "axis-range-mismatch",
         "Variable axis ranges not matching between font files",
+        StatusCode::Fail,
     )
 }
 

@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::{CheckFnResult, Context, Status};
+use crate::{CheckFnResult, Context, Status, StatusCode};
 
 /// Formats a list of items as a Markdown bullet list.
 pub fn bullet_list<I>(context: &Context, items: I) -> String
@@ -43,6 +43,7 @@ pub fn assert_all_the_same<T, U, V>(
     values: &[(T, U, V)],
     code: &str,
     message_start: &str,
+    severity: StatusCode,
 ) -> CheckFnResult
 where
     T: Eq,
@@ -61,6 +62,10 @@ where
                 values.iter().map(|(_, a, b)| format!("{}: {}", a, b))
             )
         );
-        Ok(Status::just_one_fail(code, &message))
+        if StatusCode::Fail == severity {
+            Ok(Status::just_one_fail(code, &message))
+        } else {
+            Ok(Status::just_one_warn(code, &message))
+        }
     }
 }

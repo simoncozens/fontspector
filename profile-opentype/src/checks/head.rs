@@ -1,4 +1,4 @@
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, StatusCode};
 use read_fonts::{tables::head::MacStyle, types::NameId, ReadError, TableProvider};
 use skrifa::MetadataProvider;
 
@@ -177,5 +177,6 @@ fn equal_font_versions(c: &TestableCollection, context: &Context) -> CheckFnResu
         &versions_names?,
         "mismatch",
         "Version info differs among font files of the same font project.",
+        StatusCode::Fail,
     )
 }
