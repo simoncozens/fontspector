@@ -57,7 +57,7 @@ fn monospace(t: &Testable, context: &Context) -> CheckFnResult {
     for required in [b"glyf", b"hhea", b"hmtx", b"OS/2", b"post"] {
         if !font.has_table(required) {
             return Ok(Status::just_one_fail(
-                "missing-table",
+                "lacks-table",
                 &format!("Font is missing a required table: {:?}", required),
             ));
         }
@@ -115,7 +115,7 @@ fn monospace(t: &Testable, context: &Context) -> CheckFnResult {
         let unusual_count = unusually_spaced_glyphs.len();
         let outliers_ratio = unusual_count as f32 / num_glyphs as f32 * 100f32;
         if outliers_ratio > 0.0 {
-            problems.push(Status::fail(
+            problems.push(Status::warn(
                 "mono-outliers",
                 &format!(
                     "Font is monospaced but {unusual_count} glyphs ({outliers_ratio:.2}%) have a different width. You should check the widths of: {}",
@@ -125,7 +125,7 @@ fn monospace(t: &Testable, context: &Context) -> CheckFnResult {
                     }))
                 ),
             ));
-        } else if post_isfixedpitch != 0 {
+        } else if post_isfixedpitch == 0 {
             problems.push(Status::fail(
                 "mono-bad-post-isFixedPitch",
                &format!("On monospaced fonts, the value of post.isFixedPitch must be set to a non-zero value (meaning 'fixed width monospaced'), but got {post_isfixedpitch} instead.")
@@ -194,10 +194,11 @@ fn glyph_metrics_stats(f: &TestFont) -> Result<GlyphMetricsStats, ReadError> {
     let ascii_glyph_ids = (32u32..127)
         .flat_map(|ch| f.font().charmap().map(ch))
         .collect::<Vec<_>>();
-    let all_widths = metrics
-        .h_metrics()
-        .iter()
-        .map(|x| x.advance())
+    // Here we have to be careful of the h_metrics function, because it
+    // only returns metrics for the first numLongMetrics glyphs; everything
+    // afterwards is repeated, which can throw off our frequency analysis.
+    let all_widths = (0..f.glyph_count)
+        .flat_map(|id| metrics.advance(GlyphId::new(id as u16)))
         .filter(|x| *x != 0);
     let width_max = all_widths.clone().max().unwrap_or(0);
     let (most_common_width, _most_common_count) = most_common(all_widths).unwrap_or((0, 0));
@@ -205,12 +206,12 @@ fn glyph_metrics_stats(f: &TestFont) -> Result<GlyphMetricsStats, ReadError> {
         // More than 80% of ASCII glyphs are present
         let ascii_widths = ascii_glyph_ids
             .iter()
-            .flat_map(|id| metrics.h_metrics().get(id.to_u16() as usize))
-            .map(|l| l.advance())
+            .flat_map(|id| metrics.advance(*id))
             .filter(|x| *x != 0);
         let ascii_widths_count = ascii_widths.clone().count() as f32;
-        let (_most_common_ascii_width, most_common_ascii_count) =
+        let (most_common_ascii_width, most_common_ascii_count) =
             most_common(ascii_widths).unwrap_or((0, 0));
+
         let seems_monospaced = most_common_ascii_count as f32 > ascii_widths_count * 0.8;
         return Ok(GlyphMetricsStats {
             seems_monospaced,
@@ -238,11 +239,7 @@ fn glyph_metrics_stats(f: &TestFont) -> Result<GlyphMetricsStats, ReadError> {
         {
             continue;
         }
-        if let Some(width) = metrics
-            .h_metrics()
-            .get(glyphid.to_u16() as usize)
-            .map(|l| l.advance())
-        {
+        if let Some(width) = metrics.advance(glyphid) {
             if width != 0 {
                 widths.insert(width);
             }
