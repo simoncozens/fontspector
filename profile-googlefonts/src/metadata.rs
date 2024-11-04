@@ -3,8 +3,7 @@ include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 
 use chrono::prelude::*;
 use fonts_public::FamilyProto;
-use fontspector_checkapi::prelude::*;
-use fontspector_checkapi::{skip, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 
 fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {
     let mdpb = std::str::from_utf8(&t.contents)
@@ -24,7 +23,9 @@ fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {
     applies_to = "MDPB"
 )]
 fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
-    let msg = family_proto(c)?;
+    let msg = family_proto(c).map_err(|e| {
+        CheckError::Error(format!("METADATA.pb is not a valid FamilyProto: {:?}", e))
+    })?;
     let mut problems = vec![];
     if let Some(designer) = msg.designer.as_ref() {
         if designer.contains('/') {

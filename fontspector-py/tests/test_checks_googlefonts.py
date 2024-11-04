@@ -5,7 +5,7 @@ import sys
 
 import pytest
 import requests
-from conftest import ImportRaiser, remove_import_raiser
+from conftest import ImportRaiser, remove_import_raiser, check_id
 from fontTools.ttLib import TTFont
 
 from fontbakery.checks.vendorspecific.googlefonts.conditions import (
@@ -511,23 +511,14 @@ def test_check_name_family_name_compliance():
     assert_PASS(check(ttFont), "with a good font...")
 
 
-@pytest.mark.skip("FIXME: CheckTester bug perhaps?")
-def test_check_metadata_parses():
+@check_id("googlefonts/metadata/parses")
+def test_check_metadata_parses(check):
     """Check METADATA.pb parse correctly."""
-    check = CheckTester("googlefonts/metadata/parses")
-
-    good = TEST_FILE("merriweather/Merriweather-Regular.ttf")
+    good = TEST_FILE("merriweather/METADATA.pb")
     assert_PASS(check(good), "with a good METADATA.pb file...")
 
-    skip = MockFont(file=TEST_FILE("slabo/Slabo-Regular.ttf"))
-    assert_results_contain(
-        check(skip), SKIP, "file-not-found", "with a missing METADATA.pb file..."
-    )
-
-    bad = MockFont(file=TEST_FILE("broken_metadata/foo.ttf"))
-    assert_results_contain(
-        check(bad), FATAL, "parsing-error", "with a bad METADATA.pb file..."
-    )
+    bad = TEST_FILE("broken_metadata/METADATA.pb")
+    assert list(check(bad))[0].status == ERROR
 
 
 @pytest.mark.skip("Check not ported yet.")
@@ -3549,9 +3540,9 @@ def test_check_gf_axisregistry_valid_tags():
     assert_PASS(check(font))
 
     md = Font(font).family_metadata
-    md.axes[
-        0
-    ].tag = "crap"  # I'm pretty sure this one wont ever be included in the registry
+    md.axes[0].tag = (
+        "crap"  # I'm pretty sure this one wont ever be included in the registry
+    )
     assert_results_contain(
         check(MockFont(file=font, family_metadata=md)), FAIL, "bad-axis-tag"
     )
@@ -3617,9 +3608,7 @@ def test_check_metadata_consistent_axis_enumeration():
     assert_PASS(check(font))
 
     md = Font(font).family_metadata
-    md.axes[
-        1
-    ].tag = (
+    md.axes[1].tag = (
         "wdth"  # this effectively removes the "wght" axis while not adding an extra one
     )
     assert_results_contain(

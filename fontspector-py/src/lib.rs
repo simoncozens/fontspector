@@ -11,7 +11,7 @@ use profile_universal::Universal;
 use pyo3::{
     exceptions::PyValueError,
     prelude::*,
-    types::{PyList, PyTuple},
+    types::{PyList, PyString, PyTuple},
 };
 
 #[pyclass]
@@ -19,6 +19,12 @@ struct CheckTester(String);
 
 fn obj_to_testable(py: Python, arg: &Bound<'_, PyAny>) -> PyResult<Testable> {
     let ttfont_class = py.import_bound("fontTools.ttLib")?.getattr("TTFont")?;
+    // if it's a string, just return a new testable
+    if arg.is_instance_of::<PyString>() {
+        let filename: String = arg.extract()?;
+        return Testable::new(&filename)
+            .map_err(|e| PyValueError::new_err(format!("Couldn't create testable object: {}", e)));
+    }
     if !arg.is_instance(&ttfont_class)? {
         panic!("I can't handle args {:?}", arg);
     }
