@@ -1,8 +1,14 @@
+use std::sync::LazyLock;
+
 use font_types::NameId;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 use regex::Regex;
 use skrifa::MetadataProvider;
+
+#[allow(clippy::unwrap_used)]
+static RFN_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"with [Rr]eserved [Ff]ont [Nn]ame '(?<rfn>[^']*)'").unwrap());
 
 // Although this is a /name/ check, it's really about licensing
 #[check(
@@ -50,9 +56,7 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
             .ok_or(CheckError::Error("No name ID 1".to_string()))?
             .chars()
             .collect::<String>();
-        #[allow(clippy::unwrap_used)]
-        let re = Regex::new(r"with [Rr]eserved [Ff]ont [Nn]ame '(?<rfn>[^']*)'").unwrap();
-        let matches = re.captures(&name_string);
+        let matches = RFN_RE.captures(&name_string);
 
         if matches.is_some() {
             #[allow(clippy::expect_used)]
