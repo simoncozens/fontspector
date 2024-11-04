@@ -7,6 +7,7 @@ pub mod head;
 pub mod hhea;
 pub mod kern;
 pub mod layout;
+pub mod monospaced;
 pub mod name;
 pub mod os2;
 pub mod post;

@@ -1,12 +1,9 @@
 use std::collections::{HashMap, HashSet};
 
 use font_types::NameId;
-use fontspector_checkapi::{
-    constants::GlyphClass, prelude::*, skip, testfont, FileTypeConvert, TestFont,
-};
-use read_fonts::{ReadError, TableProvider};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
+use read_fonts::TableProvider;
 use skrifa::MetadataProvider;
-use unicode_properties::{GeneralCategory, UnicodeGeneralCategory};
 
 #[check(
     id = "opentype/name/empty_records",

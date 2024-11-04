@@ -31,6 +31,7 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::layout::layout_valid_feature_tags);
         cr.register_check(checks::layout::layout_valid_language_tags);
         cr.register_check(checks::layout::layout_valid_script_tags);
+        cr.register_check(checks::monospaced::monospace);
         cr.register_check(checks::name::check_name_match_familyname_fullfont);
         cr.register_check(checks::name::consistent_family_name);
         cr.register_check(checks::name::family_max_4_fonts_per_family_name);
