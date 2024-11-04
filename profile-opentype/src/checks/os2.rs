@@ -1,4 +1,4 @@
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, TestFont};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, StatusCode, TestFont};
 use read_fonts::{
     tables::{head::MacStyle, os2::SelectionFlags},
     TableProvider,
@@ -42,8 +42,8 @@ fn fsselection(f: &Testable, _context: &Context) -> CheckFnResult {
         (regular_seen, regular_expected, "Regular"),
     ] {
         if flag != expected {
-            problems.push(Status::warn(
-                "mismatch",
+            problems.push(Status::fail(
+                &format!("bad-{}", label.to_uppercase()),
                 &format!(
                     "fsSelection {} flag {} does not match font style {}",
                     label, flag, style
@@ -60,8 +60,8 @@ fn fsselection(f: &Testable, _context: &Context) -> CheckFnResult {
         (italic_seen, mac_italic, "Italic"),
     ] {
         if flag != expected {
-            problems.push(Status::warn(
-                "macstyle-mismatch",
+            problems.push(Status::fail(
+                &format!("fsselection-macstyle-{}", label.to_lowercase()),
                 &format!(
                     "fsSelection {} flag {} does not match macStyle {} flag",
                     label, flag, expected
@@ -126,6 +126,7 @@ fn panose_familytype(c: &TestableCollection, _context: &Context) -> CheckFnResul
         &panose_values,
         "inconsistency",
         "PANOSE family type is not the same across this family. In order to fix this, please make sure that the panose.bFamilyType value is the same in the OS/2 table of all of this family's font files.",
+        StatusCode::Warn
     )
 }
 
@@ -142,7 +143,7 @@ fn panose_familytype(c: &TestableCollection, _context: &Context) -> CheckFnResul
 fn check_vendor_id(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let vendor_id = context
-        .check_metadata
+        .configuration
         .get("vendor_id")
         .ok_or(CheckError::skip(
             "no-vendor-id",
@@ -217,6 +218,12 @@ fn xavgcharwidth(f: &Testable, _context: &Context) -> CheckFnResult {
             .map(|metric| metric.advance.get() as u32)
             .filter(|&w| w > 0)
             .collect::<Vec<_>>();
+        if advances.is_empty() {
+            return Err(CheckError::Error(
+                "No non-zero width glyphs in font for average character width calculation"
+                    .to_string(),
+            ));
+        }
         (
             "the average of the widths of all glyphs in the font",
             advances.iter().sum::<u32>() / advances.len() as u32,
@@ -239,14 +246,15 @@ fn xavgcharwidth(f: &Testable, _context: &Context) -> CheckFnResult {
             .collect::<Vec<_>>();
         (
             "the weighted average of the widths of the latin lowercase glyphs in the font",
-            advances.iter().sum::<u32>() / advances.len() as u32,
+            advances.iter().sum::<u32>() / 1000u32,
         )
     };
     let actual = os2.x_avg_char_width();
     let difference = (expected as i16).abs_diff(actual);
+    println!("xAvgCharWidth: expected {} actual {}", expected, actual);
     Ok(match difference {
-        0|1 => Status::just_one_pass(),
-        2|3|4|5|6|7|8|9|20 => Status::just_one_info(
+        0 => Status::just_one_pass(),
+        1..=10 => Status::just_one_info(
             "xAvgCharWidth-close",
             &format!("OS/2 xAvgCharWidth is {} but it should be {} which corresponds to {}. These are similar values, which may be a symptom of the slightly different calculation of the xAvgCharWidth value in font editors. There's further discussion on this at https://github.com/fonttools/fontbakery/issues/1622",
                 actual, expected, rule
