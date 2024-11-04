@@ -212,8 +212,8 @@ fn check_has_ital(t: &TestFont) -> Option<Status> {
             .iter()
             .any(|axis| axis.axis_tag() == "ital");
         if !has_ital {
-            Some(Status::warn(
-                "missing-ital",
+            Some(Status::fail(
+                "missing-ital-axis",
                 &format!(
                     "Font {} lacks an 'ital' axis in the STAT table.",
                     t.filename.to_string_lossy()
@@ -238,7 +238,7 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
         if let Some(ital_pos) = axes.iter().position(|axis| axis.axis_tag() == "ital") {
             if ital_pos != axes.len() - 1 {
                 problems.push(Status::warn(
-                    "ital-not-last",
+                    "ital-axis-not-last",
                     &format!(
                         "Font {} has 'ital' axis in position {} of {}.",
                         t.filename.to_string_lossy(),
@@ -331,6 +331,20 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
                                     ),
                                 ))
                             }
+                            // If we are Roman, check for the linked value
+                            if !is_italic {
+                                let linked_value = v.linked_value();
+                                if linked_value.to_f32() != 1.0 {
+                                    problems.push(Status::warn(
+                                            "wrong-ital-axis-linkedvalue",
+                                            &format!(
+                                                "{} has STAT table 'ital' axis with wrong linked value. Expected: 1.0, got '{}'",
+                                                t.filename.to_string_lossy(),
+                                                linked_value
+                                            ),
+                                        ))
+                                }
+                            }
                         }
                         AxisValue::Format4(_) => {
                             // We don't handle this.
@@ -357,8 +371,10 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
 fn ital_axis(c: &TestableCollection, _context: &Context) -> CheckFnResult {
     let fonts = TTF.from_collection(c);
     let mut problems = vec![];
+    println!("Fonts: {:?}", fonts);
 
     for pair in segment_vf_collection(fonts).into_iter() {
+        println!("Pair: {:?}", pair);
         match pair {
             (Some(roman), Some(italic)) => {
                 // These should definitely both have an ital axis
@@ -368,7 +384,7 @@ fn ital_axis(c: &TestableCollection, _context: &Context) -> CheckFnResult {
                 problems.extend(check_ital_is_binary_and_last(&italic, true)?);
             }
             (None, Some(italic)) => {
-                problems.push(Status::warn(
+                problems.push(Status::fail(
                     "missing-roman",
                     &format!(
                         "Italic font {} has no matching Roman font.",
