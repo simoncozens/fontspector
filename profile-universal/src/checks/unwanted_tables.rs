@@ -1,5 +1,5 @@
-use font_types::Tag;
 use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
+use read_fonts::types::Tag;
 use write_fonts::FontBuilder;
 
 const UNWANTED_TABLES: [(Tag, &str); 9] = [

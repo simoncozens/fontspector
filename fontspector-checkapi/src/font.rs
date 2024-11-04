@@ -19,7 +19,7 @@ use skrifa::{
     prelude::Size,
     setting::VariationSetting,
     string::StringId,
-    GlyphId, MetadataProvider, Tag,
+    GlyphId, GlyphId16, MetadataProvider, Tag,
 };
 use std::{
     cell::RefCell,
@@ -123,9 +123,11 @@ impl TestFont<'_> {
         Ok(gdef)
     }
 
-    pub fn gdef_class(&self, glyph_id: GlyphId) -> GlyphClassDef {
+    pub fn gdef_class(&self, glyph_id: impl Into<GlyphId>) -> GlyphClassDef {
         if let Some(Ok(class_def)) = self.get_gdef().ok().and_then(|gdef| gdef.glyph_class_def()) {
-            GlyphClassDef::new(class_def.get(glyph_id))
+            GlyphId16::try_from(glyph_id.into())
+                .map(|gid| class_def.get(gid))
+                .map_or(GlyphClassDef::Unknown, GlyphClassDef::new)
         } else {
             GlyphClassDef::Unknown
         }
@@ -142,7 +144,8 @@ impl TestFont<'_> {
             .map(|s| s.to_string())
     }
 
-    fn glyph_name_for_id_impl(&self, gid: GlyphId, synthesize: bool) -> Option<String> {
+    fn glyph_name_for_id_impl(&self, gid: impl Into<GlyphId>, synthesize: bool) -> Option<String> {
+        let gid: GlyphId = gid.into();
         if self._glyphnames.borrow().is_empty() {
             if let Ok(post) = self.font().post() {
                 match post.version() {
@@ -173,16 +176,16 @@ impl TestFont<'_> {
         if let Some(Some(n)) = self._glyphnames.borrow().get(gid.to_u32() as usize) {
             Some(n.to_string())
         } else if synthesize {
-            Some(format!("gid{:}", gid).to_string())
+            Some(format!("gid{:}", gid))
         } else {
             None
         }
     }
 
-    pub fn glyph_name_for_id(&self, gid: GlyphId) -> Option<String> {
+    pub fn glyph_name_for_id(&self, gid: impl Into<GlyphId>) -> Option<String> {
         self.glyph_name_for_id_impl(gid, false)
     }
-    pub fn glyph_name_for_id_synthesise(&self, gid: GlyphId) -> String {
+    pub fn glyph_name_for_id_synthesise(&self, gid: impl Into<GlyphId>) -> String {
         #[allow(clippy::unwrap_used)]
         self.glyph_name_for_id_impl(gid, true).unwrap()
     }

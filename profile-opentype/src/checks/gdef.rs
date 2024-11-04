@@ -35,7 +35,7 @@ fn gdef_spacing_marks(f: &Testable, context: &Context) -> CheckFnResult {
         context,
         glyph_classdef
             .iter()
-            .filter(|(glyph, class)| *class == 3 && hmtx.advance(*glyph).unwrap_or(0) > 0)
+            .filter(|(glyph, class)| *class == 3 && hmtx.advance((*glyph).into()).unwrap_or(0) > 0)
             .map(|(glyph, _)| font.glyph_name_for_id_synthesise(glyph)),
     );
     if !nonspacing_mark_glyphs.is_empty() {

@@ -20,10 +20,10 @@ default-members = ["fontspector-cli"]
 pluginator = "1.0.1"
 
 # Font-related deps
-read-fonts = "0.19.3"
-skrifa = "0.19.3"
-write-fonts = "0.27.0"
-font-types = "0.5.5"
+read-fonts = "0.23.1"
+skrifa = "0.24.0"
+write-fonts = "0.30.0"
+# Don't use font-types! Use the re-exported types from read-fonts instead.
 
 # Serialization
 serde = { version = "1.0.130", features = ["derive"] }

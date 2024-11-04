@@ -105,7 +105,7 @@ fn monospace(t: &Testable, context: &Context) -> CheckFnResult {
             .iter()
             .enumerate()
             .filter(|(gid, _x)| {
-                let glyphname = font.glyph_name_for_id_synthesise(GlyphId::new(*gid as u16));
+                let glyphname = font.glyph_name_for_id_synthesise(GlyphId::new(*gid as u32));
                 *gid > 0 && glyphname != ".null" && glyphname != "NULL"
             })
             .filter(|(_gid, metric)| {
@@ -120,7 +120,7 @@ fn monospace(t: &Testable, context: &Context) -> CheckFnResult {
                 &format!(
                     "Font is monospaced but {unusual_count} glyphs ({outliers_ratio:.2}%) have a different width. You should check the widths of: {}",
                     bullet_list(context, unusually_spaced_glyphs.iter().map(|(gid, metric)| {
-                        let glyphname = font.glyph_name_for_id_synthesise(GlyphId::new(*gid as u16));
+                        let glyphname = font.glyph_name_for_id_synthesise(GlyphId::new(*gid as u32));
                         format!("{} ({}), width: {}", glyphname, gid, metric.advance())
                     }))
                 ),
@@ -198,7 +198,7 @@ fn glyph_metrics_stats(f: &TestFont) -> Result<GlyphMetricsStats, ReadError> {
     // only returns metrics for the first numLongMetrics glyphs; everything
     // afterwards is repeated, which can throw off our frequency analysis.
     let all_widths = (0..f.glyph_count)
-        .flat_map(|id| metrics.advance(GlyphId::new(id as u16)))
+        .flat_map(|id| metrics.advance(GlyphId::new(id as u32)))
         .filter(|x| *x != 0);
     let width_max = all_widths.clone().max().unwrap_or(0);
     let (most_common_width, _most_common_count) = most_common(all_widths).unwrap_or((0, 0));
@@ -209,7 +209,7 @@ fn glyph_metrics_stats(f: &TestFont) -> Result<GlyphMetricsStats, ReadError> {
             .flat_map(|id| metrics.advance(*id))
             .filter(|x| *x != 0);
         let ascii_widths_count = ascii_widths.clone().count() as f32;
-        let (most_common_ascii_width, most_common_ascii_count) =
+        let (_most_common_ascii_width, most_common_ascii_count) =
             most_common(ascii_widths).unwrap_or((0, 0));
 
         let seems_monospaced = most_common_ascii_count as f32 > ascii_widths_count * 0.8;

@@ -1,6 +1,5 @@
-use font_types::NameId;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
-use read_fonts::{tables::head::MacStyle, ReadError, TableProvider};
+use read_fonts::{tables::head::MacStyle, types::NameId, ReadError, TableProvider};
 use skrifa::MetadataProvider;
 
 #[check(

@@ -12,7 +12,6 @@ fontspector-checkapi = { path = "../fontspector-checkapi" }
 fontspector-checkhelper = { workspace = true }
 read-fonts = { workspace = true }
 write-fonts = { workspace = true }
-font-types = { workspace = true }
 skrifa = { workspace = true }
 itertools = "0.13.0"
 unicode-properties = "0.1.3"

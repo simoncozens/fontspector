@@ -1,9 +1,8 @@
 use std::collections::HashSet;
 
-use font_types::Version16Dot16;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use itertools::Itertools;
-use read_fonts::TableProvider;
+use read_fonts::{types::Version16Dot16, TableProvider};
 use skrifa::GlyphId;
 
 enum NameValidity {
@@ -67,7 +66,7 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut allnames = HashSet::new();
     let mut duplicates = HashSet::new();
 
-    for name in (0..font.glyph_count).filter_map(|x| font.glyph_name_for_id(GlyphId::new(x as u16)))
+    for name in (0..font.glyph_count).filter_map(|x| font.glyph_name_for_id(GlyphId::new(x as u32)))
     {
         if allnames.contains(&name) {
             duplicates.insert(name.clone());

@@ -1,5 +1,5 @@
-use font_types::NameId;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use read_fonts::types::NameId;
 
 #[check(
     id = "name/no_copyright_on_description",
@@ -30,4 +30,3 @@ should be removed (perhaps these were added by a longstanding FontLab Studio
     }
     return_result(problems)
 }
-

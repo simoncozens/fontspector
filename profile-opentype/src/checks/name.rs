@@ -1,8 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
-use font_types::NameId;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
-use read_fonts::TableProvider;
+use read_fonts::{types::NameId, TableProvider};
 use skrifa::MetadataProvider;
 
 #[check(

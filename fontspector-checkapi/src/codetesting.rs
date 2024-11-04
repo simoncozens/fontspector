@@ -1,7 +1,6 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)] // No bad thing if we panic in tests
 use crate::{prelude::*, Check, CheckResult, Context, FileTypeConvert, StatusCode};
-use font_types::NameId;
-use read_fonts::TableProvider;
+use read_fonts::{types::NameId, TableProvider};
 use serde_json::Map;
 use write_fonts::{
     tables::name::{Name, NameRecord},

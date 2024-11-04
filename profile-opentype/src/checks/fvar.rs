@@ -1,7 +1,7 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
-use font_types::{F2Dot14, NameId};
-use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
+use read_fonts::types::{F2Dot14, NameId};
 use skrifa::{outline::OutlinePen, MetadataProvider};
 
 const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
@@ -12,6 +12,21 @@ const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
 ];
 
 const REGISTERED_AXIS_TAGS: [&str; 5] = ["ital", "opsz", "slnt", "wdth", "wght"];
+
+fn find_regular(f: TestFont) -> Option<HashMap<String, f32>> {
+    let mut instance = f.named_instances().find(|(name, _loc)| name == "Regular");
+    if instance.is_none() {
+        instance = f.named_instances().find(|(name, _loc)| name == "Italic");
+    }
+    if instance.is_none() {
+        // Should not happen but anyway
+        instance = f
+            .named_instances()
+            .find(|(name, _loc)| name == "Regular Italic");
+    }
+
+    instance.map(|(_name, loc)| loc)
+}
 
 #[check(
     id = "opentype/fvar/regular_coords_correct",
@@ -27,38 +42,37 @@ fn regular_coords_correct(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
     let mut problems = vec![];
-    let regular_location = f
-        .named_instances()
-        .find(|(name, _loc)| name == "Regular")
-        .map(|(_name, loc)| loc)
-        .ok_or(CheckError::Skip {
-            code: "no-regular".to_string(),
-            message: "No Regular instance found".to_string(),
-        })?;
-    for (axis, expected) in REGULAR_COORDINATE_EXPECTATIONS {
-        if let Some(actual) = regular_location.get(axis) {
-            if *actual != expected {
-                problems.push(Status::fail(
-                    axis,
+    if let Some(regular_location) = find_regular(f) {
+        for (axis, expected) in REGULAR_COORDINATE_EXPECTATIONS {
+            if let Some(actual) = regular_location.get(axis) {
+                if *actual != expected {
+                    problems.push(Status::fail(
+                        &format!("{axis}-not-{expected:0}"),
+                        &format!(
+                            "Regular instance has {} coordinate of {}, expected {}",
+                            axis, actual, expected
+                        ),
+                    ));
+                }
+            }
+        }
+
+        if let Some(actual) = regular_location.get("opsz") {
+            if !(10.0..16.0).contains(actual) {
+                problems.push(Status::warn(
+                    "opsz",
                     &format!(
-                        "Regular instance has {} coordinate of {}, expected {}",
-                        axis, actual, expected
+                        "Regular instance has opsz coordinate of {}, expected between 10 and 16",
+                        actual
                     ),
                 ));
             }
         }
-    }
-
-    if let Some(actual) = regular_location.get("opsz") {
-        if !(10.0..16.0).contains(actual) {
-            problems.push(Status::warn(
-                "opsz",
-                &format!(
-                    "Regular instance has opsz coordinate of {}, expected between 10 and 16",
-                    actual
-                ),
-            ));
-        }
+    } else {
+        return Ok(Status::just_one_fail(
+            "no-regular-instance",
+            "\"Regular\" instance not present.",
+        ));
     }
     return_result(problems)
 }
@@ -419,7 +433,7 @@ fn varfont_valid_default_instance_nameids(t: &Testable, _context: &Context) -> C
         .font()
         .named_instances()
         .iter()
-        .any(|ni| ni.postscript_name_id().is_none());
+        .any(|ni| ni.postscript_name_id().is_some());
     let name2 = f
         .get_name_entry_strings(NameId::new(2))
         .next()

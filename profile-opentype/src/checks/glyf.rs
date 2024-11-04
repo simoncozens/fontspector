@@ -1,7 +1,7 @@
-use font_types::Point;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::{
     tables::glyf::{Anchor, Glyph, PointFlags},
+    types::Point,
     TableProvider,
 };
 use skrifa::{GlyphId, Tag};
@@ -64,7 +64,7 @@ fn check_point_out_of_bounds(t: &Testable, context: &Context) -> CheckFnResult {
     let loca = font.loca(None)?;
     let mut messages = vec![];
     for gid in 0..font.maxp()?.num_glyphs() {
-        let gid = GlyphId::new(gid);
+        let gid = GlyphId::new(gid.into());
         if let Some(Glyph::Simple(glyph)) = loca.get_glyf(gid, &glyf)? {
             let point_count = glyph.num_points();
             let mut points: Vec<Point<i32>> = vec![Point::default(); point_count];
@@ -130,7 +130,7 @@ fn check_glyf_non_transformed_duplicate_components(
     let loca = font.loca(None)?;
     let mut messages = vec![];
     for gid in 0..font.maxp()?.num_glyphs() {
-        let gid = GlyphId::new(gid);
+        let gid = GlyphId::new(gid.into());
         if let Some(Glyph::Composite(glyph)) = loca.get_glyf(gid, &glyf)? {
             let mut components = HashSet::new();
             for component in glyph.components() {

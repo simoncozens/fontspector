@@ -1,9 +1,8 @@
 use std::path::PathBuf;
 
-use font_types::FWord;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use itertools::Itertools;
-use read_fonts::TableProvider;
+use read_fonts::{types::FWord, TableProvider};
 
 #[check(
     id = "opentype/family/underline_thickness",

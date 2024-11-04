@@ -1,9 +1,9 @@
 use std::collections::{HashMap, HashSet};
 
-use font_types::Fixed;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
 use read_fonts::{
     tables::stat::{AxisValue, AxisValueTableFlags},
+    types::Fixed,
     ReadError, TableProvider,
 };
 use skrifa::MetadataProvider;

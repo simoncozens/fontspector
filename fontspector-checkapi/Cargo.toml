@@ -11,7 +11,6 @@ crate-type = ["cdylib", "rlib"]
 pluginator = { workspace = true }
 
 [dependencies]
-font-types = { workspace = true }
 read-fonts = { workspace = true }
 write-fonts = { workspace = true }
 skrifa = { workspace = true }
