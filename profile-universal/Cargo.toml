@@ -14,3 +14,4 @@ read-fonts = {workspace = true}
 write-fonts = {workspace = true}
 skrifa = {workspace = true}
 itertools = "0.13.0"
+unicode-properties = { workspace = true }
