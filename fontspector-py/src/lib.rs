@@ -11,7 +11,7 @@ use profile_universal::Universal;
 use pyo3::{
     exceptions::PyValueError,
     prelude::*,
-    types::{PyList, PyString, PyTuple},
+    types::{PyDict, PyDictMethods, PyList, PyString, PyTuple},
 };
 
 #[pyclass]
@@ -53,11 +53,12 @@ impl CheckTester {
         Self(check)
     }
 
-    #[pyo3(signature = (*args))]
+    #[pyo3(signature = (*args, **kwargs))]
     fn __call__<'a>(
         &self,
         py: Python<'a>,
         args: &Bound<'a, PyTuple>,
+        kwargs: Option<&Bound<'a, PyDict>>,
     ) -> PyResult<Vec<Bound<'a, PyAny>>> {
         // Spin up a new fontspector (each time, how extravagant)
         let mut registry = Registry::new();
@@ -96,9 +97,29 @@ impl CheckTester {
             TestableType::Collection(&collection)
         };
 
+        let mut fontspector_config = serde_json::Map::new();
+
+        if let Some(kwargs) = kwargs {
+            if let Some(config) = kwargs.get_item("config")? {
+                // Ideally we should convert the whole PyDict into a serde_json::Value
+                // but YAGNI.
+                let config = config.downcast::<PyDict>()?;
+                for (k, v) in config {
+                    let k = k.downcast::<PyString>()?.to_string();
+                    let v = v.downcast::<PyString>()?.to_string();
+                    fontspector_config.insert(k, serde_json::Value::String(v));
+                }
+            }
+        }
+
+        let context = Context {
+            configuration: fontspector_config,
+            ..Default::default()
+        };
+
         // Run the check!
         let result = check
-            .run(&newargs, &Context::default(), None)
+            .run(&newargs, &context, None)
             .ok_or_else(|| PyValueError::new_err("No results returned?"))?;
         // Map results back to a Python list of subresults
         let status_module = py.import_bound("fontbakery.status")?;
