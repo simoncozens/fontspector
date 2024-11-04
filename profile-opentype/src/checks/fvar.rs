@@ -189,7 +189,7 @@ fn distinct_instance_records(t: &Testable, _context: &Context) -> CheckFnResult 
                 .next()
                 .unwrap_or_else(|| format!("ID {}", subfamily_name_id));
             problems.push(Status::warn(
-                "duplicate-instance",
+                &format!("repeated-instance-record:{subfamily}"),
                 &format!(
                     "Instance {} with coordinates {:?} is duplicated",
                     subfamily, coords
@@ -362,14 +362,15 @@ fn varfont_valid_nameids(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
     let mut problems = vec![];
-    let valid_nameid = |n: NameId| (255..32768).contains(&n.to_u16());
+    let valid_nameid = |n: NameId| (256..32768).contains(&n.to_u16());
+    let valid_subfamily_nameid = |n: NameId| matches!(n.to_u16(), 2 | 17 | 256..32768);
 
     // Do the axes first
     for axis in f.font().axes().iter() {
         let axis_name_id = axis.name_id();
         if !valid_nameid(axis_name_id) {
             problems.push(Status::fail(
-                "invalid-axis-name-id",
+                &format!("invalid-axis-nameid:{axis_name_id}"),
                 &format!(
                     "Axis name ID {} ({}) is out of range. It must be greater than 255 and less than 32768.",
                     axis_name_id, f.get_name_entry_strings(axis_name_id).next().unwrap_or_default()
@@ -383,7 +384,7 @@ fn varfont_valid_nameids(t: &Testable, _context: &Context) -> CheckFnResult {
         if let Some(n) = instance.postscript_name_id() {
             if n != NameId::new(6) && !valid_nameid(n) {
                 problems.push(Status::fail(
-                        "invalid-postscript-name-id",
+                        &format!("invalid-postscript-nameid:{}", n.to_u16()),
                         &format!(
                             "PostScript name ID {} ({}) is out of range. It must be greater than 255 and less than 32768, or 6 or 0xFFFF.",
                             n, f.get_name_entry_strings(n).next().unwrap_or_default()
@@ -391,9 +392,9 @@ fn varfont_valid_nameids(t: &Testable, _context: &Context) -> CheckFnResult {
                     ));
             }
         }
-        if !valid_nameid(subfamily_name_id) {
+        if !valid_subfamily_nameid(subfamily_name_id) {
             problems.push(Status::fail(
-                "invalid-subfamily-name-id",
+                &format!("invalid-subfamily-nameid:{}", subfamily_name_id.to_u16()),
                 &format!(
                     "Instance subfamily name ID {} ({}) is out of range. It must be greater than 255 and less than 32768.",
                     subfamily_name_id, f.get_name_entry_strings(subfamily_name_id).next().unwrap_or_default()
