@@ -3,7 +3,8 @@ use std::{env, path::Path, vec};
 // Provide an environment where we can run fontbakery tests
 // as-is, but have them call a Rust implementation underneath
 use fontspector_checkapi::{
-    Context, Plugin, Registry, StatusCode, Testable, TestableCollection, TestableType,
+    CheckImplementation, Context, Plugin, Registry, StatusCode, Testable, TestableCollection,
+    TestableType,
 };
 use profile_googlefonts::GoogleFonts;
 use profile_opentype::OpenType;
@@ -91,7 +92,7 @@ impl CheckTester {
             vec![obj_to_testable(py, &first_arg)?]
         };
         let collection = TestableCollection { testables };
-        let newargs = if collection.testables.len() == 1 {
+        let newargs = if matches!(check.implementation, CheckImplementation::CheckOne(_)) {
             TestableType::Single(&collection.testables[0])
         } else {
             TestableType::Collection(&collection)
