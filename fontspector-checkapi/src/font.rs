@@ -142,7 +142,7 @@ impl TestFont<'_> {
             .map(|s| s.to_string())
     }
 
-    pub fn glyph_name_for_id(&self, gid: GlyphId, synthesize: bool) -> Option<String> {
+    fn glyph_name_for_id_impl(&self, gid: GlyphId, synthesize: bool) -> Option<String> {
         if self._glyphnames.borrow().is_empty() {
             if let Ok(post) = self.font().post() {
                 match post.version() {
@@ -179,11 +179,25 @@ impl TestFont<'_> {
         }
     }
 
-    pub fn glyph_name_for_unicode(&self, u: impl Into<u32>, synthesize: bool) -> Option<String> {
+    pub fn glyph_name_for_id(&self, gid: GlyphId) -> Option<String> {
+        self.glyph_name_for_id_impl(gid, false)
+    }
+    pub fn glyph_name_for_id_synthesise(&self, gid: GlyphId) -> String {
+        #[allow(clippy::unwrap_used)]
+        self.glyph_name_for_id_impl(gid, true).unwrap()
+    }
+    fn glyph_name_for_unicode_impl(&self, u: impl Into<u32>, synthesize: bool) -> Option<String> {
         self.font()
             .charmap()
             .map(u)
-            .and_then(|gid| self.glyph_name_for_id(gid, synthesize))
+            .and_then(|gid| self.glyph_name_for_id_impl(gid, synthesize))
+    }
+    pub fn glyph_name_for_unicode(&self, u: impl Into<u32>) -> Option<String> {
+        self.glyph_name_for_unicode_impl(u, false)
+    }
+    pub fn glyph_name_for_unicode_synthesise(&self, u: impl Into<u32>) -> String {
+        #[allow(clippy::unwrap_used)]
+        self.glyph_name_for_unicode_impl(u, true).unwrap()
     }
 
     pub fn is_variable_font(&self) -> bool {

@@ -76,20 +76,18 @@ fn check_point_out_of_bounds(t: &Testable, context: &Context) -> CheckFnResult {
             let y_max: i32 = glyph.y_max().into();
             for point in points {
                 if point.x < x_min || point.x > x_max {
-                    #[allow(clippy::unwrap_used)] // Synthesise is true so this will never fail
                     messages.push(format!(
                         "{} (x={}, bounds are {}<->{})",
-                        ttf.glyph_name_for_id(gid, true).unwrap(),
+                        ttf.glyph_name_for_id_synthesise(gid),
                         point.x,
                         x_min,
                         x_max
                     ));
                 }
                 if point.y < y_min || point.y > y_max {
-                    #[allow(clippy::unwrap_used)] // Synthesise is true so this will never fail
                     messages.push(format!(
                         "{} (y={}, bounds are {}<->{})",
-                        ttf.glyph_name_for_id(gid, true).unwrap(),
+                        ttf.glyph_name_for_id_synthesise(gid),
                         point.y,
                         y_min,
                         y_max
@@ -138,11 +136,10 @@ fn check_glyf_non_transformed_duplicate_components(
             for component in glyph.components() {
                 if let Anchor::Offset { x, y } = component.anchor {
                     if !components.insert((component.glyph, x, y)) {
-                        #[allow(clippy::unwrap_used)] // Synthesise is true so this will never fail
                         messages.push(format!(
                             "{}: duplicate component {} at {},{}",
-                            ttf.glyph_name_for_id(gid, true).unwrap(),
-                            ttf.glyph_name_for_id(component.glyph, true).unwrap(),
+                            ttf.glyph_name_for_id_synthesise(gid),
+                            ttf.glyph_name_for_id_synthesise(component.glyph),
                             x,
                             y
                         ));

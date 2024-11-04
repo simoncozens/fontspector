@@ -67,8 +67,7 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut allnames = HashSet::new();
     let mut duplicates = HashSet::new();
 
-    for name in
-        (0..font.glyph_count).filter_map(|x| font.glyph_name_for_id(GlyphId::new(x as u16), false))
+    for name in (0..font.glyph_count).filter_map(|x| font.glyph_name_for_id(GlyphId::new(x as u16)))
     {
         if allnames.contains(&name) {
             duplicates.insert(name.clone());
@@ -118,8 +117,8 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
             ),
         ));
     }
-    let spacename = font.glyph_name_for_unicode(0x20u32, false);
-    let nbspname = font.glyph_name_for_unicode(0xa0u32, false);
+    let spacename = font.glyph_name_for_unicode(0x20u32);
+    let nbspname = font.glyph_name_for_unicode(0xa0u32);
 
     match nbspname.as_deref() {
         Some("space") | Some("uni00A0") | None => {}

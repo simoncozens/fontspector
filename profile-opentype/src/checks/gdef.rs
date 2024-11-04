@@ -36,10 +36,7 @@ fn gdef_spacing_marks(f: &Testable, context: &Context) -> CheckFnResult {
         glyph_classdef
             .iter()
             .filter(|(glyph, class)| *class == 3 && hmtx.advance(*glyph).unwrap_or(0) > 0)
-            .map(|(glyph, _)| {
-                #[allow(clippy::unwrap_used)] // synthesis=true means this is infallible
-                font.glyph_name_for_id(glyph, true).unwrap()
-            }),
+            .map(|(glyph, _)| font.glyph_name_for_id_synthesise(glyph)),
     );
     if !nonspacing_mark_glyphs.is_empty() {
         return Ok(Status::just_one_fail("spacing-mark-glyphs", &format!(
@@ -69,8 +66,7 @@ fn gdef_mark_chars(f: &Testable, context: &Context) -> CheckFnResult {
                     && font.gdef_class(*gid) != GlyphClassDef::Mark
             })
             .map(|(u, gid)| {
-                #[allow(clippy::unwrap_used)] // synthesis=true means this is infallible
-                let name = font.glyph_name_for_id(gid, true).unwrap();
+                let name = font.glyph_name_for_id_synthesise(gid);
                 format!("U+{:04X} ({})", u, name)
             }),
     );
