@@ -38,6 +38,7 @@ pub fn run_check(check: Check<'_>, font: Testable) -> std::option::Option<CheckR
         network_timeout: Some(10),
         configuration: Map::new(),
         check_metadata: check.metadata(),
+        full_lists: false,
     };
     check.run(&TestableType::Single(&font), &ctx, None)
 }

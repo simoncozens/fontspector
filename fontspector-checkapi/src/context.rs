@@ -8,6 +8,7 @@ pub struct Context {
     pub network_timeout: Option<u64>,
     pub configuration: Map<String, Value>,
     pub check_metadata: Value,
+    pub full_lists: bool,
 }
 
 impl Context {
@@ -36,6 +37,7 @@ impl Context {
             network_timeout: self.network_timeout,
             configuration: check_config,
             check_metadata: check.metadata(),
+            full_lists: self.full_lists,
         }
     }
 }

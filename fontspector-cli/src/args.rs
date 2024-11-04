@@ -34,6 +34,10 @@ pub struct Args {
     #[clap(short = 'x', long)]
     pub exclude_checkid: Option<Vec<String>>,
 
+    /// Report full lists of items instead of abbreviated lists
+    #[clap(long)]
+    pub full_lists: bool,
+
     /// Threshold for emitting process error code 1
     #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Fail)]
     pub error_code_on: StatusCode,

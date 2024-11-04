@@ -159,6 +159,7 @@ fn main() {
             network_timeout: Some(10), // XXX
             configuration: Map::new(),
             check_metadata: serde_json::Value::Null,
+            full_lists: args.full_lists,
         },
         configuration,
         &testables,

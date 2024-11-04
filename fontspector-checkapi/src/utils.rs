@@ -3,14 +3,17 @@ use std::fmt::Display;
 use crate::{CheckFnResult, Context, Status};
 
 /// Formats a list of items as a Markdown bullet list.
-pub fn bullet_list<I>(_context: &Context, items: I) -> String
+pub fn bullet_list<I>(context: &Context, items: I) -> String
 where
     I: IntoIterator,
     I::Item: Display,
 {
-    items
-        .into_iter()
-        .map(|item| format!("* {}", item))
+    let iter: &mut dyn Iterator<Item = I::Item> = if !context.full_lists {
+        &mut items.into_iter().take(5)
+    } else {
+        &mut items.into_iter()
+    };
+    iter.map(|item| format!("* {}", item))
         .collect::<Vec<String>>()
         .join("\n")
 }
