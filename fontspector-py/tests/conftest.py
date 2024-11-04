@@ -37,11 +37,18 @@ def check_id(checkname):
     return pytest.mark.parametrize("check", [checkname], indirect=True)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def coverage(request):
-    session = request.node
+@pytest.hookimpl()
+def pytest_sessionfinish(session):
     if session.config.option.keyword:
         return None
     all_checks = set(registered_checks())
     untested = all_checks - set(has_tests)
-    return untested, all_checks
+    count_checks = len(all_checks)
+    count_untested = len(untested)
+    bullet_list = "\n".join(f"  - {checkname}" for checkname in untested)
+    untested_percentage = count_untested / count_checks * 100
+    if count_untested != 0:
+        print("\nSummary of untested checks:\n")
+        print(
+            f"{count_untested} checks / {count_checks} ({untested_percentage: .1f}%) are untested:\n{bullet_list}"
+        )
