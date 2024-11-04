@@ -25,6 +25,7 @@ use std::{
     cell::RefCell,
     collections::{HashMap, HashSet},
     error::Error,
+    fmt::{Debug, Formatter},
     path::{Path, PathBuf},
 };
 
@@ -35,6 +36,12 @@ pub struct TestFont<'a> {
     // should be cheap as it is run for each check.
     pub glyph_count: usize,
     _glyphnames: RefCell<Vec<Option<String>>>,
+}
+
+impl Debug for TestFont<'_> {
+    fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
+        write!(f, "<TestFont:{}>", self.filename.display())
+    }
 }
 
 pub const TTF: FileType = FileType {
