@@ -1,5 +1,5 @@
-use fontspector_checkapi::constants::GlyphClass;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use read_fonts::tables::gdef::GlyphClassDef;
 
 const ARABIC_SPACING_SYMBOLS: [u16; 17] = [
     0xFBB2, // Dot Above
@@ -41,7 +41,7 @@ fn arabic_spacing_symbols(t: &Testable, _context: &Context) -> CheckFnResult {
 
     for codepoint in ARABIC_SPACING_SYMBOLS {
         if let Some(gid) = cmap.map_codepoint(codepoint) {
-            if f.gdef_class(gid) == Some(GlyphClass::Mark) {
+            if f.gdef_class(gid) == GlyphClassDef::Mark {
                 problems.push(Status::fail(
                     "gdef-mark",
                     &format!(

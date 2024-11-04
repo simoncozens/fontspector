@@ -1,10 +1,15 @@
 use crate::{
-    constants::{GlyphClass, RIBBI_STYLE_NAMES, STATIC_STYLE_NAMES},
+    constants::{RIBBI_STYLE_NAMES, STATIC_STYLE_NAMES},
     filetype::FileTypeConvert,
     CheckError, FileType, Testable,
 };
 use read_fonts::{
-    tables::{cmap::Cmap, gdef::Gdef, os2::SelectionFlags, post::DEFAULT_GLYPH_NAMES},
+    tables::{
+        cmap::Cmap,
+        gdef::{Gdef, GlyphClassDef},
+        os2::SelectionFlags,
+        post::DEFAULT_GLYPH_NAMES,
+    },
     types::Version16Dot16,
     TableProvider,
 };
@@ -118,13 +123,12 @@ impl TestFont<'_> {
         Ok(gdef)
     }
 
-    pub fn gdef_class(&self, glyph_id: GlyphId) -> Option<GlyphClass> {
-        self.get_gdef()
-            .ok()
-            .and_then(|gdef| gdef.glyph_class_def())?
-            .ok()
-            .map(|class_def| class_def.get(glyph_id))
-            .and_then(GlyphClass::from_u16)
+    pub fn gdef_class(&self, glyph_id: GlyphId) -> GlyphClassDef {
+        if let Some(Ok(class_def)) = self.get_gdef().ok().and_then(|gdef| gdef.glyph_class_def()) {
+            GlyphClassDef::new(class_def.get(glyph_id))
+        } else {
+            GlyphClassDef::Unknown
+        }
     }
 
     pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, CheckError> {

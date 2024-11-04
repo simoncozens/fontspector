@@ -105,22 +105,3 @@ pub const VALID_FEATURE_TAGS: [&str; 122] = [
     "twid", "unic", "valt", "vatu", "vchw", "vert", "vhal", "vjmo", "vkna", "vkrn", "vpal", "vrt2",
     "vrtr", "zero",
 ];
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GlyphClass {
-    Base,
-    Ligature,
-    Mark,
-    Component,
-}
-impl GlyphClass {
-    pub fn from_u16(class: u16) -> Option<Self> {
-        match class {
-            1 => Some(Self::Base),
-            2 => Some(Self::Ligature),
-            3 => Some(Self::Mark),
-            4 => Some(Self::Component),
-            _ => None,
-        }
-    }
-}

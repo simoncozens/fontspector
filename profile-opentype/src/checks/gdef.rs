@@ -1,5 +1,5 @@
-use fontspector_checkapi::{constants::GlyphClass, prelude::*, testfont, FileTypeConvert};
-use read_fonts::TableProvider;
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use read_fonts::{tables::gdef::GlyphClassDef, TableProvider};
 use skrifa::MetadataProvider;
 use unicode_properties::{GeneralCategory, UnicodeGeneralCategory};
 
@@ -66,7 +66,7 @@ fn gdef_mark_chars(f: &Testable, context: &Context) -> CheckFnResult {
             .mappings()
             .filter(|(u, gid)| {
                 char::from_u32(*u).map_or(false, is_nonspacing_mark)
-                    && font.gdef_class(*gid) != Some(GlyphClass::Mark)
+                    && font.gdef_class(*gid) != GlyphClassDef::Mark
             })
             .map(|(u, gid)| {
                 #[allow(clippy::unwrap_used)] // synthesis=true means this is infallible
