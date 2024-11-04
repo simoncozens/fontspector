@@ -56,9 +56,9 @@ fn font_version(f: &Testable, _context: &Context) -> CheckFnResult {
             ),
         ));
     }
-    if (head_version - name_id_5_version).abs() > warn_tolerance {
+    if (head_version - name_id_5_version).abs() >= warn_tolerance {
         return Ok(Status::just_one_warn(
-            "mismatch",
+            "near-mismatch",
             &format!(
                 "Font version mismatch: head table: {}, name table: {}",
                 head_version, name_id_5_version
@@ -91,8 +91,8 @@ fn mac_style(f: &Testable, _context: &Context) -> CheckFnResult {
     let italic_ok = bits.contains(MacStyle::ITALIC) == italic;
     let mut problems = vec![];
     if !bold_ok {
-        problems.push(Status::warn(
-            "bold-mismatch",
+        problems.push(Status::fail(
+            "bad-BOLD",
             &format!(
                 "macStyle bold flag {} does not match font style {}",
                 bits.contains(MacStyle::BOLD),
@@ -101,8 +101,8 @@ fn mac_style(f: &Testable, _context: &Context) -> CheckFnResult {
         ));
     }
     if !italic_ok {
-        problems.push(Status::warn(
-            "italic-mismatch",
+        problems.push(Status::fail(
+            "bad-ITALIC",
             &format!(
                 "macStyle italic flag {} does not match font style {}",
                 bits.contains(MacStyle::ITALIC),
@@ -177,6 +177,6 @@ fn equal_font_versions(c: &TestableCollection, context: &Context) -> CheckFnResu
         &versions_names?,
         "mismatch",
         "Version info differs among font files of the same font project.",
-        StatusCode::Fail,
+        StatusCode::Warn,
     )
 }
