@@ -1,4 +1,5 @@
 pub mod arabic_spacing_symbols;
+pub mod case_mapping;
 pub mod glyphnames;
 pub mod glyphset;
 pub mod name_italic_names;

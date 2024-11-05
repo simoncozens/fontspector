@@ -7,6 +7,7 @@ pub struct Universal;
 impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
+        cr.register_check(checks::case_mapping::case_mapping);
         cr.register_check(checks::glyphnames::valid_glyphnames);
         cr.register_check(checks::glyphset::check_rupee);
         cr.register_check(checks::name_italic_names::name_italic_names);

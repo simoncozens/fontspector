@@ -15,3 +15,5 @@ write-fonts = {workspace = true}
 skrifa = {workspace = true}
 itertools = "0.13.0"
 unicode-properties = { workspace = true }
+unicode_names2 = "0.6.0"
+markdown-table = "0.2.0"
