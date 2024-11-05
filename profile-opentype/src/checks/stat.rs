@@ -371,10 +371,8 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
 fn ital_axis(c: &TestableCollection, _context: &Context) -> CheckFnResult {
     let fonts = TTF.from_collection(c);
     let mut problems = vec![];
-    println!("Fonts: {:?}", fonts);
 
     for pair in segment_vf_collection(fonts).into_iter() {
-        println!("Pair: {:?}", pair);
         match pair {
             (Some(roman), Some(italic)) => {
                 // These should definitely both have an ital axis
