@@ -36,12 +36,12 @@ fn check_rupee(f: &Testable, _context: &Context) -> CheckFnResult {
     if is_indic {
         return Ok(Status::just_one_fail(
             "missing-rupee",
-            "Font appears to be an Indic font but is missing the Indian Rupee Sign glyph.",
+            "Font appears to be an Indic font but is missing the Indian Rupee Sign glyph. Please add a glyph for Indian Rupee Sign (₹) at codepoint U+20B9.",
         ));
     } else {
         return Ok(Status::just_one_warn(
             "missing-rupee",
-            "Font is missing the Indian Rupee Sign glyph.",
+            "Font is missing the Indian Rupee Sign glyph. Please add a glyph for Indian Rupee Sign (₹) at codepoint U+20B9.",
         ));
     }
 }
