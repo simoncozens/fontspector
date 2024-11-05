@@ -7,3 +7,4 @@ pub mod name_trailing_spaces;
 pub mod required_tables;
 pub mod unwanted_tables;
 pub mod whitespace_ink;
+pub mod whitespace_widths;
