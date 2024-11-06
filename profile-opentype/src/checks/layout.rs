@@ -92,7 +92,7 @@ fn layout_valid_script_tags(f: &Testable, _context: &Context) -> CheckFnResult {
         Status::just_one_pass()
     } else {
         Status::just_one_fail(
-            "bad-language-tags",
+            "bad-script-tags",
             &format!(
                 "The following invalid script tags were found in the font: {}",
                 bad_tag.into_iter().collect::<Vec<_>>().join(", ")
@@ -136,7 +136,7 @@ fn layout_valid_feature_tags(f: &Testable, _context: &Context) -> CheckFnResult 
         Status::just_one_pass()
     } else {
         Status::just_one_fail(
-            "bad-language-tags",
+            "bad-feature-tags",
             &format!(
                 "The following invalid feature tags were found in the font: {}",
                 bad_tag.into_iter().collect::<Vec<_>>().join(", ")
