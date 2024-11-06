@@ -1,4 +1,4 @@
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::{tables::gdef::GlyphClassDef, TableProvider};
 use skrifa::MetadataProvider;
 use unicode_properties::{GeneralCategory, UnicodeGeneralCategory};
@@ -39,7 +39,7 @@ fn gdef_spacing_marks(f: &Testable, context: &Context) -> CheckFnResult {
             .map(|(glyph, _)| font.glyph_name_for_id_synthesise(glyph)),
     );
     if !nonspacing_mark_glyphs.is_empty() {
-        return Ok(Status::just_one_fail("spacing-mark-glyphs", &format!(
+        return Ok(Status::just_one_warn("spacing-mark-glyphs", &format!(
             "The following glyphs seem to be spacing (because they have width > 0 on the hmtx table) so they may be in the GDEF mark glyph class by mistake, or they should have zero width instead:\n{}",
                 nonspacing_mark_glyphs
         )));
@@ -56,6 +56,11 @@ fn gdef_spacing_marks(f: &Testable, context: &Context) -> CheckFnResult {
 )]
 fn gdef_mark_chars(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
+    skip!(
+        !font.has_table(b"GDEF"),
+        "no-gdef",
+        "GDEF table not present"
+    );
     let mark_chars_not_in_gdef_mark = bullet_list(
         context,
         font.font()
@@ -71,7 +76,7 @@ fn gdef_mark_chars(f: &Testable, context: &Context) -> CheckFnResult {
             }),
     );
     if !mark_chars_not_in_gdef_mark.is_empty() {
-        return Ok(Status::just_one_fail(
+        return Ok(Status::just_one_warn(
             "mark-chars",
             &format!(
                 "The following mark characters should be in the GDEF mark glyph class:\n{}",
