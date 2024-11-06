@@ -7,7 +7,7 @@ use skrifa::MetadataProvider;
 
 #[allow(clippy::unwrap_used)]
 static RFN_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"with [Rr]eserved [Ff]ont [Nn]ame '(?<rfn>[^']*)'").unwrap());
+    LazyLock::new(|| Regex::new(r"with [Rr]eserved [Ff]ont [Nn]ame (.*?)\.").unwrap());
 
 // Although this is a /name/ check, it's really about licensing
 #[check(
@@ -35,6 +35,14 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
     let records = f.font().name()?.name_record();
     let str_data = f.font().name()?.string_data();
 
+    let familyname = f
+        .font()
+        .localized_strings(NameId::FAMILY_NAME)
+        .english_or_first()
+        .ok_or(CheckError::Error("No name ID 1".to_string()))?
+        .chars()
+        .collect::<String>();
+
     for name in records {
         let name_string = name
             .string(str_data)?
@@ -48,18 +56,14 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
             continue;
         }
 
-        let familyname = f
-            .font()
-            .localized_strings(NameId::FAMILY_NAME)
-            .english_or_first()
-            .ok_or(CheckError::Error("No name ID 1".to_string()))?
-            .chars()
-            .collect::<String>();
         let matches = RFN_RE.captures(&name_string);
 
         if matches.is_some() {
+            println!("WHAT: {:?}", matches);
             #[allow(clippy::expect_used)]
-            let rfn = &matches.expect("wont happen")["rfn"];
+            let rfn = &matches.expect("wont happen")[1];
+            println!("Found rfn {:} in {}", rfn, name_string);
+
             if familyname.contains(rfn) {
                 problems.push(Status::fail(
                     "rfn",
@@ -76,8 +80,8 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
                     "legacy-familyname",
                     &format!(
                         "Name table entry contains \"Reserved Font Name\" for a \
-                              family name ('{}') that differs \
-                              from the currently used family name ('{}'), \
+                              family name ({}) that differs \
+                              from the currently used family name ({}), \
                               which is fine.",
                         rfn, familyname
                     ),

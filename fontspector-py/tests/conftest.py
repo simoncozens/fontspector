@@ -48,7 +48,6 @@ def pytest_sessionfinish(session):
     bullet_list = "\n".join(f"  - {checkname}" for checkname in untested)
     untested_percentage = count_untested / count_checks * 100
     if count_untested != 0:
-        print("\nSummary of untested checks:\n")
         print(
-            f"{count_untested} checks / {count_checks} ({untested_percentage: .1f}%) are untested:\n{bullet_list}"
+            f"\n{count_untested} checks / {count_checks} ({untested_percentage: .1f}%) are untested:\n{bullet_list}"
         )

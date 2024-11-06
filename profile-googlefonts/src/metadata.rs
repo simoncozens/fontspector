@@ -114,7 +114,7 @@ fn can_render_samples(c: &TestableCollection, _context: &Context) -> CheckFnResu
         for (langid, sample) in samples.iter() {
             if sample.chars().any(|c| !codepoints.contains(&(c as u32))) {
                 problems.push(Status::fail(
-                    "tofu",
+                    "sample-text",
                     &format!(
                         "Font {} cannot render {} sample text: {}",
                         font.basename().unwrap_or_default(),

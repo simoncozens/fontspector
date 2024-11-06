@@ -362,10 +362,9 @@ def test_check_name_line_breaks():
         )
 
 
-@pytest.mark.skip("FIXME: CheckTester bug perhaps?")
-def test_check_name_rfn():
+@check_id("googlefonts/name/rfn")
+def test_check_name_rfn(check):
     """Name table strings must not contain 'Reserved Font Name'."""
-    check = CheckTester("googlefonts/name/rfn")
 
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
     assert_PASS(check(ttFont))
@@ -611,10 +610,9 @@ def test_check_metadata_undeclared_fonts():
     assert_PASS(check(font))
 
 
-def test_check_family_equal_codepoint_coverage(mada_ttFonts, cabin_ttFonts):
+@check_id("googlefonts/family/equal_codepoint_coverage")
+def test_check_family_equal_codepoint_coverage(check, mada_ttFonts, cabin_ttFonts):
     """Fonts have equal codepoint coverage?"""
-    check = CheckTester("googlefonts/family/equal_codepoint_coverage")
-
     # our reference Cabin family is know to be good here.
     assert_PASS(check(cabin_ttFonts), "with a good family.")
 
@@ -3829,21 +3827,23 @@ def test_check_repo_sample_image():
     assert_results_contain(check(readme), WARN, "image-not-displayed")
 
 
-@pytest.mark.skip("FIXME: CheckTester bug perhaps?")
-def test_check_metadata_can_render_samples():
+@check_id("googlefonts/metadata/can_render_samples")
+def test_check_metadata_can_render_samples(check, tmp_path):
     """Check README.md has a sample image."""
-    check = CheckTester("googlefonts/metadata/can_render_samples")
-
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    assert_PASS(check(font))
+    mdpb = TEST_FILE("cabin/METADATA.pb")
+    assert_results_contain(check([mdpb, font]), SKIP, "no-languages")
 
     # This will try to render using strings provided by the gflanguages package
     # Available at https://pypi.org/project/gflanguages/
     md = Font(font).family_metadata
     md.languages.append("non_Runr")  # Cabin does not support Old Nordic Runic
-    assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)), FAIL, "sample-text"
-    )
+    fake_mdpb = tmp_path / "METADATA.pb"
+    from google.protobuf import text_format
+
+    textproto = text_format.MessageToString(md, as_utf8=True)
+    fake_mdpb.write_text(textproto, encoding="utf-8")
+    assert_results_contain(check([font, str(fake_mdpb)]), FAIL, "sample-text")
 
     # TODO: expand the check to also validate rendering of
     #       text provided explicitely on the sample_text field of METADATA.pb
