@@ -17,8 +17,10 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::stylistic_sets::stylisticset_description);
+        cr.register_check(checks::transformed_components::transformed_components);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
         cr.register_check(checks::whitespace_ink::whitespace_ink);
+        cr.register_check(checks::whitespace_glyphs::whitespace_glyphs);
         cr.register_check(checks::whitespace_widths::whitespace_widths);
 
         let universal_profile = Profile::from_toml(

@@ -264,7 +264,6 @@ def _remove_cmap_entry(font, cp):
         subtable.cmap.pop(cp, None)
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("whitespace_glyphs")
 def test_check_whitespace_glyphs(check):
     """Font contains glyphs for whitespace characters?"""
@@ -837,7 +836,6 @@ def test_check_cjk_chws_feature(check):
     assert_PASS(check(ttFont))
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("transformed_components")
 def test_check_transformed_components(check):
     """Ensure component transforms do not perform scaling or rotation."""

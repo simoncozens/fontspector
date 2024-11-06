@@ -325,4 +325,8 @@ impl TestFont<'_> {
             Either::Right(iter.chain(gpos_feature_and_data.into_iter().flatten()))
         }
     }
+
+    pub fn all_glyphs(&self) -> impl Iterator<Item = GlyphId> {
+        (0..self.glyph_count as u32).map(GlyphId::from)
+    }
 }
