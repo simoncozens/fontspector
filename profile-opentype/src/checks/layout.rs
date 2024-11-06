@@ -1,7 +1,10 @@
 use std::collections::HashSet;
 
-use fontspector_checkapi::constants::{VALID_FEATURE_TAGS, VALID_LANG_TAGS, VALID_SCRIPT_TAGS};
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{
+    constants::{VALID_FEATURE_TAGS, VALID_LANG_TAGS, VALID_SCRIPT_TAGS},
+    prelude::*,
+    testfont, FileTypeConvert,
+};
 use read_fonts::TableProvider;
 
 #[check(
@@ -113,31 +116,19 @@ fn layout_valid_script_tags(f: &Testable, _context: &Context) -> CheckFnResult {
 )]
 fn layout_valid_feature_tags(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
-    let mut bad_tag = HashSet::new();
-    let gsub_feature_list = font
-        .font()
-        .gsub()
-        .ok()
-        .and_then(|gsub| gsub.feature_list().ok());
-    let gpos_feature_list = font
-        .font()
-        .gsub()
-        .ok()
-        .and_then(|gsub| gsub.feature_list().ok());
-    for feature_list in [gsub_feature_list, gpos_feature_list].iter().flatten() {
-        for feature_record in feature_list.feature_records() {
-            let tag = feature_record.feature_tag().to_string();
-            // ssXX and cvXX are OK.
-            if (tag.starts_with("ss") || tag.starts_with("cv"))
-                && tag[2..].chars().all(|c| c.is_ascii_digit())
-            {
-                continue;
-            }
-            if !VALID_FEATURE_TAGS.contains(&tag.as_str())
-                && (tag.len() != 4 || !tag.chars().all(|c| c.is_ascii_uppercase()))
-            {
-                bad_tag.insert(tag);
-            }
+    let mut bad_tag: HashSet<_> = HashSet::new();
+    for (feature_record, _) in font.feature_records(false) {
+        let tag = feature_record.feature_tag().to_string();
+        // ssXX and cvXX are OK.
+        if (tag.starts_with("ss") || tag.starts_with("cv"))
+            && tag[2..].chars().all(|c| c.is_ascii_digit())
+        {
+            continue;
+        }
+        if !VALID_FEATURE_TAGS.contains(&tag.as_str())
+            && (tag.len() != 4 || !tag.chars().all(|c| c.is_ascii_uppercase()))
+        {
+            bad_tag.insert(tag);
         }
     }
 

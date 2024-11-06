@@ -3,15 +3,17 @@ use crate::{
     filetype::FileTypeConvert,
     CheckError, FileType, Testable,
 };
+use itertools::Either;
 use read_fonts::{
     tables::{
         cmap::Cmap,
         gdef::{Gdef, GlyphClassDef},
+        layout::{Feature, FeatureRecord},
         os2::SelectionFlags,
         post::DEFAULT_GLYPH_NAMES,
     },
     types::Version16Dot16,
-    TableProvider,
+    ReadError, TableProvider,
 };
 use skrifa::{
     font::FontRef,
@@ -290,5 +292,37 @@ impl TestFont<'_> {
             .draw(settings, pen)
             .map_err(|_| CheckError::Error("Failed to draw glyph".to_string()))?;
         Ok(())
+    }
+
+    pub fn feature_records(
+        &self,
+        gsub_only: bool,
+    ) -> impl Iterator<Item = (&FeatureRecord, Result<Feature, ReadError>)> {
+        let gsub_featurelist = self
+            .font()
+            .gsub()
+            .ok()
+            .and_then(|gsub| gsub.feature_list().ok());
+        let gpos_feature_list = self
+            .font()
+            .gsub()
+            .ok()
+            .and_then(|gsub| gsub.feature_list().ok());
+        let gsub_feature_and_data = gsub_featurelist.map(|list| {
+            list.feature_records()
+                .iter()
+                .map(move |feature| (feature, feature.feature(list.offset_data())))
+        });
+        let gpos_feature_and_data = gpos_feature_list.map(|list| {
+            list.feature_records()
+                .iter()
+                .map(move |feature| (feature, feature.feature(list.offset_data())))
+        });
+        let iter = gsub_feature_and_data.into_iter().flatten();
+        if gsub_only {
+            Either::Left(iter)
+        } else {
+            Either::Right(iter.chain(gpos_feature_and_data.into_iter().flatten()))
+        }
     }
 }
