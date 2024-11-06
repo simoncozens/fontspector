@@ -152,7 +152,7 @@ fn check_glyf_non_transformed_duplicate_components(
         Ok(Status::just_one_pass())
     } else {
         Ok(
-            Status::just_one_warn("found-duplicates", 
+            Status::just_one_fail("found-duplicates", 
                 &format!("The following glyphs have duplicate components which have the same x,y coordinates.\n\n{}",
                     bullet_list(context, messages))
             )

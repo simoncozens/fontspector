@@ -292,56 +292,50 @@ def test_check_description_valid_html():
     )
 
 
-@pytest.mark.skip("FIXME: CheckTester bug perhaps?")
-def test_check_description_min_length():
+@check_id("googlefonts/description/min_length")
+def test_check_description_min_length(check, tmp_path):
     """DESCRIPTION.en_us.html must have more than 200 bytes."""
-    check = CheckTester("googlefonts/description/min_length")
-
-    font = TEST_FILE("nunito/Nunito-Regular.ttf")
-
-    bad_length = "a" * 199
+    p = tmp_path / "DESCRIPTION.en_us.html"
+    p.write_text("a" * 199, encoding="utf-8")
     assert_results_contain(
-        check(MockFont(file=font, description=bad_length)),
+        check(str(p)),
         FAIL,
         "too-short",
         "with 199-byte buffer...",
     )
 
-    bad_length = "a" * 200
+    p.write_text("a" * 200, encoding="utf-8")
     assert_results_contain(
-        check(MockFont(file=font, description=bad_length)),
+        check(str(p)),
         FAIL,
         "too-short",
         "with 200-byte buffer...",
     )
 
-    good_length = "a" * 201
-    assert_PASS(
-        check(MockFont(file=font, description=good_length)), "with 201-byte buffer..."
-    )
+    p.write_text("a" * 201, encoding="utf-8")
+    assert_PASS(check(str(p)), "with 201-byte buffer...")
 
 
-@pytest.mark.skip("FIXME: CheckTester bug perhaps?")
-def test_check_description_eof_linebreak():
+@check_id("googlefonts/description/eof_linebreak")
+def test_check_description_eof_linebreak(check, tmp_path):
     """DESCRIPTION.en_us.html should end in a linebreak."""
-    check = CheckTester("googlefonts/description/eof_linebreak")
-
-    font = TEST_FILE("nunito/Nunito-Regular.ttf")
+    p = tmp_path / "DESCRIPTION.en_us.html"
 
     bad = (
         "We want to avoid description files\n"
         "without an end-of-file linebreak\n"
         "like this one."
     )
+    p.write_text(bad, encoding="utf-8")
     assert_results_contain(
-        check(MockFont(file=font, description=bad)),
+        check(str(p)),
         WARN,
         "missing-eof-linebreak",
         "when we lack an end-of-file linebreak...",
     )
 
-    good = "On the other hand, this one\nis good enough.\n"
-    assert_PASS(check(MockFont(file=font, description=good)), "when we add one...")
+    p.write_text("On the other hand, this one\nis good enough.\n", encoding="utf-8")
+    assert_PASS(check(str(p)), "when we add one...")
 
 
 @pytest.mark.skip("Check not ported yet.")

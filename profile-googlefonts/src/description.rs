@@ -16,7 +16,8 @@ use fontspector_checkapi::prelude::*;
 )]
 fn description_min_length(desc: &Testable, _context: &Context) -> CheckFnResult {
     Ok(if desc.contents.len() <= 200 {
-        Status::just_one_fail("too-short",
+        Status::just_one_fail(
+            "too-short",
             "DESCRIPTION.en_us.html must have size larger than 200 bytes.",
         )
     } else {
@@ -36,12 +37,13 @@ fn description_min_length(desc: &Testable, _context: &Context) -> CheckFnResult 
         collection, we chose to adopt the practice of placing this final linebreak
         character on them.
     ",
-    proposal="https://github.com/fonttools/fontbakery/issues/2879",
+    proposal = "https://github.com/fonttools/fontbakery/issues/2879",
     applies_to = "DESC"
 )]
 fn description_eof_linebreak(desc: &Testable, _context: &Context) -> CheckFnResult {
-    Ok(if desc.contents.ends_with(b"\n") {
-        Status::just_one_warn("missing-eof-linebreak",
+    Ok(if !desc.contents.ends_with(b"\n") {
+        Status::just_one_warn(
+            "missing-eof-linebreak",
             "The last characther on DESCRIPTION.en_us.html \
              is not a line-break. Please add it.",
         )
