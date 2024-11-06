@@ -32,6 +32,7 @@ serde_json = "1.0"
 fontspector-checkhelper = { path = "./fontspector-checkhelper" }
 
 log = "0.4.14"
+itertools = "0.13.0"
 
 # Fontbakery bridge / Python module
 pyo3 = "0.22"
