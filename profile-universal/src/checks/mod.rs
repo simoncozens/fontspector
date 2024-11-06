@@ -6,6 +6,7 @@ pub mod name_italic_names;
 pub mod name_no_copyright_on_description;
 pub mod name_trailing_spaces;
 pub mod required_tables;
+pub mod stylistic_sets;
 pub mod unwanted_tables;
 pub mod whitespace_ink;
 pub mod whitespace_widths;
