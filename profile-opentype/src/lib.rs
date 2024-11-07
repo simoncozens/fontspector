@@ -22,6 +22,7 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
         cr.register_check(checks::glyf::check_point_out_of_bounds);
         cr.register_check(checks::glyf::glyf_unused_data);
+        cr.register_check(checks::gpos::gpos_kerning_info);
         cr.register_check(checks::head::equal_font_versions);
         cr.register_check(checks::head::font_version);
         cr.register_check(checks::head::mac_style);
