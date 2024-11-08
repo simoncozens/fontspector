@@ -2,7 +2,7 @@ use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
 use read_fonts::types::Tag;
 use write_fonts::FontBuilder;
 
-const UNWANTED_TABLES: [(Tag, &str); 9] = [
+const UNWANTED_TABLES: [(Tag, &str); 16] = [
     (Tag::new(b"DSIG"), "This font has a digital signature (DSIG table) which is only required - even if only a placeholder - on old programs like MS Office 2013 in order to work properly.\n
 The current recommendation is to completely remove the DSIG table."),
     (Tag::new(b"FFTM"), "Table contains redundant FontForge timestamp info"),
@@ -12,6 +12,13 @@ The current recommendation is to completely remove the DSIG table."),
     (Tag::new(b"TSI2"), "Table contains data only used in VTT"),
     (Tag::new(b"TSI3"), "Table contains data only used in VTT"),
     (Tag::new(b"TSI5"), "Table contains data only used in VTT"),
+    (Tag::new(b"TSIC"), "Table contains data only used in VTT"),
+    (Tag::new(b"TSIV"), "Table contains data only used in VOLT"),
+    (Tag::new(b"TSIP"), "Table contains data only used in VOLT"),
+    (Tag::new(b"TSIS"), "Table contains data only used in VOLT"),
+    (Tag::new(b"TSID"), "Table contains data only used in VOLT"),
+    (Tag::new(b"TSIJ"), "Table contains data only used in VOLT"),
+    (Tag::new(b"TSIB"), "Table contains data only used in VOLT"),
     (Tag::new(b"prop"), "Table used on AAT, Apple's OS X specific technology. Although Harfbuzz now has optional AAT support, new fonts should not be using that.")
 ];
 
