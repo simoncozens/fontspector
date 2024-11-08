@@ -1,11 +1,10 @@
 import math
 import os
 import shutil
-import sys
 
 import pytest
 import requests
-from conftest import ImportRaiser, remove_import_raiser, check_id
+from conftest import check_id
 from fontTools.ttLib import TTFont
 
 from fontbakery.checks.vendorspecific.googlefonts.conditions import (
@@ -32,7 +31,6 @@ from fontbakery.constants import (
 from fontbakery.profiles import googlefonts as googlefonts_profile
 from fontbakery.status import DEBUG, ERROR, FAIL, FATAL, INFO, PASS, SKIP, WARN
 from fontbakery.testable import Font
-from fontspector import CheckTester
 
 check_statuses = (ERROR, FAIL, SKIP, PASS, WARN, INFO, DEBUG)
 
@@ -146,9 +144,9 @@ def cabin_regular_path():
     ],
 )
 @pytest.mark.skip("Check not ported yet.")
-def test_check_canonical_filename(fp, result):
+@check_id("googlefonts/canonical_filename")
+def test_check_canonical_filename(check, fp, result):
     """Files are named canonically."""
-    check = CheckTester("googlefonts/canonical_filename")
     ttFont = TTFont(fp)
 
     if result == PASS:
@@ -160,9 +158,9 @@ def test_check_canonical_filename(fp, result):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_description_broken_links(requests_mock):
+@check_id("googlefonts/description/broken_links")
+def test_check_description_broken_links(check, requests_mock):
     """Does DESCRIPTION file contain broken links ?"""
-    check = CheckTester("googlefonts/description/broken_links")
 
     requests_mock.head("http://example.com/", text="good")
     requests_mock.head("http://fonts.google.com/", text="good")
@@ -217,9 +215,9 @@ def test_check_description_broken_links(requests_mock):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_description_git_url():
+@check_id("googlefonts/description/git_url")
+def test_check_description_git_url(check):
     """Does DESCRIPTION file contain an upstream Git repo URL?"""
-    check = CheckTester("googlefonts/description/git_url")
 
     # TODO: test INFO 'url-found'
 
@@ -254,9 +252,9 @@ def test_check_description_git_url():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_description_valid_html():
+@check_id("googlefonts/description/valid_html")
+def test_check_description_valid_html(check):
     """DESCRIPTION file is a propper HTML snippet ?"""
-    check = CheckTester("googlefonts/description/valid_html")
 
     font = TEST_FILE("nunito/Nunito-Regular.ttf")
     assert_PASS(
@@ -339,9 +337,9 @@ def test_check_description_eof_linebreak(check, tmp_path):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_name_line_breaks():
+@check_id("googlefonts/name/line_breaks")
+def test_check_name_line_breaks(check):
     """Name table entries should not contain line-breaks."""
-    check = CheckTester("googlefonts/name/line_breaks")
 
     # Our reference Mada Regular font is good here:
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -424,9 +422,9 @@ def test_check_name_rfn(check):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_name_family_name_compliance():
+@check_id("googlefonts/name/family_name_compliance")
+def test_check_name_family_name_compliance(check):
     """Check family name for GF Guide compliance."""
-    check = CheckTester("googlefonts/name/family_name_compliance")
 
     def set_name(font, nameID, string):
         for record in font["name"].names:
@@ -507,6 +505,7 @@ def test_check_name_family_name_compliance():
 @check_id("googlefonts/metadata/parses")
 def test_check_metadata_parses(check):
     """Check METADATA.pb parse correctly."""
+
     good = TEST_FILE("merriweather/METADATA.pb")
     assert_PASS(check(good), "with a good METADATA.pb file...")
 
@@ -515,10 +514,10 @@ def test_check_metadata_parses(check):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_designer_values():
+@check_id("googlefonts/metadata/designer_values")
+def test_check_metadata_designer_values(check):
     """Multiple values in font designer field in
     METADATA.pb must be separated by commas."""
-    check = CheckTester("googlefonts/metadata/designer_values")
 
     font = TEST_FILE("merriweather/Merriweather-Regular.ttf")
     assert_PASS(check(font), "with a good METADATA.pb file...")
@@ -541,9 +540,9 @@ def test_check_metadata_designer_values():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_date_added():
+@check_id("googlefonts/metadata/date_added")
+def test_check_metadata_date_added(check):
     """Validate 'date_added' field on METADATA.pb."""
-    check = CheckTester("googlefonts/metadata/date_added")
 
     font = TEST_FILE("merriweather/Merriweather-Regular.ttf")
     assert_PASS(check(font), "with a good METADATA.pb file...")
@@ -573,19 +572,9 @@ def test_check_metadata_date_added():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_broken_links():
-    """Does DESCRIPTION file contain broken links?"""
-    # check = CheckTester("googlefonts/metadata/broken_links")
-    # TODO: Implement-me!
-    # FAIL, "email"
-    # WARN, "timeout"
-    # FAIL, "broken-links"
-
-
-@pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_undeclared_fonts():
+@check_id("googlefonts/metadata/undeclared_fonts")
+def test_check_metadata_undeclared_fonts(check):
     """Ensure METADATA.pb lists all font binaries."""
-    check = CheckTester("googlefonts/metadata/undeclared_fonts")
 
     # Our reference Nunito family is know to be good here.
     font = TEST_FILE("nunito/Nunito-Regular.ttf")
@@ -613,6 +602,7 @@ def test_check_metadata_undeclared_fonts():
 @check_id("googlefonts/family/equal_codepoint_coverage")
 def test_check_family_equal_codepoint_coverage(check, mada_ttFonts, cabin_ttFonts):
     """Fonts have equal codepoint coverage?"""
+
     # our reference Cabin family is know to be good here.
     assert_PASS(check(cabin_ttFonts), "with a good family.")
 
@@ -627,9 +617,9 @@ def test_check_family_equal_codepoint_coverage(check, mada_ttFonts, cabin_ttFont
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_fstype():
+@check_id("googlefonts/fstype")
+def test_check_fstype(check):
     """Checking OS/2 fsType"""
-    check = CheckTester("googlefonts/fstype")
 
     # our reference Cabin family is know to be good here.
     ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
@@ -707,9 +697,9 @@ def test_condition_registered_vendor_ids():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_vendor_id():
+@check_id("googlefonts/vendor_id")
+def test_check_vendor_id(check):
     """Checking OS/2 achVendID"""
-    check = CheckTester("googlefonts/vendor_id")
 
     # Let's start with our reference Merriweather Regular
     ttFont = TTFont(TEST_FILE("merriweather/Merriweather-Regular.ttf"))
@@ -737,9 +727,9 @@ def test_check_vendor_id():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_glyph_coverage():
+@check_id("googlefonts/glyph_coverage")
+def test_check_glyph_coverage(check):
     """Check glyph coverage."""
-    check = CheckTester("googlefonts/glyph_coverage")
 
     # Our reference Cabin Regular is known to be bad here.
     ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
@@ -769,9 +759,9 @@ def test_check_glyph_coverage():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_usweightclass():
+@check_id("googlefonts/usweightclass")
+def test_check_usweightclass(check):
     """Checking OS/2 usWeightClass."""
-    check = CheckTester("googlefonts/usweightclass")
 
     # Our reference Mada Regular is know to be bad here.
     font = TEST_FILE("mada/Mada-Regular.ttf")
@@ -833,9 +823,9 @@ def test_family_directory_condition():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_family_has_license():
+@check_id("googlefonts/family/has_license")
+def test_check_family_has_license(check):
     """Check font project has a license."""
-    check = CheckTester("googlefonts/family/has_license")
 
     def licenses_for_test(path):
         found = MockFont(file=path + "/NoSuch.ttf").licenses
@@ -883,9 +873,9 @@ def test_check_family_has_license():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_license_ofl_copyright():
+@check_id("googlefonts/license/OFL_copyright")
+def test_check_license_ofl_copyright(check):
     """Check license file has good copyright string."""
-    check = CheckTester("googlefonts/license/OFL_copyright")
 
     # And Mada has a bad copyright string format:
     font = TEST_FILE("mada/Mada-Regular.ttf")
@@ -905,9 +895,9 @@ def test_check_license_ofl_copyright():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_license_ofl_body_text():
+@check_id("googlefonts/license/OFL_body_text")
+def test_check_license_ofl_body_text(check):
     """Check OFL.txt contains correct body text."""
-    check = CheckTester("googlefonts/license/OFL_body_text")
 
     # Our reference Montserrat family is know to have
     # a proper OFL.txt license file.
@@ -937,9 +927,9 @@ def test_check_license_ofl_body_text():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_name_license(mada_ttFonts):
+@check_id("googlefonts/name/license")
+def test_check_name_license(check, mada_ttFonts):
     """Check copyright namerecords match license file."""
-    check = CheckTester("googlefonts/name/license")
 
     # Our reference Mada family has its copyright name records properly set
     # identifying it as being licensed under the Open Font License.
@@ -964,25 +954,10 @@ def test_check_name_license(mada_ttFonts):
     # WARN, "http" / "http-in-description"
 
 
-def NOT_IMPLEMENTED_test_check_name_license_url():
-    """License URL matches License text on name table?"""
-    # check = CheckTester("googlefonts/name/license_url")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - FAIL, code="ufl"
-    # - FAIL, code="licensing-inconsistency"
-    # - FAIL, code="no-license-found"
-    # - FAIL, code="bad-entries"
-    # - WARN, code="http-in-description"
-    # - WARN, code="http"
-    # - PASS
-
-
 @pytest.mark.skip("Check not ported yet.")
-def test_check_name_description_max_length():
+@check_id("googlefonts/name/description_max_length")
+def test_check_name_description_max_length(check):
     """Description strings in the name table must not exceed 200 characters."""
-    check = CheckTester("googlefonts/name/description_max_length")
 
     # Our reference Mada Regular is know to be good here.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -1006,9 +981,9 @@ def test_check_name_description_max_length():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_name_version_format():
+@check_id("googlefonts/name/version_format")
+def test_check_name_version_format(check):
     """Version format is correct in 'name' table ?"""
-    check = CheckTester("googlefonts/name/version_format")
 
     # Our reference Mada Regular font is good here:
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -1040,20 +1015,6 @@ def test_check_name_version_format():
     )
 
 
-def NOT_IMPLEMENTED_test_check_old_ttfautohint():
-    """Font has old ttfautohint applied?"""
-    # check = CheckTester("googlefonts/old_ttfautohint")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - FAIL, code="lacks-version-strings"
-    # - INFO, code="version-not-detected"  "Could not detect which version of
-    #                                       ttfautohint was used in this font."
-    # - WARN, code="old-ttfa"  "detected an old ttfa version"
-    # - PASS
-    # - FAIL, code="parse-error"
-
-
 @pytest.mark.parametrize(
     "expected_status,expected_keyword,reason,font",
     [
@@ -1081,51 +1042,18 @@ def NOT_IMPLEMENTED_test_check_old_ttfautohint():
     ],
 )
 @pytest.mark.skip("Check not ported yet.")
-def test_check_has_ttfautohint_params(expected_status, expected_keyword, reason, font):
+@check_id("googlefonts/has_ttfautohint_params")
+def test_check_has_ttfautohint_params(
+    check, expected_status, expected_keyword, reason, font
+):
     """Font has ttfautohint params?"""
-    check = CheckTester("googlefonts/has_ttfautohint_params")
     assert_results_contain(check(font), expected_status, expected_keyword, reason)
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_epar():
-    """EPAR table present in font?"""
-    check = CheckTester("googlefonts/epar")
-
-    # Our reference Mada Regular lacks an EPAR table:
-    ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
-
-    # So it must emit an INFO message inviting the designers
-    # to learn more about it:
-    assert_results_contain(
-        check(ttFont), INFO, "lacks-EPAR", "with a font lacking an EPAR table..."
-    )
-
-    # add a fake EPAR table to validate the PASS code-path:
-    ttFont["EPAR"] = "foo"
-    assert_PASS(check(ttFont), "with a good font...")
-
-
-def NOT_IMPLEMENTED_test_check_gasp():
-    """Is GASP table correctly set?"""
-    # check = CheckTester("googlefonts/gasp")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - FAIL, "lacks-gasp"        "Font is missing the gasp table."
-    # - FAIL, "empty"             "The gasp table has no values."
-    # - FAIL, "lacks-ffff-range"  "The gasp table does not have a 0xFFFF gasp range."
-    # - INFO, "ranges"            "These are the ppm ranges declared on the gasp table:"
-    # - WARN, "non-ffff-range"    "The gasp table has a range that may be unneccessary."
-    # - WARN, "unset-flags"       "All flags in gasp range 0xFFFF (i.e. all font sizes)
-    #                              must be set to 1"
-    # - PASS                      "The gasp table is correctly set."
-
-
-@pytest.mark.skip("Check not ported yet.")
-def test_check_name_familyname_first_char():
+@check_id("googlefonts/name/familyname_first_char")
+def test_check_name_familyname_first_char(check):
     """Make sure family name does not begin with a digit."""
-    check = CheckTester("googlefonts/name/familyname_first_char")
 
     # Our reference Mada Regular is known to be good
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -1148,9 +1076,9 @@ def test_check_name_familyname_first_char():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_unique_full_name_values():
+@check_id("googlefonts/metadata/unique_full_name_values")
+def test_check_metadata_unique_full_name_values(check):
     """METADATA.pb: check if fonts field only has unique "full_name" values."""
-    check = CheckTester("googlefonts/metadata/unique_full_name_values")
 
     # Our reference FamilySans family is good:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1168,9 +1096,9 @@ def test_check_metadata_unique_full_name_values():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_unique_weight_style_pairs():
+@check_id("googlefonts/metadata/unique_weight_style_pairs")
+def test_check_metadata_unique_weight_style_pairs(check):
     """METADATA.pb: check if fonts field only contains unique style:weight pairs."""
-    check = CheckTester("googlefonts/metadata/unique_weight_style_pairs")
 
     # Our reference FamilySans family is good:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1189,9 +1117,9 @@ def test_check_metadata_unique_weight_style_pairs():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_license():
+@check_id("googlefonts/metadata/license")
+def test_check_metadata_license(check):
     """METADATA.pb license is "APACHE2", "UFL" or "OFL"?"""
-    check = CheckTester("googlefonts/metadata/license")
 
     # Let's start with our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1216,9 +1144,9 @@ def test_check_metadata_license():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_menu_and_latin():
+@check_id("googlefonts/metadata/menu_and_latin")
+def test_check_metadata_menu_and_latin(check):
     """METADATA.pb should contain at least "menu" and "latin" subsets."""
-    check = CheckTester("googlefonts/metadata/menu_and_latin")
 
     # Let's start with our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1250,9 +1178,9 @@ def test_check_metadata_menu_and_latin():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_subsets_order():
+@check_id("googlefonts/metadata/subsets_order")
+def test_check_metadata_subsets_order(check):
     """METADATA.pb subsets should be alphabetically ordered."""
-    check = CheckTester("googlefonts/metadata/subsets_order")
 
     # Let's start with our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1290,9 +1218,9 @@ def test_check_metadata_subsets_order():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_includes_production_subsets(requests_mock):
+@check_id("googlefonts/metadata/includes_production_subsets")
+def test_check_metadata_includes_production_subsets(check, requests_mock):
     """Check METADATA.pb has production subsets."""
-    check = CheckTester("googlefonts/metadata/includes_production_subsets")
 
     requests_mock.get(
         "http://fonts.google.com/metadata/fonts",
@@ -1321,9 +1249,9 @@ def test_check_metadata_includes_production_subsets(requests_mock):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_single_cjk_subset():
+@check_id("googlefonts/metadata/single_cjk_subset")
+def test_check_metadata_single_cjk_subset(check):
     """Check METADATA.pb file only contains a single CJK subset"""
-    check = CheckTester("googlefonts/metadata/single_cjk_subset")
 
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
     md = Font(font).family_metadata
@@ -1346,9 +1274,9 @@ def test_check_metadata_single_cjk_subset():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_copyright():
+@check_id("googlefonts/metadata/copyright")
+def test_check_metadata_copyright(check):
     """METADATA.pb: Copyright notice is the same in all fonts?"""
-    check = CheckTester("googlefonts/metadata/copyright")
 
     # Let's start with our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1372,9 +1300,9 @@ def test_check_metadata_copyright():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_familyname():
+@check_id("googlefonts/metadata/familyname")
+def test_check_metadata_familyname(check):
     """Check that METADATA.pb family values are all the same."""
-    check = CheckTester("googlefonts/metadata/familyname")
 
     # Let's start with our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1396,11 +1324,10 @@ def test_check_metadata_familyname():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_has_regular():
-    """
-    METADATA.pb: According Google Fonts standards, families should have a Regular style.
-    """
-    check = CheckTester("googlefonts/metadata/has_regular")
+@check_id("googlefonts/metadata/has_regular")
+def test_check_metadata_has_regular(check):
+    """METADATA.pb: According Google Fonts standards,
+    families should have a Regular style."""
 
     # Let's start with our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1425,9 +1352,9 @@ def test_check_metadata_has_regular():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_regular_is_400():
+@check_id("googlefonts/metadata/regular_is_400")
+def test_check_metadata_regular_is_400(check):
     """METADATA.pb: Regular should be 400."""
-    check = CheckTester("googlefonts/metadata/regular_is_400")
 
     # Let's start with the METADATA.pb file from our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1464,10 +1391,10 @@ def test_check_metadata_regular_is_400():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_nameid_post_script_name():
+@check_id("googlefonts/metadata/nameid/post_script_name")
+def test_check_metadata_nameid_post_script_name(check):
     """Checks METADATA.pb font.post_script_name matches
     postscript name declared on the name table."""
-    check = CheckTester("googlefonts/metadata/nameid/post_script_name")
 
     # Let's start with the METADATA.pb file from our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
@@ -1490,10 +1417,10 @@ def test_check_metadata_nameid_post_script_name():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_nameid_font_name():
+@check_id("googlefonts/metadata/nameid/font_name")
+def test_check_metadata_nameid_font_name(check):
     """METADATA.pb font.name value should be same as the family name declared
     on the name table."""
-    check = CheckTester("googlefonts/metadata/nameid/font_name")
 
     # Our reference Merriweather-Regular is know to have good fullname metadata
     font = TEST_FILE("merriweather/Merriweather-Regular.ttf")
@@ -1532,10 +1459,10 @@ def test_check_metadata_nameid_font_name():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_match_fullname_postscript():
+@check_id("googlefonts/metadata/match_fullname_postscript")
+def test_check_metadata_match_fullname_postscript(check):
     """METADATA.pb family.full_name and family.post_script_name
     fields have equivalent values ?"""
-    check = CheckTester("googlefonts/metadata/match_fullname_postscript")
 
     regular_font = TEST_FILE("merriweather/Merriweather-Regular.ttf")
     lightitalic_font = TEST_FILE("merriweather/Merriweather-LightItalic.ttf")
@@ -1589,17 +1516,6 @@ def test_check_metadata_match_fullname_postscript():
     #                       full_name:        "MistakenFont Regular"
 
 
-def NOT_IMPLEMENTED_test_check_match_filename_postscript():
-    """METADATA.pb family.filename and family.post_script_name
-    fields have equivalent values?"""
-    # check = CheckTester("googlefonts/metadata/match_filename_postscript")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - FAIL, "mismatch"		"METADATA.pb filename does not match post_script_name"
-    # - PASS
-
-
 MONTSERRAT_RIBBI = [
     TEST_FILE("montserrat/Montserrat-Regular.ttf"),
     TEST_FILE("montserrat/Montserrat-Italic.ttf"),
@@ -1625,9 +1541,9 @@ MONTSERRAT_NON_RIBBI = [
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_valid_full_name_values():
+@check_id("googlefonts/metadata/valid_full_name_values")
+def test_check_metadata_valid_full_name_values(check):
     """METADATA.pb font.full_name field contains font name in right format?"""
-    check = CheckTester("googlefonts/metadata/valid_full_name_values")
 
     # Our reference Montserrat family is a good 18-styles family:
     # properly described in its METADATA.pb file:
@@ -1664,9 +1580,9 @@ def test_check_metadata_valid_full_name_values():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_valid_filename_values():
+@check_id("googlefonts/metadata/valid_filename_values")
+def test_check_metadata_valid_filename_values(check):
     """METADATA.pb font.filename field contains font name in right format?"""
-    check = CheckTester("googlefonts/metadata/valid_filename_values")
 
     # Our reference Montserrat family is a good 18-styles family:
     for font in MONTSERRAT_RIBBI + MONTSERRAT_NON_RIBBI:
@@ -1687,9 +1603,9 @@ def test_check_metadata_valid_filename_values():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_valid_post_script_name_values():
+@check_id("googlefonts/metadata/valid_post_script_name_values")
+def test_check_metadata_valid_post_script_name_values(check):
     """METADATA.pb font.post_script_name field contains font name in right format?"""
-    check = CheckTester("googlefonts/metadata/valid_post_script_name_values")
 
     # Our reference Montserrat family is a good 18-styles family:
     for fontfile in MONTSERRAT_RIBBI + MONTSERRAT_NON_RIBBI:
@@ -1713,13 +1629,14 @@ def test_check_metadata_valid_post_script_name_values():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_valid_nameid25():
+@check_id("googlefonts/metadata/valid_nameid25")
+def test_check_metadata_valid_nameid25(check):
     """Check name ID 25 to end with "Italic" for Italic VFs"""
-    check = CheckTester("googlefonts/metadata/valid_nameid25")
 
     # PASS
     ttFont = TTFont(TEST_FILE("shantell/ShantellSans[BNCE,INFM,SPAC,wght].ttf"))
     assert_PASS(check(ttFont), f"with a good font ({ttFont})...")
+
     ttFont = TTFont(TEST_FILE("shantell/ShantellSans-Italic[BNCE,INFM,SPAC,wght].ttf"))
     assert_PASS(check(ttFont), f"with a good font ({ttFont})...")
 
@@ -1746,6 +1663,7 @@ def test_check_metadata_valid_nameid25():
         "nameid25-missing-italic",
         f"with a bad font ({ttFont})...",
     )
+
     set_name(ttFont, 25, "ShantellSans Italic")
     assert_results_contain(
         check(MockFont(file=fontpath, ttFont=ttFont)),
@@ -1783,9 +1701,9 @@ GOOD_COPYRIGHT_NOTICE_STRINGS = (
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_font_copyright():
+@check_id("googlefonts/font_copyright")
+def test_check_font_copyright(check):
     """Copyright notice on METADATA.pb matches canonical pattern ?"""
-    check = CheckTester("googlefonts/font_copyright")
 
     # Our reference Cabin Regular is known to be bad
     # Since it provides an email instead of a git URL.
@@ -1834,9 +1752,9 @@ def test_check_font_copyright():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_reserved_font_name():
+@check_id("googlefonts/metadata/reserved_font_name")
+def test_check_metadata_reserved_font_name(check):
     """Copyright notice on METADATA.pb should not contain Reserved Font Name."""
-    check = CheckTester("googlefonts/metadata/reserved_font_name")
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
     assert_PASS(check(font), "with a good copyright notice string...")
@@ -1853,9 +1771,9 @@ def test_check_metadata_reserved_font_name():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_filenames():
+@check_id("googlefonts/metadata/filenames")
+def test_check_metadata_filenames(check):
     """METADATA.pb: Font filenames match font.filename entries?"""
-    check = CheckTester("googlefonts/metadata/filenames")
 
     assert_PASS(check(rosarivo_fonts), "with matching list of font files...")
 
@@ -1881,12 +1799,10 @@ def test_check_metadata_filenames():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_nameid_family_and_full_names():
-    """
-    METADATA.pb font.name and font.full_name fields match the values declared on
-    the name table?
-    """
-    check = CheckTester("googlefonts/metadata/nameid/family_and_full_names")
+@check_id("googlefonts/metadata/nameid/family_and_full_names")
+def test_check_metadata_nameid_family_and_full_names(check):
+    """METADATA.pb font.name and font.full_name fields
+    match the values declared on the name table?"""
 
     # Our reference Merriweather Regular is known to be good here.
     ttFont = TTFont(TEST_FILE("merriweather/Merriweather-Regular.ttf"))
@@ -1927,9 +1843,9 @@ def test_check_metadata_nameid_family_and_full_names():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_match_name_familyname():
+@check_id("googlefonts/metadata/match_name_familyname")
+def test_check_metadata_match_name_familyname(check):
     """METADATA.pb: Check font name is the same as family name."""
-    check = CheckTester("googlefonts/metadata/match_name_familyname")
 
     # Our reference Cabin Regular is known to be good
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
@@ -1949,9 +1865,9 @@ def test_check_metadata_match_name_familyname():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_check_metadata_canonical_weight_value():
+@check_id("googlefonts/metadata/canonical_weight_value")
+def test_check_check_metadata_canonical_weight_value(check):
     """METADATA.pb: Check that font weight has a canonical value."""
-    check = CheckTester("googlefonts/metadata/canonical_weight_value")
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
     check(font)
@@ -1975,9 +1891,9 @@ def test_check_check_metadata_canonical_weight_value():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_os2_weightclass():
+@check_id("googlefonts/metadata/os2_weightclass")
+def test_check_metadata_os2_weightclass(check):
     """Checking OS/2 usWeightClass matches weight specified at METADATA.pb"""
-    check = CheckTester("googlefonts/metadata/os2_weightclass")
 
     # === test cases for Variable Fonts ===
     # Our reference Jura is known to be good
@@ -2035,36 +1951,11 @@ def test_check_metadata_os2_weightclass():
             assert_PASS(check(ttFont), f"with weightClass 275 on ({fontfile})...")
 
 
-def NOT_IMPLEMENTED_test_check_metadata_match_weight_postscript():
-    """METADATA.pb: Metadata weight matches postScriptName."""
-    # check = CheckTester("googlefonts/metadata/match_weight_postscript")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - FAIL, "METADATA.pb: Font weight value is invalid."
-    # - FAIL, "METADATA.pb: Mismatch between postScriptName and weight value."
-    # - PASS
-
-
-def NOT_IMPLEMENTED_test_check_metadata_canonical_style_names():
-    """METADATA.pb: Font styles are named canonically?"""
-    # check = CheckTester("googlefonts/metadata/canonical_style_names")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - SKIP		    "Applicable only to font styles declared as 'italic' or 'normal'
-    #                    on METADATA.pb."
-    # - FAIL, "italic"	"Font style should be italic."
-    # - FAIL, "normal"	"Font style should be normal."
-    # - PASS		    "Font styles are named canonically."
-
-
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_consistent_repo_urls():
-    """
-    METADATA.pb: Check URL on copyright string is the same as in repository_url field.
-    """
-    check = CheckTester("googlefonts/metadata/consistent_repo_urls")
+@check_id("googlefonts/metadata/consistent_repo_urls")
+def test_check_metadata_consistent_repo_urls(check):
+    """METADATA.pb: Check URL on copyright string
+    is the same as in repository_url field."""
 
     # The problem was first seen on a project with these diverging values:
     # copyright: "Copyright 2022 The Delicious Handrawn Project Authors
@@ -2103,9 +1994,9 @@ def test_check_metadata_consistent_repo_urls():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_primary_script():
+@check_id("googlefonts/metadata/primary_script")
+def test_check_metadata_primary_script(check):
     """METADATA.pb: Check for primary_script"""
-    check = CheckTester("googlefonts/metadata/primary_script")
 
     class Metadata:
         primary_script = ""
@@ -2129,9 +2020,9 @@ def test_check_metadata_primary_script():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_unitsperem():
+@check_id("googlefonts/unitsperem")
+def test_check_unitsperem(check):
     """Stricter unitsPerEm criteria for Google Fonts."""
-    check = CheckTester("googlefonts/unitsperem")
 
     ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
 
@@ -2168,33 +2059,10 @@ def test_check_unitsperem():
         )
 
 
-def NOT_IMPLEMENTED_test_check_version_bump():
-    """Version number has increased since previous release on Google Fonts?"""
-    # check = CheckTester("googlefonts/version_bump")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - FAIL, "Version number is equal to version on Google Fonts."
-    # - FAIL, "Version number is less than version on Google Fonts."
-    # - FAIL, "Version number is equal to version on Google Fonts GitHub repo."
-    # - FAIL, "Version number is less than version on Google Fonts GitHub repo."
-    # - PASS
-
-
-def NOT_IMPLEMENTED_test_check_production_glyphs_similarity():
-    """Glyphs are similiar to Google Fonts version?"""
-    # check = CheckTester("googlefonts/production_glyphs_similarity")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - WARN, "Following glyphs differ greatly from Google Fonts version"
-    # - PASS, "Glyphs are similar"
-
-
 @pytest.mark.skip("Check not ported yet.")
-def test_check_italic_angle():
+@check_id("opentype/italic_angle", profile=googlefonts_profile)
+def test_check_italic_angle(check):
     """Checking post.italicAngle value."""
-    check = CheckTester("opentype/italic_angle", profile=googlefonts_profile)
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
     ttFont = TTFont(font)
@@ -2249,9 +2117,9 @@ def test_check_italic_angle():
 # More info at https://github.com/fonttools/fontbakery/issues/2581
 @pytest.mark.xfail(strict=True)
 @pytest.mark.skip("Check not ported yet.")
-def test_check_production_encoded_glyphs(cabin_ttFonts):
+@check_id("googlefonts/production_encoded_glyphs")
+def test_check_production_encoded_glyphs(check, cabin_ttFonts):
     """Check glyphs are not missing when compared to version on fonts.google.com"""
-    check = CheckTester("googlefonts/production_encoded_glyphs")
 
     for font in cabin_fonts:
         # Cabin font hosted on fonts.google.com contains
@@ -2266,9 +2134,9 @@ def test_check_production_encoded_glyphs(cabin_ttFonts):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_category():
+@check_id("googlefonts/metadata/category")
+def test_check_metadata_category(check):
     """Category field for this font on METADATA.pb is valid?"""
-    check = CheckTester("googlefonts/metadata/category")
 
     # Our reference Cabin family...
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
@@ -2440,7 +2308,8 @@ def test_check_metadata_category():
     ],
 )
 @pytest.mark.skip("Check not ported yet.")
-def test_check_font_names(fp, mod, result):
+@check_id("googlefonts/font_names")
+def test_check_font_names(check, fp, mod, result):
     """Check font names are correct"""
     # Please note: This check was introduced in
     # https://github.com/fonttools/fontbakery/pull/3800 which has replaced
@@ -2457,7 +2326,6 @@ def test_check_font_names(fp, mod, result):
     # previous test cases found in fontbakery.
     # https://github.com/googlefonts/axisregistry/blob/main/tests/test_names.py
 
-    check = CheckTester("googlefonts/font_names")
     ttFont = TTFont(fp)
     # get the expecteed font names now before we modify them
     expected = expected_font_names(ttFont, [])
@@ -2490,9 +2358,9 @@ def test_check_font_names(fp, mod, result):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_name_mandatory_entries():
+@check_id("googlefonts/name/mandatory_entries")
+def test_check_name_mandatory_entries(check):
     """Font has all mandatory 'name' table entries ?"""
-    check = CheckTester("googlefonts/name/mandatory_entries")
 
     # We'll check both RIBBI and non-RIBBI fonts
     # so that we cover both cases for FAIL/PASS scenarios
@@ -2565,52 +2433,10 @@ def test_condition_familyname_with_spaces():
     )
 
 
-# Temporarily disabling this code-test since check/negative_advance_width itself
-# is disabled waiting for an implementation targetting the
-# actual root cause of the issue.
-#
-# See also comments at googlefons.py as well as at
-# https://github.com/fonttools/fontbakery/issues/1727
-def disabled_test_check_negative_advance_width():
-    """Check that advance widths cannot be inferred as negative."""
-    check = CheckTester("googlefonts/negative_advance_width")
-
-    # Our reference Cabin Regular is good
-    ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
-
-    # So it must PASS
-    assert_PASS(check(ttFont), "with a good font...")
-
-    # We then change values in an arbitrary glyph
-    # in the glyf table in order to cause the problem:
-    glyphName = "J"
-    coords = ttFont["glyf"].glyphs[glyphName].coordinates
-
-    # FIXME:
-    # Note: I thought this was the proper way to induce the
-    # issue, but now I think I'll need to look more
-    # carefully at sample files providedby MarcFoley
-    # to see what's really at play here and how the relevant
-    # data is encoded into the affected OpenType files.
-    rightSideX = coords[-3][0]
-    # leftSideX: (make right minus left a negative number)
-    coords[-4][0] = rightSideX + 1
-
-    ttFont["glyf"].glyphs[glyphName].coordinates = coords
-
-    # and now this should FAIL:
-    assert_results_contain(
-        check(ttFont),
-        FAIL,
-        "bad-coordinates",
-        "with bad coordinates on the glyf table...",
-    )
-
-
 @pytest.mark.skip("Check not ported yet.")
-def test_check_varfont_generate_static():
+@check_id("googlefonts/varfont/generate_static")
+def test_check_varfont_generate_static(check):
     """Check a static ttf can be generated from a variable font."""
-    check = CheckTester("googlefonts/varfont/generate_static")
 
     ttFont = TTFont(TEST_FILE("cabinvfbeta/CabinVFBeta.ttf"))
     assert_PASS(check(ttFont))
@@ -2628,9 +2454,9 @@ def test_check_varfont_generate_static():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_varfont_has_HVAR():
+@check_id("googlefonts/varfont/has_HVAR")
+def test_check_varfont_has_HVAR(check):
     """Check that variable fonts have an HVAR table."""
-    check = CheckTester("googlefonts/varfont/has_HVAR")
 
     # Our reference Cabin Variable Font contains an HVAR table.
     ttFont = TTFont(TEST_FILE("cabinvfbeta/CabinVFBeta.ttf"))
@@ -2644,9 +2470,9 @@ def test_check_varfont_has_HVAR():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_fvar_instances__another_test():  # TODO: REVIEW THIS.
+@check_id("googlefonts/fvar_instances")
+def test_check_fvar_instances__another_test(check):  # TODO: REVIEW THIS.
     """Check variable font instances."""
-    check = CheckTester("googlefonts/fvar_instances")
 
     ttFont = TTFont(TEST_FILE("cabinvf/Cabin[wdth,wght].ttf"))
 
@@ -2665,9 +2491,9 @@ def test_check_fvar_instances__another_test():  # TODO: REVIEW THIS.
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_fvar_instances__yet_another_test():  # TODO: REVIEW THIS.
+@check_id("googlefonts/fvar_instances")
+def test_check_fvar_instances__yet_another_test(check):  # TODO: REVIEW THIS.
     """A variable font must have named instances."""
-    check = CheckTester("googlefonts/fvar_instances")
 
     # ExpletusVF does have instances.
     # Note: The "broken" in the path name refers to something else.
@@ -2687,9 +2513,9 @@ def test_check_fvar_instances__yet_another_test():  # TODO: REVIEW THIS.
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_fvar_instances__whats_going_on_here():  # TODO: REVIEW THIS.
+@check_id("googlefonts/fvar_instances")
+def test_check_fvar_instances__whats_going_on_here(check):  # TODO: REVIEW THIS.
     """Variable font weight coordinates must be multiples of 100."""
-    check = CheckTester("googlefonts/fvar_instances")
 
     # This copy of Markazi Text has an instance with
     # a 491 'wght' coordinate instead of 500.
@@ -2710,20 +2536,10 @@ def test_check_fvar_instances__whats_going_on_here():  # TODO: REVIEW THIS.
     assert_PASS(check(ttFont), "with a good font...")
 
 
-def NOT_IMPLEMENTED_test_check_family_tnum_horizontal_metrics():
-    """All tabular figures must have the same width across the RIBBI-family."""
-    # check = CheckTester("googlefonts/family/tnum_horizontal_metrics")
-    # TODO: Implement-me!
-    #
-    # code-paths:
-    # - FAIL, "inconsistent-widths"
-    # - PASS
-
-
 @pytest.mark.skip("Check not ported yet.")
-def test_check_family_italics_have_roman_counterparts():
+@check_id("googlefonts/family/italics_have_roman_counterparts")
+def test_check_family_italics_have_roman_counterparts(check):
     """Ensure Italic styles have Roman counterparts."""
-    check = CheckTester("googlefonts/family/italics_have_roman_counterparts")
 
     # The path used here, "some-crazy.path/", is meant to ensure
     # that the parsing code does not get lost when trying to
@@ -2776,8 +2592,8 @@ def test_check_family_italics_have_roman_counterparts():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_repo_dirname_match_nameid_1(tmp_path):
-    check = CheckTester("googlefonts/repo/dirname_matches_nameid_1")
+@check_id("googlefonts/repo/dirname_matches_nameid_1")
+def test_check_repo_dirname_match_nameid_1(check, tmp_path):
     FONT_FAMILY_NAME = "rosarivo"
 
     # Create a temporary directory that mimics the folder structure of the Google Fonts
@@ -2824,9 +2640,9 @@ def test_check_repo_dirname_match_nameid_1(tmp_path):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_repo_vf_has_static_fonts(tmp_path):
+@check_id("googlefonts/repo/vf_has_static_fonts")
+def test_check_repo_vf_has_static_fonts(check, tmp_path):
     """Check VF family dirs in google/fonts contain static fonts"""
-    check = CheckTester("googlefonts/repo/vf_has_static_fonts")
 
     # in order for this check to work, we need to
     # mimic the folder structure of the Google Fonts repository
@@ -2870,9 +2686,10 @@ def test_check_repo_vf_has_static_fonts(tmp_path):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_repo_upstream_yaml_has_required_fields():
+@check_id("googlefonts/repo/upstream_yaml_has_required_fields")
+def test_check_repo_upstream_yaml_has_required_fields(check):
     """Check upstream.yaml has all required fields"""
-    check = CheckTester("googlefonts/repo/upstream_yaml_has_required_fields")
+
     upstream_yaml = {
         "branch": "main",
         "files": {"TestFamily-Regular.ttf": "TestFamily-Regular.ttf"},
@@ -2894,9 +2711,9 @@ def test_check_repo_upstream_yaml_has_required_fields():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_repo_fb_report(tmp_path):
+@check_id("googlefonts/repo/fb_report")
+def test_check_repo_fb_report(check, tmp_path):
     """A font repository should not include FontBakery report files"""
-    check = CheckTester("googlefonts/repo/fb_report")
 
     family_dir = tmp_path / "repo_fb_report"
     family_dir.mkdir()
@@ -2946,9 +2763,9 @@ def test_check_repo_fb_report(tmp_path):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_repo_zip_files(tmp_path):
+@check_id("googlefonts/repo/zip_files")
+def test_check_repo_zip_files(check, tmp_path):
     """A font repository should not include ZIP files"""
-    check = CheckTester("googlefonts/repo/zip_files")
 
     family_dir = tmp_path / "repo_zip_files"
     family_dir.mkdir()
@@ -2976,9 +2793,8 @@ def test_check_repo_zip_files(tmp_path):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_vertical_metrics(requests_mock):
-    check = CheckTester("googlefonts/vertical_metrics")
-
+@check_id("googlefonts/vertical_metrics")
+def test_check_vertical_metrics(check, requests_mock):
     requests_mock.get(
         "http://fonts.google.com/metadata/fonts",
         json={
@@ -3109,9 +2925,8 @@ def test_check_vertical_metrics(requests_mock):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_vertical_metrics_regressions():
-    check = CheckTester("googlefonts/vertical_metrics_regressions")
-
+@check_id("googlefonts/vertical_metrics_regressions")
+def test_check_vertical_metrics_regressions(check):
     def new_context():
         context = MockContext(
             testables=[Font(x) for x in cabin_fonts], config={"skip_network": False}
@@ -3253,9 +3068,8 @@ def test_check_vertical_metrics_regressions():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_cjk_vertical_metrics(requests_mock):
-    check = CheckTester("googlefonts/cjk_vertical_metrics")
-
+@check_id("googlefonts/cjk_vertical_metrics")
+def test_check_cjk_vertical_metrics(check, requests_mock):
     requests_mock.get(
         "http://fonts.google.com/metadata/fonts",
         json={
@@ -3341,11 +3155,10 @@ def test_check_cjk_vertical_metrics(requests_mock):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_cjk_vertical_metrics_regressions():
+@check_id("googlefonts/cjk_vertical_metrics_regressions")
+def test_check_cjk_vertical_metrics_regressions(check):
     # TODO: try to remove deepcopy usage
     from copy import deepcopy
-
-    check = CheckTester("googlefonts/cjk_vertical_metrics_regressions")
 
     ttFont = TTFont(cjk_font)
     regular_remote_style = deepcopy(ttFont)
@@ -3399,9 +3212,8 @@ def test_check_cjk_vertical_metrics_regressions():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_varfont_instance_coordinates(vf_ttFont):
-    check = CheckTester("googlefonts/fvar_instances")
-
+@check_id("googlefonts/fvar_instances")
+def test_check_varfont_instance_coordinates(check, vf_ttFont):
     # OpenSans-Roman-VF is correct
     assert_PASS(
         check(vf_ttFont), "with a variable font which has correct instance coordinates."
@@ -3422,9 +3234,8 @@ def test_check_varfont_instance_coordinates(vf_ttFont):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_varfont_instance_names(vf_ttFont):
-    check = CheckTester("googlefonts/fvar_instances")
-
+@check_id("googlefonts/fvar_instances")
+def test_check_varfont_instance_names(check, vf_ttFont):
     assert_PASS(
         check(vf_ttFont), "with a variable font which has correct instance names."
     )
@@ -3455,12 +3266,20 @@ def test_check_varfont_instance_names(vf_ttFont):
         "bad-fvar-instances",
         "with a variable font which does not have correct instance names.",
     )
+    # Let's see if the check is skipped if a font contains a MORF axis.
+    # We allow fonts with a MORF axis to have custom fvar instances.
+    from fontTools.ttLib.tables._f_v_a_r import Axis
+
+    vf_ttFont3 = copy(vf_ttFont)
+    morf_axis = Axis()
+    morf_axis.axisTag = "MORF"
+    vf_ttFont3["fvar"].axes.append(morf_axis)
+    assert_SKIP(check(vf_ttFont3))
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_varfont_duplicate_instance_names(vf_ttFont):
-    check = CheckTester("googlefonts/varfont/duplicate_instance_names")
-
+@check_id("googlefonts/varfont/duplicate_instance_names")
+def test_check_varfont_duplicate_instance_names(check, vf_ttFont):
     assert_PASS(
         check(vf_ttFont), "with a variable font which has unique instance names."
     )
@@ -3496,9 +3315,9 @@ def test_check_varfont_duplicate_instance_names(vf_ttFont):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_gfaxisregistry_bounds():
+@check_id("googlefonts/metadata/axisregistry_bounds")
+def test_check_gfaxisregistry_bounds(check):
     """Validate METADATA.pb axes values are within gf_axisregistry bounds."""
-    check = CheckTester("googlefonts/metadata/axisregistry_bounds")
 
     # Our reference varfont, CabinVF, has good axes bounds:
     font = TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")
@@ -3522,9 +3341,9 @@ def test_check_gfaxisregistry_bounds():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_gf_axisregistry_valid_tags():
+@check_id("googlefonts/metadata/axisregistry_valid_tags")
+def test_check_gf_axisregistry_valid_tags(check):
     """Validate METADATA.pb axes tags are defined in gf_axisregistry."""
-    check = CheckTester("googlefonts/metadata/axisregistry_valid_tags")
 
     # The axis tags in our reference varfont, CabinVF,
     # are properly defined in the registry:
@@ -3532,18 +3351,18 @@ def test_check_gf_axisregistry_valid_tags():
     assert_PASS(check(font))
 
     md = Font(font).family_metadata
-    md.axes[0].tag = (
-        "crap"  # I'm pretty sure this one wont ever be included in the registry
-    )
+    md.axes[
+        0
+    ].tag = "crap"  # I'm pretty sure this one wont ever be included in the registry
     assert_results_contain(
         check(MockFont(file=font, family_metadata=md)), FAIL, "bad-axis-tag"
     )
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_gf_axisregistry_fvar_axis_defaults():
+@check_id("googlefonts/axisregistry/fvar_axis_defaults")
+def test_check_gf_axisregistry_fvar_axis_defaults(check):
     """Validate METADATA.pb axes tags are defined in gf_axisregistry."""
-    check = CheckTester("googlefonts/axisregistry/fvar_axis_defaults")
 
     # The default value for the axes in this reference varfont
     # are properly registered in the registry:
@@ -3556,11 +3375,11 @@ def test_check_gf_axisregistry_fvar_axis_defaults():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_STAT_gf_axisregistry():
-    """
-    Validate STAT particle names and values match the fallback names in GFAxisRegistry.
-    """
-    check = CheckTester("googlefonts/STAT/axisregistry")
+@check_id("googlefonts/STAT/axisregistry")
+def test_check_STAT_gf_axisregistry(check):
+    """Validate STAT particle names and values
+    match the fallback names in GFAxisRegistry."""
+    from fontTools.otlLib.builder import buildStatTable
 
     # Our reference varfont, CabinVF,
     # has "Regular", instead of "Roman" in its 'ital' axis on the STAT table:
@@ -3588,11 +3407,38 @@ def test_check_STAT_gf_axisregistry():
     ttFont["STAT"].table.AxisValueArray = None
     assert_results_contain(check(ttFont), FAIL, "missing-axis-values")
 
+    # Let's add a MORF Axis with custom axisvalues
+    stat = [
+        {
+            "tag": "MORF",
+            "name": "Morph",
+            "values": [
+                {"name": "Foo", "value": 0},
+                {"name": "Bar", "value": 100},
+            ],
+        },
+        {
+            "tag": "wght",
+            "name": "Weight",
+            "values": [
+                {"name": "Regular", "value": 400, "flags": 0x2},
+                {"name": "Bold", "value": 700},
+            ],
+        },
+    ]
+    buildStatTable(ttFont, stat)
+    assert_PASS(check(ttFont))
+
+    # Let's make a weight axisvalue incorrect.
+    stat[1]["values"][1]["value"] = 800
+    buildStatTable(ttFont, stat)
+    assert_results_contain(check(ttFont), FAIL, "bad-coordinate")
+
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_consistent_axis_enumeration():
+@check_id("googlefonts/metadata/consistent_axis_enumeration")
+def test_check_metadata_consistent_axis_enumeration(check):
     """Validate VF axes match the ones declared on METADATA.pb."""
-    check = CheckTester("googlefonts/metadata/consistent_axis_enumeration")
 
     # The axis tags of CabinVF,
     # are properly declared on its METADATA.pb:
@@ -3600,7 +3446,9 @@ def test_check_metadata_consistent_axis_enumeration():
     assert_PASS(check(font))
 
     md = Font(font).family_metadata
-    md.axes[1].tag = (
+    md.axes[
+        1
+    ].tag = (
         "wdth"  # this effectively removes the "wght" axis while not adding an extra one
     )
     assert_results_contain(
@@ -3614,9 +3462,9 @@ def test_check_metadata_consistent_axis_enumeration():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_STAT_axis_order():
+@check_id("googlefonts/STAT/axis_order")
+def test_check_STAT_axis_order(check):
     """Check axis ordering on the STAT table."""
-    check = CheckTester("googlefonts/STAT/axis_order")
 
     fonts = [TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")]
     assert_results_contain(check(fonts), INFO, "summary")
@@ -3631,9 +3479,9 @@ def test_check_STAT_axis_order():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_escaped_strings():
+@check_id("googlefonts/metadata/escaped_strings")
+def test_check_metadata_escaped_strings(check):
     """Ensure METADATA.pb does not use escaped strings."""
-    check = CheckTester("googlefonts/metadata/escaped_strings")
 
     good = TEST_FILE("issue_2932/good/SomeFont-Regular.ttf")
     assert_PASS(check(good))
@@ -3643,10 +3491,10 @@ def test_check_metadata_escaped_strings():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_designer_profiles(requests_mock):
+@check_id("googlefonts/metadata/designer_profiles")
+def test_check_metadata_designer_profiles(check, requests_mock):
     """METADATA.pb: Designer is listed with the correct name on
     the Google Fonts catalog of designers?"""
-    check = CheckTester("googlefonts/metadata/designer_profiles")
 
     requests_mock.get(
         "https://raw.githubusercontent.com/google/fonts/master/"
@@ -3691,11 +3539,10 @@ def test_check_metadata_designer_profiles(requests_mock):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_description_family_update(requests_mock):
-    """
-    On a family update, the DESCRIPTION.en_us.html file should ideally also be updated.
-    """
-    check = CheckTester("googlefonts/description/family_update")
+@check_id("googlefonts/description/family_update")
+def test_check_description_family_update(check, requests_mock):
+    """On a family update, the DESCRIPTION.en_us.html
+    file should ideally also be updated."""
 
     font = TEST_FILE("abeezee/ABeeZee-Regular.ttf")
     ABEEZEE_DESC = (
@@ -3713,10 +3560,10 @@ def test_check_description_family_update(requests_mock):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_os2_use_typo_metrics():
+@check_id("googlefonts/os2/use_typo_metrics")
+def test_check_os2_use_typo_metrics(check):
     """All non-CJK fonts checked with the googlefonts profile
     should have OS/2.fsSelection bit 7 (USE TYPO METRICS) set."""
-    check = CheckTester("googlefonts/os2/use_typo_metrics")
 
     ttFont = TTFont(TEST_FILE("abeezee/ABeeZee-Regular.ttf"))
     fsel = ttFont["OS/2"].fsSelection
@@ -3731,9 +3578,9 @@ def test_check_os2_use_typo_metrics():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_os2_use_typo_metrics_with_cjk():
+@check_id("googlefonts/os2/use_typo_metrics")
+def test_check_os2_use_typo_metrics_with_cjk(check):
     """All CJK fonts checked with the googlefonts profile should skip this check"""
-    check = CheckTester("googlefonts/os2/use_typo_metrics")
 
     tt_pass_clear = TTFont(TEST_FILE("cjk/SourceHanSans-Regular.otf"))
     tt_pass_set = TTFont(TEST_FILE("cjk/SourceHanSans-Regular.otf"))
@@ -3756,9 +3603,9 @@ def test_check_os2_use_typo_metrics_with_cjk():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_meta_script_lang_tags():
+@check_id("googlefonts/meta/script_lang_tags")
+def test_check_meta_script_lang_tags(check):
     """Ensure font has ScriptLangTags in the 'meta' table."""
-    check = CheckTester("googlefonts/meta/script_lang_tags")
 
     # This sample font from the Noto project declares
     # the script/lang tags in the meta table correctly:
@@ -3777,9 +3624,9 @@ def test_check_meta_script_lang_tags():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_family_directory_name():
+@check_id("googlefonts/metadata/family_directory_name")
+def test_check_metadata_family_directory_name(check):
     """Check family directory name."""
-    check = CheckTester("googlefonts/metadata/family_directory_name")
 
     font = TEST_FILE("overpassmono/OverpassMono-Regular.ttf")
     assert_PASS(check(font))
@@ -3796,9 +3643,9 @@ def test_check_metadata_family_directory_name():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_repo_sample_image():
+@check_id("googlefonts/repo/sample_image")
+def test_check_repo_sample_image(check):
     """Check README.md has a sample image."""
-    check = CheckTester("googlefonts/repo/sample_image")
 
     # That's what we'd like to see:
     # README.md including a sample image and highlighting it in the
@@ -3850,9 +3697,9 @@ def test_check_metadata_can_render_samples(check, tmp_path):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_description_urls():
+@check_id("googlefonts/description/urls")
+def test_check_description_urls(check):
     """URLs on DESCRIPTION file must not display http(s) prefix."""
-    check = CheckTester("googlefonts/description/urls")
 
     font = TEST_FILE("librecaslontext/LibreCaslonText[wght].ttf")
     assert_PASS(check(font))
@@ -3870,9 +3717,9 @@ def test_check_description_urls():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_unsupported_subsets():
+@check_id("googlefonts/metadata/unsupported_subsets")
+def test_check_metadata_unsupported_subsets(check):
     """Check for METADATA subsets with zero support."""
-    check = CheckTester("googlefonts/metadata/unsupported_subsets")
 
     font = TEST_FILE("librecaslontext/LibreCaslonText[wght].ttf")
     assert_PASS(check(font))
@@ -3891,11 +3738,10 @@ def test_check_metadata_unsupported_subsets():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_category_hints():
-    """
-    Check if category on METADATA.pb matches what can be inferred from the family name.
-    """
-    check = CheckTester("googlefonts/metadata/category_hints")
+@check_id("googlefonts/metadata/category_hints")
+def test_check_metadata_category_hints(check):
+    """Check if category on METADATA.pb matches
+    what can be inferred from the family name."""
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
     assert_PASS(check(font), "with a familyname without any of the keyword hints...")
@@ -3947,11 +3793,11 @@ def test_check_metadata_category_hints():
     ],
 )
 @pytest.mark.skip("Check not ported yet.")
-def test_check_fvar_instances(fp, mod, result):
+@check_id("googlefonts/fvar_instances")
+def test_check_fvar_instances(check, fp, mod, result):
     """Check font fvar instances are correct"""
     from fontTools.ttLib.tables._f_v_a_r import NamedInstance
 
-    check = CheckTester("googlefonts/fvar_instances")
     ttFont = TTFont(fp)
     expected = expected_font_names(ttFont, [])
     if mod:
@@ -3999,9 +3845,10 @@ def test_check_fvar_instances(fp, mod, result):
     ],
 )
 @pytest.mark.skip("Check not ported yet.")
-def test_check_axes_match(fp, mod, result, code):
+@check_id("googlefonts/axes_match")
+def test_check_axes_match(check, fp, mod, result, code):
     """Check if the axes match between the font and the Google Fonts version."""
-    check = CheckTester("googlefonts/axes_match")
+
     ttFont = TTFont(fp)
     if mod:
         name, min_val, max_val = mod
@@ -4085,14 +3932,14 @@ def test_check_axes_match(fp, mod, result, code):
     ],
 )
 @pytest.mark.skip("Check not ported yet.")
-def test_check_STAT(fps, new_stat, result):
+@check_id("googlefonts/STAT")
+def test_check_STAT(check, fps, new_stat, result):
     """Check STAT table Axis Values are correct"""
     # more comprehensive checks are available in the axisregistry:
     # https://github.com/googlefonts/axisregistry/blob/main/tests/test_names.py#L442
     # this check merely exists to check that everything is hooked up correctly
     from fontTools.otlLib.builder import buildStatTable
 
-    check = CheckTester("googlefonts/STAT")
     ttFonts = [TTFont(f) for f in fps]
     ttFont = ttFonts[0]
     expected = expected_font_names(ttFont, ttFonts)
@@ -4114,10 +3961,10 @@ def test_check_STAT(fps, new_stat, result):
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_description_has_article():
+@check_id("googlefonts/description/has_article")
+def test_check_description_has_article(check):
     """Noto fonts must have an ARTICLE.en_us.html file, others with an
     article should have an empty DESCRIPTION"""
-    check = CheckTester("googlefonts/description/has_article")
 
     font = TEST_FILE("notosanskhudawadi/NotoSansKhudawadi-Regular.ttf")
     assert_PASS(check(font), "with a good font")
@@ -4135,9 +3982,10 @@ def test_check_description_has_article():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_description_has_unsupported_elements():
+@check_id("googlefonts/description/has_unsupported_elements")
+def test_check_description_has_unsupported_elements(check):
     """Check the description doesn't contain unsupported html elements"""
-    check = CheckTester("googlefonts/description/has_unsupported_elements")
+
     font = TEST_FILE("librecaslontext/LibreCaslonText[wght].ttf")
     assert_PASS(check(font))
 
@@ -4148,12 +3996,9 @@ def test_check_description_has_unsupported_elements():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_italic_axis_in_stat_is_boolean():
+@check_id("opentype/italic_axis_in_stat_is_boolean", profile=googlefonts_profile)
+def test_check_italic_axis_in_stat_is_boolean(check):
     """Ensure 'ital' STAT axis is boolean value"""
-    check = CheckTester(
-        "opentype/italic_axis_in_stat_is_boolean",
-        profile=googlefonts_profile,
-    )
 
     # PASS
     font = TEST_FILE("shantell/ShantellSans[BNCE,INFM,SPAC,wght].ttf")
@@ -4190,9 +4035,9 @@ def test_check_italic_axis_in_stat_is_boolean():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_italic_axis_last():
+@check_id("opentype/italic_axis_last", profile=googlefonts_profile)
+def test_check_italic_axis_last(check):
     """Ensure 'ital' STAT axis is boolean value"""
-    check = CheckTester("opentype/italic_axis_last", profile=googlefonts_profile)
 
     font = TEST_FILE("shantell/ShantellSans-Italic[BNCE,INFM,SPAC,wght].ttf")
     ttFont = TTFont(font)
@@ -4207,9 +4052,9 @@ def test_check_italic_axis_last():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_unreachable_subsetting():
+@check_id("googlefonts/metadata/unreachable_subsetting")
+def test_check_metadata_unreachable_subsetting(check):
     """Check for codepoints not covered by METADATA subsetting"""
-    check = CheckTester("googlefonts/metadata/unreachable_subsetting")
 
     font = TEST_FILE("notosanskhudawadi/NotoSansKhudawadi-Regular.ttf")
     assert_PASS(check(font), "with a good font")
@@ -4229,9 +4074,9 @@ def test_check_metadata_unreachable_subsetting():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_alt_caron():
+@check_id("alt_caron", profile=googlefonts_profile)
+def test_check_alt_caron(check):
     """Check accent of Lcaron, dcaron, lcaron, tcaron"""
-    check = CheckTester("alt_caron", profile=googlefonts_profile)
 
     ttFont = TTFont(TEST_FILE("annie/AnnieUseYourTelescope-Regular.ttf"))
     assert_results_contain(
@@ -4248,9 +4093,9 @@ def test_check_alt_caron():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_shape_languages():
+@check_id("googlefonts/glyphsets/shape_languages")
+def test_check_shape_languages(check):
     """Shapes languages in all GF glyphsets."""
-    check = CheckTester("googlefonts/glyphsets/shape_languages")
 
     #    FIXME: With the latest version of shaperglot (v0.6.3), our reference
     #    Cabin-Regular.ttf is not fully passing anymore:
@@ -4265,10 +4110,10 @@ def test_check_shape_languages():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_varfont_bold_wght_coord():
+@check_id("googlefonts/varfont/bold_wght_coord")
+def test_check_varfont_bold_wght_coord(check):
     """The variable font 'wght' (Weight) axis coordinate
     must be 700 on the 'Bold' instance."""
-    check = CheckTester("googlefonts/varfont/bold_wght_coord")
 
     # Our reference varfont CabinVFBeta.ttf
     # has a good Bold:wght coordinate
@@ -4289,9 +4134,9 @@ def test_check_varfont_bold_wght_coord():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_metadata_minisite_url():
+@check_id("googlefonts/metadata/minisite_url")
+def test_check_metadata_minisite_url(check):
     """Validate minisite_url field"""
-    check = CheckTester("googlefonts/metadata/minisite_url")
 
     font = "data/test/merriweather/Merriweather-Regular.ttf"
     assert_results_contain(check(font), INFO, "lacks-minisite-url")
@@ -4326,9 +4171,9 @@ def test_check_metadata_minisite_url():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_linegaps():
+@check_id("linegaps", profile=googlefonts_profile)
+def test_check_linegaps(check):
     """Checking Vertical Metric Linegaps."""
-    check = CheckTester("linegaps", profile=googlefonts_profile)
 
     # Our reference Mada Regular is know to be bad here.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -4357,9 +4202,9 @@ def test_check_linegaps():
 
 
 @pytest.mark.skip("Check not ported yet.")
-def test_check_article_images():
+@check_id("googlefonts/article/images", profile=googlefonts_profile)
+def test_check_article_images(check):
     """Test article page visual content, length requirements, and image properties."""
-    check = CheckTester("googlefonts/article/images", profile=googlefonts_profile)
 
     # Test case for missing ARTICLE
     family_directory = portable_path("data/test/missing_article")
