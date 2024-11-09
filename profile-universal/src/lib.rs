@@ -8,16 +8,20 @@ impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
         cr.register_check(checks::case_mapping::case_mapping);
+        cr.register_check(checks::consistent_axes::consistent_axes);
+        cr.register_check(checks::fvar_name_entries::fvar_name_entries);
         cr.register_check(checks::glyphnames::valid_glyphnames);
         cr.register_check(checks::glyphset::check_rupee);
         cr.register_check(checks::name_italic_names::name_italic_names);
         cr.register_check(
             checks::name_no_copyright_on_description::name_no_copyright_on_description,
         );
+        cr.register_check(checks::mandatory_avar_table::mandatory_avar_table);
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::stylistic_sets::stylisticset_description);
         cr.register_check(checks::transformed_components::transformed_components);
+        cr.register_check(checks::unsupported_axes::unsupported_axes);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
         cr.register_check(checks::whitespace_ink::whitespace_ink);
         cr.register_check(checks::whitespace_glyphs::whitespace_glyphs);
