@@ -760,7 +760,6 @@ def test_check_unreachable_glyphs(check):
     assert_PASS(check(ttFont))
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("soft_hyphen")
 def test_check_soft_hyphen(montserrat_ttFonts, check):
     """Check glyphs contain the recommended contour count"""

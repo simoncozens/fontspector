@@ -20,6 +20,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::sfnt_version::sfnt_version);
+        cr.register_check(checks::soft_hyphen::soft_hyphen);
         cr.register_check(checks::stylistic_sets::stylisticset_description);
         cr.register_check(checks::transformed_components::transformed_components);
         cr.register_check(checks::unsupported_axes::unsupported_axes);
