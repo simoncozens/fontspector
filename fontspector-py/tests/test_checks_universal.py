@@ -885,7 +885,6 @@ def test_check_freetype_rasterizer(check):
     assert_PASS(check(font), "with a good font...")
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("sfnt_version")
 def test_check_sfnt_version(check):
     """Ensure that the font has the proper sfntVersion value."""
@@ -907,7 +906,7 @@ def test_check_sfnt_version(check):
     ttFont.sfntVersion = "\x00\x01\x00\x00"
     msg = assert_results_contain(check(ttFont), FAIL, "wrong-sfnt-version-cff")
     assert msg == (
-        "Font with CFF data has incorrect sfntVersion value: '\x00\x01\x00\x00'"
+        "Font with CFF data has incorrect sfntVersion value: '\\x00\\x01\\x00\\x00'"
     )
 
     # Valid CFF2 font; the check must PASS.
@@ -918,7 +917,7 @@ def test_check_sfnt_version(check):
     ttFont.sfntVersion = "\x00\x01\x00\x00"
     msg = assert_results_contain(check(ttFont), FAIL, "wrong-sfnt-version-cff")
     assert msg == (
-        "Font with CFF data has incorrect sfntVersion value: '\x00\x01\x00\x00'"
+        "Font with CFF data has incorrect sfntVersion value: '\\x00\\x01\\x00\\x00'"
     )
 
 

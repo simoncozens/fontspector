@@ -9,6 +9,7 @@ pub mod name_italic_names;
 pub mod name_no_copyright_on_description;
 pub mod name_trailing_spaces;
 pub mod required_tables;
+pub mod sfnt_version;
 pub mod stylistic_sets;
 pub mod transformed_components;
 pub mod unsupported_axes;
