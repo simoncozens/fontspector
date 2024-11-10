@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 pub const RIBBI_STYLE_NAMES: [&str; 5] = ["Regular", "Italic", "Bold", "BoldItalic", "Bold Italic"];
 pub const STATIC_STYLE_NAMES: [&str; 18] = [
     "Thin",
@@ -104,4 +106,27 @@ pub const VALID_FEATURE_TAGS: [&str; 122] = [
     "smcp", "smpl", "ssty", "stch", "subs", "sups", "swsh", "titl", "tjmo", "tnam", "tnum", "trad",
     "twid", "unic", "valt", "vatu", "vchw", "vert", "vhal", "vjmo", "vkna", "vkrn", "vpal", "vrt2",
     "vrtr", "zero",
+];
+
+pub const CJK_UNICODE_RANGES: [Range<u32>; 20] = [
+    0x1100..0x11FF,   // Hangul Jamo
+    0x3040..0x309F,   // Hiragana
+    0x30A0..0x30FF,   // Katakana
+    0x31F0..0x31FF,   // Katakana Phonetic Extensions
+    0x3100..0x312F,   // Bopomofo
+    0x31A0..0x31BF,   // Bopomofo Extended (Bopomofo)
+    0x3130..0x318F,   // Hangul Compatibility Jamo
+    0x3200..0x32FF,   // Enclosed CJK Letters and Months
+    0x3300..0x33FF,   // CJK Compatibility
+    0xAC00..0xD7AF,   // Hangul Syllables
+    0x4E00..0x9FFF,   // CJK Unified Ideographs
+    0x2E80..0x2EFF,   // CJK Radicals Supplement (CJK Unified Ideographs)
+    0x2F00..0x2FDF,   // Kangxi Radicals (CJK Unified Ideographs)
+    0x2FF0..0x2FFF,   // Ideographic Description Characters (CJK Unified Ideographs)
+    0x3400..0x4DBF,   // CJK Unified Ideographs Extension A (CJK Unified Ideographs)
+    0x20000..0x2A6DF, // CJK Unified Ideographs Extension B (CJK Unified Ideographs)
+    0x3190..0x319F,   // Kanbun (CJK Unified Ideographs)
+    0x31C0..0x31EF,   // CJK Strokes
+    0xF900..0xFAFF,   // CJK Compatibility Ideographs (CJK Strokes)
+    0x2F800..0x2FA1F, // CJK Compatibility Ideographs Supplement (CJK Strokes)
 ];

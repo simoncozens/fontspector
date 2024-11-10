@@ -329,4 +329,18 @@ impl TestFont<'_> {
     pub fn all_glyphs(&self) -> impl Iterator<Item = GlyphId> {
         (0..self.glyph_count as u32).map(GlyphId::from)
     }
+
+    pub fn is_cjk_font(&self) -> bool {
+        self.codepoints()
+            .into_iter()
+            .filter(|&cp| is_cjk(cp))
+            .count()
+            > 150
+    }
+}
+
+fn is_cjk(cp: u32) -> bool {
+    crate::constants::CJK_UNICODE_RANGES
+        .iter()
+        .any(|range| range.contains(&cp))
 }
