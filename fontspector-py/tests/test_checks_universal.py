@@ -6,7 +6,7 @@ from fontTools.ttLib import TTFont
 import pytest
 import requests
 
-from fontbakery.status import INFO, WARN, FAIL, SKIP
+from fontbakery.status import INFO, WARN, FAIL, SKIP, ERROR
 from fontbakery.codetesting import (
     assert_PASS,
     assert_SKIP,
@@ -565,7 +565,6 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts, check):
     assert message == "Font file lacks OS/2 table"
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("os2_metrics_match_hhea")
 def test_check_os2_metrics_match_hhea(check):
     """Checking OS/2 Metrics match hhea Metrics."""
@@ -602,8 +601,7 @@ def test_check_os2_metrics_match_hhea(check):
 
     # Delete OS/2 table
     del ttFont["OS/2"]
-    message = assert_results_contain(check(ttFont), FAIL, "lacks-OS/2")
-    assert message == "Mada-Black.ttf lacks a 'OS/2' table."
+    assert check(ttFont)[0].status == ERROR
 
 
 @pytest.mark.skip(reason="Check not yet implemented")
