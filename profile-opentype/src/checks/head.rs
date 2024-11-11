@@ -4,15 +4,15 @@ use skrifa::MetadataProvider;
 
 #[check(
     id = "opentype/font_version",
-    proposal = "legacy:check/044",
     title = "Checking font version fields (head and name table).",
     rationale = "
-    The OpenType specification provides for two fields which contain
-    the version number of the font: fontRevision in the head table,
-    and nameID 5 in the name table. If these fields do not match,
-    different applications will report different version numbers for
-    the font.
-    "
+        The OpenType specification provides for two fields which contain
+        the version number of the font: fontRevision in the head table,
+        and nameID 5 in the name table. If these fields do not match,
+        different applications will report different version numbers for
+        the font.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
 )]
 fn font_version(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
@@ -70,13 +70,13 @@ fn font_version(f: &Testable, _context: &Context) -> CheckFnResult {
 
 #[check(
     id = "opentype/mac_style",
-    proposal = "legacy:check/031",
     title = "Checking head.macStyle value.",
     rationale = "
-    The values of the flags on the macStyle entry on the 'head' OpenType table
-    that describe whether a font is bold and/or italic must be coherent with the
-    actual style of the font as inferred by its filename.
-    "
+        The values of the flags on the macStyle entry on the 'head' OpenType table
+        that describe whether a font is bold and/or italic must be coherent with the
+        actual style of the font as inferred by its filename.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
 )]
 fn mac_style(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
@@ -115,20 +115,20 @@ fn mac_style(f: &Testable, _context: &Context) -> CheckFnResult {
 
 #[check(
     id = "opentype/unitsperem",
-    proposal = "legacy:check/043",
     title = "Checking unitsPerEm value is reasonable.",
     rationale = "
-    According to the OpenType spec:
+        According to the OpenType spec:
 
-    The value of unitsPerEm at the head table must be a value
-    between 16 and 16384. Any value in this range is valid.
+        The value of unitsPerEm at the head table must be a value
+        between 16 and 16384. Any value in this range is valid.
 
-    In fonts that have TrueType outlines, a power of 2 is recommended
-    as this allows performance optimizations in some rasterizers.
+        In fonts that have TrueType outlines, a power of 2 is recommended
+        as this allows performance optimizations in some rasterizers.
 
-    But 1000 is a commonly used value. And 2000 may become
-    increasingly more common on Variable Fonts.
-    "
+        But 1000 is a commonly used value. And 2000 may become
+        increasingly more common on Variable Fonts.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
 )]
 fn unitsperem(f: &Testable, _context: &Context) -> CheckFnResult {
     match testfont!(f).font().head()?.units_per_em() {
@@ -155,7 +155,7 @@ fn unitsperem(f: &Testable, _context: &Context) -> CheckFnResult {
     id = "opentype/family/equal_font_versions",
     title = "Make sure all font files have the same version value.",
     rationale = "Within a family released at the same time, all members of the family should have the same version number in the head table.",
-    proposal = "legacy:check/014",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
     implementation = "all"
 )]
 fn equal_font_versions(c: &TestableCollection, context: &Context) -> CheckFnResult {

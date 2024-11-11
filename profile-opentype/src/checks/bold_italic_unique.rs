@@ -13,7 +13,7 @@ use read_fonts::tables::os2::SelectionFlags;
         This four-way distinction should also be reflected in the OS/2.fsSelection
         field, using bits 0 and 5.
     ",
-    proposal = "legacy:check/153",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
     implementation = "all"
 )]
 fn bold_italic_unique(c: &TestableCollection, _context: &Context) -> CheckFnResult {
