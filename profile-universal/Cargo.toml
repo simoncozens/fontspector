@@ -8,6 +8,7 @@ authors =  [
 ]
 
 [dependencies]
+interpolatable = { git = "https://github.com/simoncozens/interpolatable", features = [ "skrifa"]} # For interpolation_issues
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 fontspector-checkhelper = { workspace = true }
 read-fonts = {workspace = true}

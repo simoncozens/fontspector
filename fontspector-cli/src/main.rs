@@ -12,7 +12,6 @@ use fontbakery_bridge::FontbakeryBridge;
 use fontspector_checkapi::{
     Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
 };
-#[cfg(debug_assertions)]
 use itertools::Either;
 use profile_googlefonts::GoogleFonts;
 use profile_opentype::OpenType;
@@ -23,6 +22,8 @@ use reporters::{
 };
 use serde_json::Map;
 
+#[cfg(not(debug_assertions))]
+use indicatif::ParallelProgressIterator;
 #[cfg(debug_assertions)]
 use indicatif::ProgressIterator;
 #[cfg(not(debug_assertions))]
@@ -220,10 +221,12 @@ fn main() {
     } else {
         Either::Right(checkorder.iter().progress())
     };
-    // No progress bar for parallel, for psychological reasons.
-    // (Progress bars make slow tasks seem faster, but make fast tasks seem slower. ;-)
     #[cfg(not(debug_assertions))]
-    let checkorder_iterator = checkorder.par_iter();
+    let checkorder_iterator = if checkorder.clone().len() > 100_000 && !args.quiet {
+        Either::Left(checkorder.par_iter().progress())
+    } else {
+        Either::Right(checkorder.par_iter())
+    };
 
     #[allow(clippy::unwrap_used)] // We check for is_some before unwrapping
     let results: RunResults = checkorder_iterator

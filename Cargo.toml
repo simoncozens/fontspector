@@ -20,8 +20,8 @@ default-members = ["fontspector-cli"]
 pluginator = "1.0.1"
 
 # Font-related deps
-read-fonts = "0.23.1"
-skrifa = "0.24.0"
+read-fonts = "0.23.2"
+skrifa = "0.24.1"
 write-fonts = "0.30.0"
 # Don't use font-types! Use the re-exported types from read-fonts instead.
 unicode-properties = "0.1.3"

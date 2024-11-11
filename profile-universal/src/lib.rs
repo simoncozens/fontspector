@@ -12,6 +12,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::fvar_name_entries::fvar_name_entries);
         cr.register_check(checks::glyphnames::valid_glyphnames);
         cr.register_check(checks::glyphset::check_rupee);
+        cr.register_check(checks::interpolation_issues::interpolation_issues);
         cr.register_check(checks::name_italic_names::name_italic_names);
         cr.register_check(
             checks::name_no_copyright_on_description::name_no_copyright_on_description,

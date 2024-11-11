@@ -59,10 +59,8 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
         let matches = RFN_RE.captures(&name_string);
 
         if matches.is_some() {
-            println!("WHAT: {:?}", matches);
             #[allow(clippy::expect_used)]
             let rfn = &matches.expect("wont happen")[1];
-            println!("Found rfn {:} in {}", rfn, name_string);
 
             if familyname.contains(rfn) {
                 problems.push(Status::fail(
