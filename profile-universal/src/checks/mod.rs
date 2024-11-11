@@ -16,6 +16,7 @@ pub mod soft_hyphen;
 pub mod stylistic_sets;
 pub mod transformed_components;
 pub mod unsupported_axes;
+pub mod unwanted_aat_tables;
 pub mod unwanted_tables;
 pub mod whitespace_glyphs;
 pub mod whitespace_ink;
