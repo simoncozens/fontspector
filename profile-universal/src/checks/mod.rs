@@ -4,6 +4,7 @@ pub mod consistent_axes;
 pub mod fvar_name_entries;
 pub mod glyphnames;
 pub mod glyphset;
+pub mod integer_ppem_if_hinted;
 pub mod interpolation_issues;
 pub mod mandatory_avar_table;
 pub mod name_italic_names;
