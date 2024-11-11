@@ -7,21 +7,21 @@ use skrifa::{GlyphId, MetadataProvider};
 
 #[check(
     id = "opentype/fsselection",
-    proposal = "legacy:check/129",
     title = "Checking OS/2 fsSelection value.",
     rationale = "
-    The OS/2.fsSelection field is a bit field used to specify the stylistic
-    qualities of the font - in particular, it specifies to some operating
-    systems whether the font is italic (bit 0), bold (bit 5) or regular
-    (bit 6).
+        The OS/2.fsSelection field is a bit field used to specify the stylistic
+        qualities of the font - in particular, it specifies to some operating
+        systems whether the font is italic (bit 0), bold (bit 5) or regular
+        (bit 6).
 
-    This check verifies that the fsSelection field is set correctly for the
-    font style. For a family of static fonts created in GlyphsApp, this is
-    set by using the style linking checkboxes in the exports settings.
+        This check verifies that the fsSelection field is set correctly for the
+        font style. For a family of static fonts created in GlyphsApp, this is
+        set by using the style linking checkboxes in the exports settings.
 
-    Additionally, the bold and italic bits in OS/2.fsSelection must match
-    the bold and italic bits in head.macStyle per the OpenType spec.
-    "
+        Additionally, the bold and italic bits in OS/2.fsSelection must match
+        the bold and italic bits in head.macStyle per the OpenType spec.
+    ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
 )]
 fn fsselection(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
@@ -74,16 +74,16 @@ fn fsselection(f: &Testable, _context: &Context) -> CheckFnResult {
 
 #[check(
     id = "opentype/family/panose_familytype",
-    proposal = "legacy:check/010",
     title = "Fonts have consistent PANOSE family type?",
     rationale = "
-    The [PANOSE value](https://monotype.github.io/panose/) in the OS/2 table is a
-    way of classifying a font based on its visual appearance and characteristics.
+        The [PANOSE value](https://monotype.github.io/panose/) in the OS/2 table is a
+        way of classifying a font based on its visual appearance and characteristics.
 
-    The first field in the PANOSE classification is the family type: 2 means Latin
-    Text, 3 means Latin Script, 4 means Latin Decorative, 5 means Latin Symbol.
-    This check ensures that within a family, all fonts have the same family type.
+        The first field in the PANOSE classification is the family type: 2 means Latin
+        Text, 3 means Latin Script, 4 means Latin Decorative, 5 means Latin Symbol.
+        This check ensures that within a family, all fonts have the same family type.
     ",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
     implementation = "all"
 )]
 fn panose_familytype(c: &TestableCollection, _context: &Context) -> CheckFnResult {

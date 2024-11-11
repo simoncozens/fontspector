@@ -38,7 +38,7 @@ const OPTIONAL_TABLE_TAGS: [&[u8; 4]; 20] = [
         - A gasp table is necessary if a designer wants to influence the sizes
           at which grayscaling is used under Windows. Etc.
     ",
-    proposal = "legacy:check/052"
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
 )]
 fn required_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);

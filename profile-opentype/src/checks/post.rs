@@ -14,7 +14,7 @@ use read_fonts::{types::FWord, TableProvider};
         If thicknesses are not family consistent, words set on the same line which have
         different styles look strange.
     "#,
-    proposal = "legacy:check/008",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
     implementation = "all"
 )]
 fn underline_thickness(c: &TestableCollection, _context: &Context) -> CheckFnResult {
@@ -78,10 +78,10 @@ fn underline_thickness(c: &TestableCollection, _context: &Context) -> CheckFnRes
         Acceptable post format versions are 2 and 3 for TTF and OTF CFF2 builds,
         and post format 3 for CFF builds.
     "#,
-    proposal = "legacy:check/015
-        https://github.com/google/fonts/issues/215
-        https://github.com/fonttools/fontbakery/issues/263
-        https://github.com/fonttools/fontbakery/issues/3635",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829  // legacy check
+                https://github.com/google/fonts/issues/215
+                https://github.com/fonttools/fontbakery/issues/263
+                https://github.com/fonttools/fontbakery/issues/3635",
     title = "Font has correct post table version?"
 )]
 fn post_table_version(t: &Testable, _context: &Context) -> CheckFnResult {
