@@ -27,6 +27,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::soft_hyphen::soft_hyphen);
         cr.register_check(checks::stylistic_sets::stylisticset_description);
         cr.register_check(checks::transformed_components::transformed_components);
+        cr.register_check(checks::typographic_family_name::typographic_family_name);
         cr.register_check(checks::unsupported_axes::unsupported_axes);
         cr.register_check(checks::unwanted_aat_tables::unwanted_aat_tables);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
