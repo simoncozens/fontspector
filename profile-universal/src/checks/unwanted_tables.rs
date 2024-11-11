@@ -26,7 +26,7 @@ The current recommendation is to completely remove the DSIG table."),
     id = "unwanted_tables",
     title = "Are there unwanted tables?",
     rationale = "Some font editors store source data in their own SFNT tables, and these can sometimes sneak into final release files, which should only have OpenType spec tables.",
-    proposal = "legacy:check/053",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
     hotfix = delete_unwanted_tables
 )]
 fn unwanted_tables(t: &Testable, _context: &Context) -> CheckFnResult {
