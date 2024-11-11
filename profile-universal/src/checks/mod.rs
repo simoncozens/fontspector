@@ -6,6 +6,7 @@ pub mod glyphnames;
 pub mod glyphset;
 pub mod integer_ppem_if_hinted;
 pub mod interpolation_issues;
+pub mod linegaps;
 pub mod mandatory_avar_table;
 pub mod name_italic_names;
 pub mod name_no_copyright_on_description;
