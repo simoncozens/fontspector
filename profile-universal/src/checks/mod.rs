@@ -1,6 +1,7 @@
 pub mod arabic_spacing_symbols;
 pub mod case_mapping;
 pub mod consistent_axes;
+pub mod control_chars;
 pub mod fvar_name_entries;
 pub mod glyphnames;
 pub mod glyphset;
@@ -12,6 +13,7 @@ pub mod name_italic_names;
 pub mod name_no_copyright_on_description;
 pub mod name_trailing_spaces;
 pub mod os2_metrics_match_hhea;
+pub mod render_own_name;
 pub mod required_tables;
 pub mod sfnt_version;
 pub mod soft_hyphen;

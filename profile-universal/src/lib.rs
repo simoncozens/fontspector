@@ -9,6 +9,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
         cr.register_check(checks::case_mapping::case_mapping);
         cr.register_check(checks::consistent_axes::consistent_axes);
+        cr.register_check(checks::control_chars::control_chars);
         cr.register_check(checks::fvar_name_entries::fvar_name_entries);
         cr.register_check(checks::glyphnames::valid_glyphnames);
         cr.register_check(checks::glyphset::check_rupee);
@@ -22,6 +23,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::mandatory_avar_table::mandatory_avar_table);
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::os2_metrics_match_hhea::os2_metrics_match_hhea);
+        cr.register_check(checks::render_own_name::render_own_name);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::sfnt_version::sfnt_version);
         cr.register_check(checks::soft_hyphen::soft_hyphen);
