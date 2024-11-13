@@ -138,7 +138,6 @@ def test_check_valid_glyphnames(check):
     assert cff2_skip_msg in message
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("unique_glyphnames")
 def test_check_unique_glyphnames(check):
     """Font contains unique glyph names?"""
