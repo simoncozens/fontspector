@@ -59,11 +59,9 @@ def test_check_typographic_family_name(test_ttFont, check):
     # TODO: test a FAIL case
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_name_char_restrictions():
+@check_id("name/char_restrictions")
+def test_check_name_char_restrictions(check):
     """Are there disallowed characters in the restricted NAME table entries?"""
-    check = CheckTester("name/char_restrictions")
-
     # Our reference Merriweather Regular is known to be good
     ttFont = TTFont(TEST_FILE("merriweather/Merriweather-Regular.ttf"))
 

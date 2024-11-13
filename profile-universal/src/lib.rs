@@ -24,6 +24,7 @@ impl fontspector_checkapi::Plugin for Universal {
             checks::name_no_copyright_on_description::name_no_copyright_on_description,
         );
         cr.register_check(checks::mandatory_avar_table::mandatory_avar_table);
+        cr.register_check(checks::name_char_restrictions::name_char_restrictions);
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::no_mac_entries::no_mac_entries);
         cr.register_check(checks::os2_metrics_match_hhea::os2_metrics_match_hhea);
@@ -117,7 +118,7 @@ include_profiles = ["opentype"]
     "mandatory_glyphs",
     "math_signs_width",
     "missing_small_caps_glyphs",
-    "name/ascii_only_entries",
+    "name/char_restrictions",
     "name/family_and_style_max_length",
     "no_debugging_tables",
     "no_mac_entries",
