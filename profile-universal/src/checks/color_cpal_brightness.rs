@@ -78,8 +78,8 @@ fn color_cpal_brightness(t: &Testable, context: &Context) -> CheckFnResult {
     if dark_glyphs.is_empty() {
         Ok(Status::just_one_pass())
     } else {
-        Ok(Status::just_one_fail(
-            "dark-colors",
+        Ok(Status::just_one_warn(
+            "glyphs-too-dark-or-too-bright",
             &format!(
                 "These glyphs have layers with colors that are too dark or too bright: {}",
                 bullet_list(

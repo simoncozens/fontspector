@@ -25,7 +25,7 @@ fn colorfont_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     if f.has_table(b"COLR") {
         if f.font().colr()?.version() == 0 && f.has_table(b"SVG ") {
             problems.push(Status::fail("drop-svg", "Font has a COLR v0 table, which is already widely supported, so the SVG table isn't needed."));
-        } else if f.font().colr()?.version() == 0 && !f.has_table(b"SVG ") && !f.is_variable_font()
+        } else if f.font().colr()?.version() == 1 && !f.has_table(b"SVG ") && !f.is_variable_font()
         {
             problems.push(Status::fail("add-svg", 
                 &format!(
