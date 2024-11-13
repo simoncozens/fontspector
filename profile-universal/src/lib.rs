@@ -14,6 +14,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::consistent_axes::consistent_axes);
         cr.register_check(checks::control_chars::control_chars);
         cr.register_check(checks::fvar_name_entries::fvar_name_entries);
+        cr.register_check(checks::glyf_nested_components::glyf_nested_components);
         cr.register_check(checks::glyphnames::valid_glyphnames);
         cr.register_check(checks::glyphset::check_rupee);
         cr.register_check(checks::integer_ppem_if_hinted::integer_ppem_if_hinted);

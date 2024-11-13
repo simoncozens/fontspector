@@ -6,6 +6,7 @@ pub mod colorfont_tables;
 pub mod consistent_axes;
 pub mod control_chars;
 pub mod fvar_name_entries;
+pub mod glyf_nested_components;
 pub mod glyphnames;
 pub mod glyphset;
 pub mod integer_ppem_if_hinted;
