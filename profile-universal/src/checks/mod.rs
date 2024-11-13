@@ -15,6 +15,7 @@ pub mod mandatory_avar_table;
 pub mod name_italic_names;
 pub mod name_no_copyright_on_description;
 pub mod name_trailing_spaces;
+pub mod no_mac_entries;
 pub mod os2_metrics_match_hhea;
 pub mod render_own_name;
 pub mod required_tables;
