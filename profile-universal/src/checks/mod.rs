@@ -1,5 +1,6 @@
 pub mod arabic_spacing_symbols;
 pub mod case_mapping;
+pub mod cmap_format_12;
 pub mod consistent_axes;
 pub mod control_chars;
 pub mod fvar_name_entries;

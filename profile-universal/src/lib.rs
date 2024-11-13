@@ -8,6 +8,7 @@ impl fontspector_checkapi::Plugin for Universal {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
         cr.register_check(checks::case_mapping::case_mapping);
+        cr.register_check(checks::cmap_format_12::cmap_format_12);
         cr.register_check(checks::consistent_axes::consistent_axes);
         cr.register_check(checks::control_chars::control_chars);
         cr.register_check(checks::fvar_name_entries::fvar_name_entries);
