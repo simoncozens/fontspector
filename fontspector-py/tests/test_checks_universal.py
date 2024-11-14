@@ -507,7 +507,6 @@ def test_check_superfamily_vertical_metrics(
     )
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("STAT_strings")
 def test_check_STAT_strings(check):
     good = TTFont(TEST_FILE("ibmplexsans-vf/IBMPlexSansVar-Roman.ttf"))

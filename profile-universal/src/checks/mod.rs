@@ -25,6 +25,7 @@ pub mod render_own_name;
 pub mod required_tables;
 pub mod sfnt_version;
 pub mod soft_hyphen;
+pub mod stat_strings;
 pub mod stylistic_sets;
 pub mod transformed_components;
 pub mod typographic_family_name;
