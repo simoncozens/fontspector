@@ -846,17 +846,16 @@ def test_check_linegaps(check):
     assert check(ttFont)[0].status == ERROR
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("STAT_in_statics")
 def test_check_STAT_in_statics(check):
     """Checking STAT table on static fonts."""
     ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
-    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: has_STAT_table" in msg
+    msg = assert_results_contain(check(ttFont), SKIP, "no-stat")
+    assert "No STAT table." in msg
 
     ttFont = TTFont(TEST_FILE("varfont/RobotoSerif[GRAD,opsz,wdth,wght].ttf"))
-    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: not is_variable_font" in msg
+    msg = assert_results_contain(check(ttFont), SKIP, "variable-font")
+    assert "This is a variable font." in msg
 
     # Remove fvar table to make FontBakery think it is dealing with a static font
     del ttFont["fvar"]
@@ -865,7 +864,9 @@ def test_check_STAT_in_statics(check):
     # here to think it is a static font) has multiple records per design axis in its
     # STAT table:
     msg = assert_results_contain(check(ttFont), FAIL, "multiple-STAT-entries")
-    assert "The STAT table has more than a single entry for the 'opsz' axis (5)" in msg
+    assert (
+        "'wght' axis (9)" in msg or "'opsz' axis (5)" in msg or "'wdth' axis (8)" in msg
+    )
 
     # Remove all entries except the very first one:
     stat = ttFont["STAT"].table
