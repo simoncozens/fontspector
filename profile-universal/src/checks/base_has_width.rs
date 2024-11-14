@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use fontspector_checkapi::{constants::GlyphClass, prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use read_fonts::tables::gdef::GlyphClassDef;
 use read_fonts::TableProvider;
 use skrifa::{GlyphId, MetadataProvider};
 use unicode_properties::{GeneralCategory, UnicodeGeneralCategory};
@@ -34,8 +35,8 @@ fn base_has_width(f: &Testable, context: &Context) -> CheckFnResult {
         .map(|(c, g)| (g, c))
         .collect();
     for (gid, metric) in hmtx.h_metrics().iter().enumerate() {
-        let gid = GlyphId::new(gid as u16);
-        if metric.advance() == 0 && font.gdef_class(gid) != Some(GlyphClass::Mark) {
+        let gid = GlyphId::new(gid as u32);
+        if metric.advance() == 0 && font.gdef_class(gid) != GlyphClassDef::Mark {
             let codepoint = reverse_charmap.get(&gid);
             if codepoint == Some(&0) || codepoint.is_none() {
                 continue;
@@ -47,7 +48,7 @@ fn base_has_width(f: &Testable, context: &Context) -> CheckFnResult {
                 continue;
             }
             #[allow(clippy::unwrap_used)]
-            let name = font.glyph_name_for_id(gid, true).unwrap();
+            let name = font.glyph_name_for_id_synthesise(gid);
             if name == "NULL" {
                 continue;
             }

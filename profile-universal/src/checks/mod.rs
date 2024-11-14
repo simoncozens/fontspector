@@ -1,4 +1,5 @@
 pub mod arabic_spacing_symbols;
+pub mod base_has_width;
 pub mod case_mapping;
 pub mod cmap_format_12;
 pub mod color_cpal_brightness;
