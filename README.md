@@ -4,9 +4,9 @@ Fontspector is a command-line tool for checking the quality of font projects.
 It is a Rust port of [fontbakery](http://github.com/fonttools/fontbakery),
 and is currently at an early alpha stage.
 
-* OpenType profile: 43/53 checks ported (81%)
-* Universal profile: 51/138 checks ported (37%)
-* Google Fonts profile: 54/157 checks ported (34%)
+* OpenType profile: 45/53 checks ported (85%)
+* Universal profile: 81/138 checks ported (59%)
+* Google Fonts profile: 84/157 checks ported (53%)
 
 ## Components
 
@@ -38,7 +38,7 @@ pytest
 ## Building the web version
 
 Fontspector also has a WASM-based web version at
-https://googlefonts.github.io/fontspector
+https://simoncozens.github.io/fontspector
 
 It is built and deployed from Github Actions, but should you need to
 rebuild this manually for development, run:
