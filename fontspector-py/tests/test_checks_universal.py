@@ -367,7 +367,6 @@ def mada_ttFonts():
     return [TTFont(path) for path in mada_fonts]
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("family/win_ascent_and_descent")
 def test_check_family_win_ascent_and_descent(mada_ttFonts, check):
     """Checking OS/2 usWinAscent & usWinDescent."""
@@ -377,19 +376,19 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts, check):
     message = assert_results_contain(check(ttFont), FAIL, "ascent")
     assert message == (
         "OS/2.usWinAscent value should be"
-        " equal or greater than 880, but got 776 instead"
+        " equal or greater than 880, but got 776 instead."
     )
     # multi font input
     check_results = check(mada_ttFonts)
     message = assert_results_contain([check_results[0]], FAIL, "ascent")
     assert message == (
         "OS/2.usWinAscent value should be"
-        " equal or greater than 918, but got 776 instead"
+        " equal or greater than 918, but got 776 instead."
     )
     message = assert_results_contain([check_results[1]], FAIL, "descent")
     assert message == (
         "OS/2.usWinDescent value should be"
-        " equal or greater than 406, but got 322 instead"
+        " equal or greater than 406, but got 322 instead."
     )
 
     # Fix usWinAscent
@@ -401,7 +400,7 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts, check):
     message = assert_results_contain(check(ttFont), FAIL, "ascent")
     assert message == (
         "OS/2.usWinAscent value 1761 is too large. "
-        "It should be less than double the yMax. Current yMax value is 880"
+        "It should be less than double the yMax. Current yMax value is 880."
     )
 
     # Make usWinDescent too large
@@ -409,13 +408,12 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts, check):
     message = assert_results_contain(check(ttFont), FAIL, "descent")
     assert message == (
         "OS/2.usWinDescent value 585 is too large."
-        " It should be less than double the yMin. Current absolute yMin value is 292"
+        " It should be less than double the yMin. Current absolute yMin value is 292."
     )
 
     # Delete OS/2 table
     del ttFont["OS/2"]
-    message = assert_results_contain(check(ttFont), FAIL, "lacks-OS/2")
-    assert message == "Font file lacks OS/2 table"
+    assert check(ttFont)[0].status == ERROR
 
 
 @check_id("os2_metrics_match_hhea")
