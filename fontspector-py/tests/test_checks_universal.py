@@ -455,7 +455,6 @@ def test_check_os2_metrics_match_hhea(check):
     assert check(ttFont)[0].status == ERROR
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("family/vertical_metrics")
 def test_check_family_vertical_metrics(montserrat_ttFonts, check):
     assert_PASS(check(montserrat_ttFonts), "with multiple good fonts...")
@@ -463,10 +462,10 @@ def test_check_family_vertical_metrics(montserrat_ttFonts, check):
     montserrat_ttFonts[0]["OS/2"].sTypoAscender = 3333
     montserrat_ttFonts[1]["OS/2"].usWinAscent = 4444
     results = check(montserrat_ttFonts)
-    msg = assert_results_contain([results[0]], FAIL, "sTypoAscender-mismatch")
-    assert "Montserrat Black: 3333" in msg
-    msg = assert_results_contain([results[1]], FAIL, "usWinAscent-mismatch")
-    assert "Montserrat Black Italic: 4444" in msg
+    msg = assert_results_contain(results, FAIL, "sTypoAscender-mismatch")
+    assert "Montserrat-Black.ttf: 3333" in msg
+    msg = assert_results_contain(results, FAIL, "usWinAscent-mismatch")
+    assert "Montserrat-BlackItalic.ttf: 4444" in msg
 
     del montserrat_ttFonts[2]["OS/2"]
     del montserrat_ttFonts[3]["hhea"]

@@ -6,6 +6,7 @@ pub mod color_cpal_brightness;
 pub mod colorfont_tables;
 pub mod consistent_axes;
 pub mod control_chars;
+pub mod family_vertical_metrics;
 pub mod family_win_ascent_and_descent;
 pub mod fvar_name_entries;
 pub mod glyf_nested_components;
