@@ -1,7 +1,7 @@
 use std::ascii::escape_default;
 
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
-use read_fonts::types::{CFF_SFTN_VERSION, TT_SFNT_VERSION};
+use read_fonts::types::{CFF_SFNT_VERSION, TT_SFNT_VERSION};
 
 fn escape_bytes<B: AsRef<[u8]>>(buf: B) -> String {
     String::from_utf8(
@@ -40,7 +40,7 @@ fn sfnt_version(t: &Testable, _context: &Context) -> CheckFnResult {
             ),
         ));
     }
-    if (f.has_table(b"CFF ") || f.has_table(b"CFF2")) && font_sfnt_version != CFF_SFTN_VERSION {
+    if (f.has_table(b"CFF ") || f.has_table(b"CFF2")) && font_sfnt_version != CFF_SFNT_VERSION {
         return Ok(Status::just_one_fail(
             "wrong-sfnt-version-cff",
             &format!(

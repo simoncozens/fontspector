@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::{
-    types::{Version16Dot16, CFF_SFTN_VERSION, TT_SFNT_VERSION},
+    types::{Version16Dot16, CFF_SFNT_VERSION, TT_SFNT_VERSION},
     TableProvider,
 };
 
@@ -21,7 +21,7 @@ fn unique_glyphnames(t: &Testable, context: &Context) -> CheckFnResult {
         "TrueType fonts with a format 3 post table contain no glyph names."
     );
     skip!(
-        f.font().table_directory.sfnt_version() == CFF_SFTN_VERSION
+        f.font().table_directory.sfnt_version() == CFF_SFNT_VERSION
             && f.has_table(b"CFF2")
             && f.font().post()?.version() == Version16Dot16::new(3, 0),
         "cff2-post3",
