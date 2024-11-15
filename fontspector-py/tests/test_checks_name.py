@@ -154,11 +154,9 @@ def test_check_name_char_restrictions(check):
     )
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_name_family_and_style_max_length():
+@check_id("name/family_and_style_max_length")
+def test_check_name_family_and_style_max_length(check):
     """Name table entries should not be too long."""
-    check = CheckTester("name/family_and_style_max_length")
-
     # Our reference Cabin Regular is known to be good
     ttFont = TTFont(TEST_FILE("cabinvf/Cabin[wdth,wght].ttf"))
 

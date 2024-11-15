@@ -17,6 +17,7 @@ pub mod interpolation_issues;
 pub mod linegaps;
 pub mod mandatory_avar_table;
 pub mod name_char_restrictions;
+pub mod name_family_and_style_max;
 pub mod name_italic_names;
 pub mod name_no_copyright_on_description;
 pub mod name_trailing_spaces;

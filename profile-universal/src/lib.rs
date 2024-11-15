@@ -23,6 +23,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::integer_ppem_if_hinted::integer_ppem_if_hinted);
         cr.register_check(checks::interpolation_issues::interpolation_issues);
         cr.register_check(checks::linegaps::linegaps);
+        cr.register_check(checks::name_family_and_style_max::family_and_style_max_length);
         cr.register_check(checks::name_italic_names::name_italic_names);
         cr.register_check(
             checks::name_no_copyright_on_description::name_no_copyright_on_description,
