@@ -1272,26 +1272,21 @@ def test_check_metadata_single_cjk_subset(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/copyright")
 def test_check_metadata_copyright(check):
     """METADATA.pb: Copyright notice is the same in all fonts?"""
 
     # Let's start with our reference FamilySans family:
-    font = TEST_FILE("familysans/FamilySans-Regular.ttf")
+    mdpb = TEST_FILE("familysans/METADATA.pb")
 
     # We know its copyright notices are consistent:
-    assert_PASS(check(font), "with consistent copyright notices on FamilySans...")
+    assert_PASS(check(mdpb), "with consistent copyright notices on FamilySans...")
 
     # Now we make them diverge:
-    md = Font(font).family_metadata
-    md.fonts[1].copyright = (
-        md.fonts[0].copyright + " arbitrary suffix!"
-    )  # to make it different
-
+    mdpb = TEST_FILE("familysans/bad-METADATA.pb")
     # To ensure the problem is detected:
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(mdpb),
         FAIL,
         "inconsistency",
         "with diverging copyright notice strings...",
@@ -3298,9 +3293,9 @@ def test_check_gf_axisregistry_valid_tags(check):
     assert_PASS(check(font))
 
     md = Font(font).family_metadata
-    md.axes[
-        0
-    ].tag = "crap"  # I'm pretty sure this one wont ever be included in the registry
+    md.axes[0].tag = (
+        "crap"  # I'm pretty sure this one wont ever be included in the registry
+    )
     assert_results_contain(
         check(MockFont(file=font, family_metadata=md)), FAIL, "bad-axis-tag"
     )
@@ -3393,9 +3388,7 @@ def test_check_metadata_consistent_axis_enumeration(check):
     assert_PASS(check(font))
 
     md = Font(font).family_metadata
-    md.axes[
-        1
-    ].tag = (
+    md.axes[1].tag = (
         "wdth"  # this effectively removes the "wght" axis while not adding an extra one
     )
     assert_results_contain(
