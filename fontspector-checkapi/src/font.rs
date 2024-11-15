@@ -305,9 +305,9 @@ impl TestFont<'_> {
             .and_then(|gsub| gsub.feature_list().ok());
         let gpos_feature_list = self
             .font()
-            .gsub()
+            .gpos()
             .ok()
-            .and_then(|gsub| gsub.feature_list().ok());
+            .and_then(|gpos| gpos.feature_list().ok());
         let gsub_feature_and_data = gsub_featurelist.map(|list| {
             list.feature_records()
                 .iter()
