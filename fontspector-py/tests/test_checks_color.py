@@ -14,14 +14,15 @@ import pytest
 @check_id("colorfont_tables")
 def test_check_colorfont_tables(check):
     """Ensure font has the expected color font tables."""
-    ttFont = TTFont(TEST_FILE("color_fonts/noto-glyf_colr_1.ttf"))
+    noto = TEST_FILE("color_fonts/noto-glyf_colr_1.ttf")
+    ttFont = TTFont(noto)
     assert "SVG " not in ttFont.keys()
     assert "COLR" in ttFont.keys()
     assert ttFont["COLR"].version == 1
     # Check colr v1 static font has an svg table (since v1 isn't yet broadly supported).
     # Will fail since font doesn't have one.
     assert_results_contain(
-        check(ttFont), FAIL, "add-svg", "with a static colr v1 font lacking SVG table"
+        check(noto), FAIL, "add-svg", "with a static colr v1 font lacking SVG table"
     )
 
     # Fake a variable font by adding an fvar table.
