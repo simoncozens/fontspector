@@ -1,4 +1,4 @@
-use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use skrifa::{outline::OutlinePen, setting::VariationSetting, GlyphId, MetadataProvider};
 
 #[derive(Default)]
