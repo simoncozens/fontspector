@@ -699,7 +699,6 @@ def test_check_transformed_components(check):
     assert_results_contain(check(font), FAIL, "transformed-components")
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("gpos7")
 def test_check_gpos7(check):
     """Check if font contains any GPOS 7 lookups

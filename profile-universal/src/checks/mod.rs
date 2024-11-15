@@ -12,6 +12,7 @@ pub mod fvar_name_entries;
 pub mod glyf_nested_components;
 pub mod glyphnames;
 pub mod glyphset;
+pub mod gpos7;
 pub mod integer_ppem_if_hinted;
 pub mod interpolation_issues;
 pub mod linegaps;
