@@ -5,6 +5,7 @@ mod family;
 mod license;
 mod metadata;
 mod metadata_copyright;
+mod metadata_license;
 use fontspector_checkapi::prelude::*;
 
 pub struct GoogleFonts;
@@ -21,6 +22,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(metadata::validate_metadatapb);
         cr.register_check(metadata::can_render_samples);
         cr.register_check(metadata_copyright::metadata_copyright);
+        cr.register_check(metadata_license::metadata_license);
         let profile = Profile::from_toml(
             r#"
 include_profiles = ["universal"]

@@ -1,6 +1,7 @@
 import math
 import os
 import shutil
+import tempfile
 
 import pytest
 import requests
@@ -1115,31 +1116,38 @@ def test_check_metadata_unique_weight_style_pairs(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/license")
 def test_check_metadata_license(check):
     """METADATA.pb license is "APACHE2", "UFL" or "OFL"?"""
 
     # Let's start with our reference FamilySans family:
-    font = TEST_FILE("familysans/FamilySans-Regular.ttf")
+    font = TEST_FILE("familysans/METADATA.pb")
 
     good_licenses = ["APACHE2", "UFL", "OFL"]
     some_bad_values = ["APACHE", "Apache", "Ufl", "Ofl", "Open Font License"]
 
     check(font)
-    md = Font(font).family_metadata
-    for good in good_licenses:
-        md.license = good
-        assert_PASS(check(MockFont(file=font, family_metadata=md)), f": {good}")
+    contents = open(font, "r").read()
+    import re
 
-    for bad in some_bad_values:
-        md.license = bad
-        assert_results_contain(
-            check(MockFont(file=font, family_metadata=md)),
-            FAIL,
-            "bad-license",
-            f": {bad}",
-        )
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        dest = tmpdirname + "/METADATA.pb"
+        for good in good_licenses:
+            contents = re.sub(r'license:\s*".*"', f'license: "{good}"', contents)
+            with open(dest, "w") as f:
+                f.write(contents)
+            assert_PASS(check(dest), f": {good}")
+
+        for bad in some_bad_values:
+            contents = re.sub(r'license:\s*".*"', f'license: "{bad}"', contents)
+            with open(dest, "w") as f:
+                f.write(contents)
+            assert_results_contain(
+                check(dest),
+                FAIL,
+                "bad-license",
+                f": {bad}",
+            )
 
 
 @pytest.mark.skip("Check not ported yet.")

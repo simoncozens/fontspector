@@ -1,14 +1,5 @@
-#![allow(renamed_and_removed_lints, clippy::unwrap_used)]
-include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
-use fonts_public::FamilyProto;
 use fontspector_checkapi::{prelude::*, StatusCode};
-
-fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {
-    let mdpb = std::str::from_utf8(&t.contents)
-        .map_err(|_| CheckError::Error("METADATA.pb is not valid UTF-8".to_string()))?;
-    protobuf::text_format::parse_from_str::<FamilyProto>(mdpb)
-        .map_err(|e| CheckError::Error(format!("Error parsing METADATA.pb: {}", e)))
-}
+use crate::metadata::family_proto;
 
 #[check(
     id="googlefonts/metadata/copyright",
