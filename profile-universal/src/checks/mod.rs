@@ -33,6 +33,7 @@ pub mod stat_in_statics;
 pub mod stat_strings;
 pub mod stylistic_sets;
 pub mod transformed_components;
+pub mod typoascender_agrave;
 pub mod typographic_family_name;
 pub mod unique_glyphnames;
 pub mod unsupported_axes;

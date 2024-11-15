@@ -43,6 +43,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::stat_strings::stat_strings);
         cr.register_check(checks::stylistic_sets::stylisticset_description);
         cr.register_check(checks::transformed_components::transformed_components);
+        cr.register_check(checks::typoascender_agrave::typoascender_exceeds_agrave);
         cr.register_check(checks::typographic_family_name::typographic_family_name);
         cr.register_check(checks::unique_glyphnames::unique_glyphnames);
         cr.register_check(checks::unsupported_axes::unsupported_axes);
