@@ -43,7 +43,6 @@ def test_check_integer_ppem_if_hinted(check):
     assert_PASS(check(ttFont), "with a good font...")
 
 
-@pytest.mark.skip(reason="This check is not yet implemented.")
 @check_id("smart_dropout")
 def test_check_smart_dropout(check):
     """Ensure smart dropout control is enabled in "prep" table instructions."""
