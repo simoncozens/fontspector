@@ -658,28 +658,26 @@ def test_check_contour_count(montserrat_ttFonts, check):
     assert msg == "This font lacks cmap data."
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("cjk_chws_feature")
 def test_check_cjk_chws_feature(check):
     """Does the font contain chws and vchw features?"""
     cjk_font = TEST_FILE("cjk/SourceHanSans-Regular.otf")
-    ttFont = TTFont(cjk_font)
-    assert_results_contain(
-        check(ttFont), WARN, "missing-chws-feature", "for Source Han Sans"
-    )
+    results = check(cjk_font)
+    assert_results_contain(results, WARN, "missing-chws-feature", "for Source Han Sans")
 
-    assert_results_contain(
-        check(ttFont), WARN, "missing-vchw-feature", "for Source Han Sans"
-    )
+    assert_results_contain(results, WARN, "missing-vchw-feature", "for Source Han Sans")
 
     # Insert them.
     from fontTools.ttLib.tables.otTables import FeatureRecord
 
+    ttFont = TTFont(cjk_font)
     chws = FeatureRecord()
     chws.FeatureTag = "chws"
     vchw = FeatureRecord()
     vchw.FeatureTag = "vchw"
     ttFont["GPOS"].table.FeatureList.FeatureRecord.extend([chws, vchw])
+    # Don't need the glyphs though, they're just heavyv
+    del ttFont["CFF "]
 
     assert_PASS(check(ttFont))
 
