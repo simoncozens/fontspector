@@ -3507,7 +3507,6 @@ def test_check_description_family_update(check, requests_mock):
     assert_PASS(check(MockFont(file=font, description=desc + "\nSomething else...")))
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/os2/use_typo_metrics")
 def test_check_os2_use_typo_metrics(check):
     """All non-CJK fonts checked with the googlefonts profile
