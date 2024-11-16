@@ -59,40 +59,52 @@ impl fontspector_checkapi::Plugin for Universal {
             r#"
 include_profiles = ["opentype"]
 [sections]
-"Superfamily Checks" = [
-    "superfamily/list",
-    "superfamily/vertical_metrics",
-]
-"UFO Sources" = [
-    "designspace_has_consistent_codepoints",
-    "designspace_has_consistent_glyphset",
-    "designspace_has_consistent_groups",
-    "designspace_has_default_master",
-    "designspace_has_sources",
-    "ufolint",
-    # "ufo_consistent_curve_type",  # FIXME (orphan check) https://github.com/fonttools/fontbakery/pull/4809
-    "ufo_features_default_languagesystem",
-    # "ufo_no_open_corners",  # FIXME (orphan check) https://github.com/fonttools/fontbakery/pull/4809
-    "ufo_recommended_fields",
-    "ufo_required_fields",
-    "ufo_unnecessary_fields",
-]
+
+# Superfamilies are kind of dead with the advent of VFs
+#"Superfamily Checks" = [
+#    "superfamily/list",
+#    "superfamily/vertical_metrics",
+#]
+
+# Source checks are a good idea and we can do them with norad, but let's hold them
+# over for another version.
+#"UFO Sources" = [
+#    "designspace_has_consistent_codepoints",
+#    "designspace_has_consistent_glyphset",
+#    "designspace_has_consistent_groups",
+#    "designspace_has_default_master",
+#    "designspace_has_sources",
+#    "ufolint",
+#    # "ufo_consistent_curve_type",  # FIXME (orphan check) https://github.com/fonttools/fontbakery/pull/4809
+#    "ufo_features_default_languagesystem",
+#    # "ufo_no_open_corners",  # FIXME (orphan check) https://github.com/fonttools/fontbakery/pull/4809
+#    "ufo_recommended_fields",
+#    "ufo_required_fields",
+#    "ufo_unnecessary_fields",
+#]
+
 "Universal Profile Checks" = [
     # Checks which we have definitely ported already
     "arabic_spacing_symbols",
     "case_mapping",
+    "cjk_chws_feature",
     "cmap/format_12",
     "color_cpal_brightness",
     "colorfont_tables",
     "control_chars",
+    "family/vertical_metrics",
+    "family/win_ascent_and_descent",
     "fvar_name_entries",
     "glyf_nested_components",
+    "gpos7",
     "integer_ppem_if_hinted",
     "interpolation_issues",
     "linegaps",
     "valid_glyphnames",
     "mandatory_avar_table",
+    "mandatory_glyphs",
     "name/char_restrictions",
+    "name/family_and_style_max_length",
     "name/italic_names",
     "name/no_copyright_on_description",
     "name/trailing_spaces",
@@ -102,9 +114,13 @@ include_profiles = ["opentype"]
     "required_tables",
     "rupee",
     "sfnt_version",
+    "smart_dropout",
     "soft_hyphen",
+    "STAT_in_statics",
+    "STAT_strings",
     "stylisticset_description",
     "transformed_components",
+    "typoascender_exceeds_Agrave",
     "typographic_family_name",
     "unique_glyphnames",
     "unwanted_aat_tables",
@@ -117,41 +133,31 @@ include_profiles = ["opentype"]
 
     # Checks which don't make sense any more
     # "family/single_directory", # Fontspector assumes families are in a directory
+    # "ots", # ots checks need to be directly integrated
+    # "ttx_roundtrip", # What's ttx? :-)
 
     # Checks left to port
     "alt_caron",
     "arabic_high_hamza",
     # "caps_vertically_centered",  # Disabled: issue #4274
-    "cjk_chws_feature",
     "cjk_not_enough_glyphs",
     "contour_count",
     "empty_glyph_on_gid1_for_colrv0",
     "empty_letters",
-    "family/vertical_metrics",
-    "family/win_ascent_and_descent",
     "file_size",
     "fontspector_version",
     "fontdata_namecheck",
     "freetype_rasterizer",
-    "gpos7",
     "gsub/smallcaps_before_ligatures",
     "hinting_impact",
     "inconsistencies_between_fvar_stat",
     "legacy_accents",
     "ligature_carets",
     "kerning_for_non_ligated_sequences",
-    "mandatory_glyphs",
     "math_signs_width",
     "missing_small_caps_glyphs",
-    "name/family_and_style_max_length",
     "no_debugging_tables",
-    "ots",
-    "smart_dropout",
-    "STAT_in_statics",
-    "STAT_strings",
     "tabular_kerning",
-    "ttx_roundtrip",
-    "typoascender_exceeds_Agrave",
     "unreachable_glyphs",
     "varfont/duplexed_axis_reflow",
     "varfont/instances_in_order",
