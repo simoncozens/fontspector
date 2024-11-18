@@ -88,13 +88,17 @@ include_profiles = ["opentype"]
 
 "Universal Profile Checks" = [
     # Checks which we have definitely ported already
+    "alt_caron",
+    "arabic_high_hamza",
     "arabic_spacing_symbols",
     "case_mapping",
     "cjk_chws_feature",
+    "cjk_not_enough_glyphs",
     "cmap/format_12",
     "color_cpal_brightness",
     "colorfont_tables",
     "control_chars",
+    "empty_glyph_on_gid1_for_colrv0",
     "family/vertical_metrics",
     "family/win_ascent_and_descent",
     "fvar_name_entries",
@@ -138,14 +142,12 @@ include_profiles = ["opentype"]
     # "family/single_directory", # Fontspector assumes families are in a directory
     # "ots", # ots checks need to be directly integrated
     # "ttx_roundtrip", # What's ttx? :-)
+    # "vttclean", # merged into unwanted_tables
+    # "no_debugging_tables", # merged into unwanted_tables
 
     # Checks left to port
-    "alt_caron",
-    "arabic_high_hamza",
     # "caps_vertically_centered",  # Disabled: issue #4274
-    "cjk_not_enough_glyphs",
     "contour_count",
-    "empty_glyph_on_gid1_for_colrv0",
     "empty_letters",
     "file_size",
     "fontspector_version",
@@ -159,13 +161,11 @@ include_profiles = ["opentype"]
     "kerning_for_non_ligated_sequences",
     "math_signs_width",
     "missing_small_caps_glyphs",
-    "no_debugging_tables",
     "tabular_kerning",
     "unreachable_glyphs",
     "varfont/duplexed_axis_reflow",
     "varfont/instances_in_order",
     "vtt_volt_data",  # very similar to vttclean, may be a good idea to merge them.
-    "vttclean",
 ]
 "#,
         )
