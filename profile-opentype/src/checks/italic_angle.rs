@@ -5,7 +5,7 @@ use read_fonts::{types::BoundingBox, TableProvider};
 use skrifa::{
     prelude::{LocationRef, Size},
     setting::VariationSetting,
-    GlyphId, MetadataProvider,
+    MetadataProvider,
 };
 
 fn x_leftmost_intersection(paths: &[BezPath], y: f32, x_min: f32, x_max: f32) -> Option<f32> {
