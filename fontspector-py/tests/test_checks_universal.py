@@ -875,7 +875,6 @@ def test_check_STAT_in_statics(check):
     assert_PASS(check(ttFont))
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("alt_caron")
 def test_check_alt_caron(check):
     """Check accent of Lcaron, dcaron, lcaron, tcaron"""

@@ -8,6 +8,7 @@ use read_fonts::{
     tables::{
         cmap::Cmap,
         gdef::{Gdef, GlyphClassDef},
+        glyf::Glyph,
         layout::{Feature, FeatureRecord},
         os2::SelectionFlags,
         post::DEFAULT_GLYPH_NAMES,
@@ -210,6 +211,12 @@ impl TestFont<'_> {
     pub fn glyph_name_for_unicode_synthesise(&self, u: impl Into<u32>) -> String {
         #[allow(clippy::unwrap_used)]
         self.glyph_name_for_unicode_impl(u, true).unwrap()
+    }
+
+    pub fn get_glyf_glyph(&self, gid: GlyphId) -> Result<Option<Glyph>, ReadError> {
+        let loca = self.font().loca(None)?;
+        let glyf = self.font().glyf()?;
+        loca.get_glyf(gid, &glyf)
     }
 
     pub fn is_variable_font(&self) -> bool {

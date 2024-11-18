@@ -8,6 +8,7 @@ pub struct OpenType;
 
 impl fontspector_checkapi::Plugin for OpenType {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
+        cr.register_check(checks::alt_caron::alt_caron);
         cr.register_check(checks::bold_italic_unique::bold_italic_unique);
         cr.register_check(checks::code_pages::code_pages);
         cr.register_check(checks::fvar::axis_ranges_correct);
