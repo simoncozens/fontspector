@@ -48,11 +48,20 @@ fn mangle_name(glyph: &str) -> String {
 fn alt_caron(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
+    let charmap = f.font().charmap();
     let glyphname_to_codepoint: HashMap<String, u32> = f
         .codepoints()
         .iter()
         .copied()
-        .map(|codepoint| (f.glyph_name_for_unicode_synthesise(codepoint), codepoint))
+        .map(|codepoint| {
+            (
+                charmap
+                    .map(codepoint)
+                    .map(|gid| f.glyph_name_for_id_synthesise(gid))
+                    .unwrap_or("".to_string()),
+                codepoint,
+            )
+        })
         .collect();
     let charmap = f.font().charmap();
     for caron in CARON_CODEPOINTS {

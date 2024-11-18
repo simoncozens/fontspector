@@ -1,6 +1,5 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use markdown_table::{Heading, MarkdownTable};
-use skrifa::MetadataProvider;
 use unicode_properties::{GeneralCategoryGroup, UnicodeGeneralCategory};
 
 fn swapcase(c: &char) -> Option<char> {
@@ -59,15 +58,16 @@ const CASE_MAPPING_EXCEPTIONS: [u32; 22] = [
 fn case_mapping(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut missing_counterparts_table = vec![];
-    for codepoint in f.codepoints() {
-        if CASE_MAPPING_EXCEPTIONS.contains(&codepoint) {
+    let codepoints = f.codepoints();
+    for codepoint in codepoints.iter() {
+        if CASE_MAPPING_EXCEPTIONS.contains(codepoint) {
             continue;
         }
-        if let Some(c) = char::from_u32(codepoint)
+        if let Some(c) = char::from_u32(*codepoint)
             .filter(|c| matches!(c.general_category_group(), GeneralCategoryGroup::Letter))
         {
             if let Some(swapped) = swapcase(&c) {
-                if f.font().charmap().map(swapped as u32).is_none() {
+                if !codepoints.contains(&(swapped as u32)) {
                     let have = format!(
                         "U+{:04X}: {}",
                         codepoint,
