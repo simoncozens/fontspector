@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::{
     context::Context,
     prelude::FixFnResult,
@@ -79,6 +81,7 @@ impl<'a> Check<'a> {
         fn_result: CheckFnResult,
         file: Option<&'a Testable>,
         section: Option<&str>,
+        duration: Duration,
     ) -> CheckResult {
         let subresults = match fn_result {
             Ok(results) => results.collect::<Vec<_>>(),
@@ -90,7 +93,13 @@ impl<'a> Check<'a> {
         } else {
             subresults
         };
-        CheckResult::new(self, file.and_then(|f| f.filename.to_str()), section, res)
+        CheckResult::new(
+            self,
+            file.and_then(|f| f.filename.to_str()),
+            section,
+            res,
+            duration,
+        )
     }
 
     /// Run the check, either on a collection or a single file.
@@ -102,15 +111,23 @@ impl<'a> Check<'a> {
         context: &Context,
         section: Option<&str>,
     ) -> Option<CheckResult> {
-        log::debug!("Running check {} on {:?}", self.id, testable);
+        // log::debug!("Running check {} on {:?}", self.id, testable);
         match (&self.implementation, testable) {
             (CheckImplementation::CheckAll(_), TestableType::Single(_)) => None,
             (CheckImplementation::CheckOne(_), TestableType::Collection(_)) => None,
             (CheckImplementation::CheckOne(check_one), TestableType::Single(f)) => {
-                Some(self.clarify_result(check_one(f, context), Some(f), section))
+                let start = std::time::Instant::now();
+                let result = check_one(f, context);
+                let duration = start.elapsed();
+
+                Some(self.clarify_result(result, Some(f), section, duration))
             }
             (CheckImplementation::CheckAll(check_all), TestableType::Collection(f)) => {
-                Some(self.clarify_result(check_all(f, context), None, section))
+                let start = std::time::Instant::now();
+                let result = check_all(f, context);
+                let duration = start.elapsed();
+
+                Some(self.clarify_result(result, None, section, duration))
             }
         }
     }

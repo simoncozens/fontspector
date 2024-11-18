@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use serde::{ser::SerializeStruct, Serialize};
 
 use crate::{Check, CheckId, Status, StatusCode};
@@ -39,6 +41,8 @@ pub struct CheckResult {
     pub hotfix_result: Option<FixResult>,
     /// If source fixing was attempted, the result of the source fix
     pub sourcefix_result: Option<FixResult>,
+    /// Time taken
+    pub time: Duration,
 }
 
 impl Serialize for CheckResult {
@@ -70,6 +74,7 @@ impl CheckResult {
         filename: Option<&str>,
         section: Option<&str>,
         subresults: Vec<Status>,
+        duration: Duration,
     ) -> Self {
         Self {
             check_id: check.id.to_string(),
@@ -80,6 +85,7 @@ impl CheckResult {
             subresults,
             hotfix_result: None,
             sourcefix_result: None,
+            time: duration,
         }
     }
 

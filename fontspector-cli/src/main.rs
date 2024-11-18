@@ -4,7 +4,11 @@
 mod args;
 mod reporters;
 
-use std::{path::PathBuf, time::Instant};
+use std::{
+    collections::HashMap,
+    path::PathBuf,
+    time::{Duration, Instant},
+};
 
 use args::Args;
 use clap::Parser;
@@ -269,6 +273,23 @@ fn main() {
     }
     TerminalReporter::summary_report(results.summary());
     // }
+
+    if args.verbose > 1 {
+        let mut per_test_time = HashMap::new();
+        for result in results.iter() {
+            let time = per_test_time
+                .entry(result.check_id.clone())
+                .or_insert(Duration::default());
+            *time += result.time;
+        }
+        let mut times: Vec<_> = per_test_time.iter().collect();
+        times.sort_by_key(|(_, time)| -(time.as_micros() as i128));
+        println!("\nTop 10 slowest checks:");
+        for (check_id, time) in times.iter().take(10) {
+            println!("{:}: {:.3}s", check_id, time.as_secs_f32());
+        }
+    }
+
     if worst_status >= args.error_code_on {
         std::process::exit(1);
     }
