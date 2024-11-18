@@ -319,9 +319,7 @@ fn same_size_instance_records(t: &Testable, _context: &Context) -> CheckFnResult
         .named_instances()
         .iter()
         .map(|ni| {
-            ni.postscript_name_id().is_none() ||
-            // Work around https://github.com/googlefonts/fontations/issues/1204
-            ni.postscript_name_id() == Some(NameId::new(0xFFFF))
+            ni.postscript_name_id().is_none() 
         })
         .collect();
     Ok(if has_or_hasnt_postscriptname.len() > 1 {
