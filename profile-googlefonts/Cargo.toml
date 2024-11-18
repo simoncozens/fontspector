@@ -6,13 +6,13 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.38"                                                                              # For metadata date checks
 fontspector-checkapi = { path = "../fontspector-checkapi" }
-google-fonts-languages = { git = "https://github.com/googlefonts/lang" }
+google-fonts-languages = "0"
 itertools = { workspace = true }
-protobuf = { git = "https://github.com/cmyr/rust-protobuf", branch = "parse-unicode-strings" }
+protobuf = "3.7.1"
 read-fonts = { workspace = true }
 write-fonts = { workspace = true }
 regex = "1.10.6"
 skrifa = { workspace = true }
 
 [build-dependencies]
-protobuf-codegen = { git = "https://github.com/cmyr/rust-protobuf", branch = "parse-unicode-strings" }
+protobuf-codegen = "3.7.1"
