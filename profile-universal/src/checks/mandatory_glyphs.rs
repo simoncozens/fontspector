@@ -1,5 +1,7 @@
-use fontspector_checkapi::{pens::HasInkPen, prelude::*, testfont, FileTypeConvert};
-use skrifa::{setting::VariationSetting, GlyphId, MetadataProvider};
+use fontspector_checkapi::{
+    pens::HasInkPen, prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION,
+};
+use skrifa::{GlyphId, MetadataProvider};
 
 #[check(
     id="mandatory_glyphs",
@@ -48,8 +50,7 @@ fn mandatory_glyphs(f: &Testable, _context: &Context) -> CheckFnResult {
         ))
     }
     let mut pen = HasInkPen::new();
-    let default: Vec<VariationSetting> = vec![];
-    font.draw_glyph(gid_0, &mut pen, default)?;
+    font.draw_glyph(gid_0, &mut pen, DEFAULT_LOCATION)?;
     if !pen.has_ink() {
         problems.push(Status::fail(
             "notdef-is-blank",

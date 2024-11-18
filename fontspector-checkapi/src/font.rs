@@ -351,3 +351,5 @@ fn is_cjk(cp: u32) -> bool {
         .iter()
         .any(|range| range.contains(&cp))
 }
+
+pub const DEFAULT_LOCATION: &[VariationSetting] = &[];

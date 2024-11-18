@@ -1,10 +1,9 @@
 use crate::bezglyph::BezGlyph;
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION};
 use kurbo::{BezPath, ParamCurve};
 use read_fonts::{types::BoundingBox, TableProvider};
 use skrifa::{
     prelude::{LocationRef, Size},
-    setting::VariationSetting,
     MetadataProvider,
 };
 
@@ -63,8 +62,7 @@ fn italic_angle(t: &Testable, context: &Context) -> CheckFnResult {
                 continue;
             }
             let mut paths = BezGlyph::default();
-            let default: Vec<VariationSetting> = vec![];
-            f.draw_glyph(gid, &mut paths, default)?;
+            f.draw_glyph(gid, &mut paths, DEFAULT_LOCATION)?;
             let y_bottom = bounds.y_min + (bounds.y_max - bounds.y_min) * 0.2;
             let y_top = bounds.y_min + (bounds.y_max - bounds.y_min) * 0.8;
             if let Some(x_intsctn_bottom) =

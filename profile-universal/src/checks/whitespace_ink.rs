@@ -1,5 +1,7 @@
-use fontspector_checkapi::{pens::AnythingPen, prelude::*, testfont, FileTypeConvert};
-use skrifa::{setting::VariationSetting, MetadataProvider};
+use fontspector_checkapi::{
+    pens::AnythingPen, prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION,
+};
+use skrifa::MetadataProvider;
 use unicode_properties::{GeneralCategory, UnicodeGeneralCategory};
 
 const EXTRA_NON_DRAWING: [u32; 4] = [0x180E, 0x200B, 0x2060, 0xFEFF];
@@ -39,9 +41,8 @@ fn whitespace_ink(t: &Testable, context: &Context) -> CheckFnResult {
             (cp, gid)
         })
         .filter(|(_cp, gid)| {
-            let default: Vec<VariationSetting> = vec![];
             let mut anythingpen = AnythingPen::new();
-            f.draw_glyph(*gid, &mut anythingpen, default)
+            f.draw_glyph(*gid, &mut anythingpen, DEFAULT_LOCATION)
                 .ok()
                 .and(if anythingpen.anything() {
                     Some(())

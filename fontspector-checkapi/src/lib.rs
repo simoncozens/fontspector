@@ -16,7 +16,7 @@ pub use check::{return_result, Check, CheckFlags, CheckId, CheckImplementation};
 pub use checkresult::{CheckResult, FixResult};
 pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};
-pub use font::{TestFont, TTF};
+pub use font::{TestFont, DEFAULT_LOCATION, TTF};
 pub use profile::{Override, Profile};
 pub use registry::Registry;
 pub use status::{CheckError, CheckFnResult, Status, StatusCode, StatusList};
