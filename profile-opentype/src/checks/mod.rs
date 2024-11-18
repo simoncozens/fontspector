@@ -8,6 +8,7 @@ pub mod head;
 pub mod hhea;
 pub mod kern;
 pub mod layout;
+pub mod loca_maxp;
 pub mod monospaced;
 pub mod name;
 pub mod os2;
