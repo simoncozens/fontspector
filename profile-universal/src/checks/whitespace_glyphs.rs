@@ -1,4 +1,5 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use skrifa::MetadataProvider;
 
 #[check(
     id = "whitespace_glyphs",
@@ -20,8 +21,9 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 fn whitespace_glyphs(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
-    for c in [0x20, 0x0A0] {
-        if !f.codepoints().contains(&c) {
+    let charmap = f.font().charmap();
+    for c in [0x20u32, 0x0A0] {
+        if charmap.map(c).is_none() {
             problems.push(Status::fail(
                 &format!("missing-whitespace-glyph-0x{:04X}", c),
                 &format!("Whitespace glyph missing for codepoint 0x{:04X}", c),

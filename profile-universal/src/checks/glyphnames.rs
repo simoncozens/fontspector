@@ -3,7 +3,6 @@ use std::collections::HashSet;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use itertools::Itertools;
 use read_fonts::{types::Version16Dot16, TableProvider};
-use skrifa::GlyphId;
 
 enum NameValidity {
     OK,
@@ -66,21 +65,25 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut allnames = HashSet::new();
     let mut duplicates = HashSet::new();
 
-    for name in (0..font.glyph_count).filter_map(|x| font.glyph_name_for_id(GlyphId::new(x as u32)))
-    {
-        if allnames.contains(&name) {
-            duplicates.insert(name.clone());
-        }
-        match test_glyph_name(&name) {
-            NameValidity::OK => {}
-            NameValidity::Naughty => {
-                badnames.insert(name.clone());
+    for name in font.all_glyphs().map(|x| font.glyph_name_for_id(x)) {
+        if let Some(name) = name {
+            if allnames.contains(&name) {
+                duplicates.insert(name.clone());
             }
-            NameValidity::Long => {
-                warnnames.insert(name.clone());
+            match test_glyph_name(&name) {
+                NameValidity::OK => {}
+                NameValidity::Naughty => {
+                    badnames.insert(name.clone());
+                }
+                NameValidity::Long => {
+                    warnnames.insert(name.clone());
+                }
             }
+            allnames.insert(name);
+        } else {
+            // We have run out of names and are synthesising, stop here.
+            break;
         }
-        allnames.insert(name);
     }
     if !badnames.is_empty() {
         problems.push(Status::fail(

@@ -30,11 +30,15 @@ fn unique_glyphnames(t: &Testable, context: &Context) -> CheckFnResult {
     let mut duplicates = vec![];
     let mut seen_glyphs = HashSet::new();
     for glyph in f.all_glyphs() {
-        let name = f.glyph_name_for_id_synthesise(glyph);
-        if seen_glyphs.contains(&name) {
-            duplicates.push(name);
+        if let Some(name) = f.glyph_name_for_id(glyph) {
+            if seen_glyphs.contains(&name) {
+                duplicates.push(name);
+            } else {
+                seen_glyphs.insert(name);
+            }
         } else {
-            seen_glyphs.insert(name);
+            // We are synthesising, stop
+            break;
         }
     }
     if duplicates.is_empty() {
