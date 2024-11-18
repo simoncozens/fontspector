@@ -15,6 +15,7 @@ write-fonts = { workspace = true }
 skrifa = { workspace = true }
 itertools = {workspace = true }
 unicode-properties = { workspace = true }
+kurbo = "0.11" # For italic angle check
 
 [dev-dependencies]
 fontbakery-bridge = { path = "../fontbakery-bridge" }

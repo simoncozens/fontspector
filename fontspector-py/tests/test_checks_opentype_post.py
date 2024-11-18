@@ -1,3 +1,4 @@
+import tempfile
 import pytest
 
 from fontTools.ttLib import TTFont
@@ -128,7 +129,6 @@ def test_check_post_table_version(check):
     assert_PASS(check(mock_cff_post_3), reason="with a post 3 CFF mock font.")
 
 
-@pytest.mark.xfail(reason="The check is not implemented yet.")
 @check_id("opentype/italic_angle")
 def test_check_italic_angle(check):
     """Checking post.italicAngle value."""
@@ -148,41 +148,49 @@ def test_check_italic_angle(check):
 
     for value, style, expected_result, expected_msg in test_cases:
         ttFont["post"].italicAngle = value
+        with tempfile.NamedTemporaryFile(suffix="-" + style + ".ttf") as temp:
+            ttFont.save(temp)
 
-        if expected_result != PASS:
-            assert_results_contain(
-                check(MockFont(ttFont=ttFont, style=style)),
-                expected_result,
-                expected_msg,
-                f"with italic-angle:{value} style:{style}...",
-            )
-        else:
-            assert_PASS(
-                check(MockFont(ttFont=ttFont, style=style)),
-                f"with italic-angle:{value} style:{style}...",
-            )
+            if expected_result != PASS:
+                assert_results_contain(
+                    check(temp.name),
+                    expected_result,
+                    expected_msg,
+                    f"with italic-angle:{value} style:{style}...",
+                )
+            else:
+                assert_PASS(
+                    check(temp.name),
+                    f"with italic-angle:{value} style:{style}...",
+                )
 
     # Cairo, check left and right-leaning explicitly
     ttFont = TTFont(TEST_FILE("cairo/CairoPlay-Italic.rightslanted.ttf"))
-    assert_PASS(check(MockFont(ttFont=ttFont, style="Italic")))
-    ttFont["post"].italicAngle *= -1
-    assert_results_contain(
-        check(MockFont(ttFont=ttFont, style="Italic")), WARN, "positive"
-    )
+    with tempfile.NamedTemporaryFile(suffix="-Italic.ttf") as temp:
+        ttFont.save(temp)
+        assert_PASS(check(temp.name))
+    with tempfile.NamedTemporaryFile(suffix="-Italic.ttf") as temp:
+        ttFont["post"].italicAngle *= -1
+        ttFont.save(temp)
+        assert_results_contain(check(temp.name), WARN, "positive")
 
     ttFont = TTFont(TEST_FILE("cairo/CairoPlay-Italic.leftslanted.ttf"))
-    assert_PASS(check(MockFont(ttFont=ttFont, style="Italic")))
+    with tempfile.NamedTemporaryFile(suffix="-Italic.ttf") as temp:
+        ttFont.save(temp)
+        assert_PASS(check(temp.name))
     ttFont["post"].italicAngle *= -1
-    assert_results_contain(
-        check(MockFont(ttFont=ttFont, style="Italic")), WARN, "negative"
-    )
+    with tempfile.NamedTemporaryFile(suffix="-Italic.ttf") as temp:
+        ttFont.save(temp)
+        assert_results_contain(check(temp.name), WARN, "negative")
 
     ttFont = TTFont(TEST_FILE("cairo/CairoPlay-Italic.rightslanted.ttf"))
-    assert_PASS(check(MockFont(ttFont=ttFont, style="Italic")))
-    ttFont["glyf"]["I"].endPtsOfContours = []
-    ttFont["glyf"]["I"].coordinates = []
-    ttFont["glyf"]["I"].flags = []
-    ttFont["glyf"]["I"].numberOfContours = 0
-    assert_results_contain(
-        check(MockFont(ttFont=ttFont, style="Italic")), WARN, "empty-glyphs"
-    )
+    with tempfile.NamedTemporaryFile(suffix="-Italic.ttf") as temp:
+        ttFont.save(temp)
+        assert_PASS(check(temp.name))
+    with tempfile.NamedTemporaryFile(suffix="-Italic.ttf") as temp:
+        ttFont["glyf"]["I"].endPtsOfContours = []
+        ttFont["glyf"]["I"].coordinates = []
+        ttFont["glyf"]["I"].flags = []
+        ttFont["glyf"]["I"].numberOfContours = 0
+        ttFont.save(temp)
+        assert_results_contain(check(temp.name), WARN, "empty-glyphs")

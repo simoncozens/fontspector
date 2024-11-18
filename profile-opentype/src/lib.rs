@@ -1,5 +1,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
+mod bezglyph;
 mod checks;
+
 use fontspector_checkapi::{Profile, Registry};
 
 pub struct OpenType;
@@ -30,6 +32,7 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::head::unitsperem);
         cr.register_check(checks::hhea::caret_slope);
         cr.register_check(checks::hhea::maxadvancewidth);
+        cr.register_check(checks::italic_angle::italic_angle);
         cr.register_check(checks::layout::layout_valid_feature_tags);
         cr.register_check(checks::layout::layout_valid_language_tags);
         cr.register_check(checks::layout::layout_valid_script_tags);

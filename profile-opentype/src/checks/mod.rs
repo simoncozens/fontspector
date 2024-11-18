@@ -7,6 +7,7 @@ pub mod glyf;
 pub mod gpos;
 pub mod head;
 pub mod hhea;
+pub mod italic_angle;
 pub mod kern;
 pub mod layout;
 pub mod loca_maxp;
