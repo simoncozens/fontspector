@@ -1,8 +1,10 @@
 use std::collections::{HashMap, HashSet};
 
-use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, StatusCode, TestFont};
+use fontspector_checkapi::{
+    pens::XDeltaPen, prelude::*, skip, testfont, FileTypeConvert, StatusCode, TestFont,
+};
 use read_fonts::types::{F2Dot14, NameId};
-use skrifa::{outline::OutlinePen, MetadataProvider};
+use skrifa::MetadataProvider;
 
 const REGULAR_COORDINATE_EXPECTATIONS: [(&str, f32); 4] = [
     ("wght", 400.0),
@@ -318,9 +320,7 @@ fn same_size_instance_records(t: &Testable, _context: &Context) -> CheckFnResult
         .font()
         .named_instances()
         .iter()
-        .map(|ni| {
-            ni.postscript_name_id().is_none() 
-        })
+        .map(|ni| ni.postscript_name_id().is_none())
         .collect();
     Ok(if has_or_hasnt_postscriptname.len() > 1 {
         Status::just_one_fail(
@@ -484,64 +484,6 @@ fn varfont_valid_default_instance_nameids(t: &Testable, _context: &Context) -> C
         }
     }
     return_result(problems)
-}
-
-struct XDeltaPen {
-    highest_point: Option<(f32, f32)>,
-    lowest_point: Option<(f32, f32)>,
-}
-
-impl XDeltaPen {
-    fn new() -> Self {
-        XDeltaPen {
-            highest_point: None,
-            lowest_point: None,
-        }
-    }
-
-    fn update(&mut self, x: f32, y: f32) {
-        if let Some((_hx, hy)) = self.highest_point {
-            if y > hy {
-                self.highest_point = Some((x, y));
-            }
-        } else {
-            self.highest_point = Some((x, y));
-        }
-        if let Some((_lx, ly)) = self.lowest_point {
-            if y < ly {
-                self.lowest_point = Some((x, y));
-            }
-        } else {
-            self.lowest_point = Some((x, y));
-        }
-    }
-
-    fn x_delta(&self) -> f32 {
-        if let (Some((hx, _)), Some((lx, _))) = (self.highest_point, self.lowest_point) {
-            hx - lx
-        } else {
-            0.0
-        }
-    }
-}
-
-impl OutlinePen for XDeltaPen {
-    fn move_to(&mut self, x: f32, y: f32) {
-        self.update(x, y);
-    }
-    fn line_to(&mut self, x: f32, y: f32) {
-        self.update(x, y);
-    }
-    fn quad_to(&mut self, cx0: f32, cy0: f32, x: f32, y: f32) {
-        self.update(cx0, cy0);
-        self.update(x, y);
-    }
-    fn curve_to(&mut self, cx0: f32, cy0: f32, cx1: f32, cy1: f32, x: f32, y: f32) {
-        self.update(cx0, cy0);
-        self.update(cx1, cy1);
-        self.update(x, y);
-    }
-    fn close(&mut self) {}
 }
 
 #[check(

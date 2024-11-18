@@ -1,30 +1,5 @@
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
-use skrifa::{outline::OutlinePen, setting::VariationSetting, GlyphId, MetadataProvider};
-
-#[derive(Default)]
-struct HasInkPen(bool);
-impl HasInkPen {
-    fn has_ink(&self) -> bool {
-        self.0
-    }
-}
-impl OutlinePen for HasInkPen {
-    fn move_to(&mut self, _x: f32, _y: f32) {}
-
-    fn line_to(&mut self, _x: f32, _y: f32) {
-        self.0 = true;
-    }
-
-    fn quad_to(&mut self, _cx0: f32, _cy0: f32, _x: f32, _y: f32) {
-        self.0 = true;
-    }
-
-    fn curve_to(&mut self, _cx0: f32, _cy0: f32, _cx1: f32, _cy1: f32, _x: f32, _y: f32) {
-        self.0 = true;
-    }
-
-    fn close(&mut self) {}
-}
+use fontspector_checkapi::{pens::HasInkPen, prelude::*, testfont, FileTypeConvert};
+use skrifa::{setting::VariationSetting, GlyphId, MetadataProvider};
 
 #[check(
     id="mandatory_glyphs",
@@ -72,7 +47,7 @@ fn mandatory_glyphs(f: &Testable, _context: &Context) -> CheckFnResult {
             &format!("The '.notdef' glyph should not have a Unicode codepoint value assigned, but has 0x{:04X}.", cp.0)
         ))
     }
-    let mut pen = HasInkPen::default();
+    let mut pen = HasInkPen::new();
     let default: Vec<VariationSetting> = vec![];
     font.draw_glyph(gid_0, &mut pen, default)?;
     if !pen.has_ink() {

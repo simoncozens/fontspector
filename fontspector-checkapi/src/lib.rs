@@ -6,6 +6,7 @@ pub mod constants;
 mod context;
 mod filetype;
 mod font;
+pub mod pens;
 mod profile;
 mod registry;
 mod status;
