@@ -3,7 +3,7 @@ use read_fonts::{tables::gdef::GlyphClassDef, TableProvider};
 use skrifa::MetadataProvider;
 use unicode_properties::{GeneralCategory, UnicodeGeneralCategory};
 
-fn is_nonspacing_mark(c: char) -> bool {
+pub(crate) fn is_nonspacing_mark(c: char) -> bool {
     matches!(
         c.general_category(),
         GeneralCategory::NonspacingMark | GeneralCategory::EnclosingMark

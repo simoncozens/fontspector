@@ -2,6 +2,7 @@ pub mod bold_italic_unique;
 pub mod code_pages;
 pub mod fvar;
 pub mod gdef;
+pub mod gdef_non_mark_chars;
 pub mod glyf;
 pub mod gpos;
 pub mod head;

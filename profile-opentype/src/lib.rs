@@ -19,6 +19,7 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::fvar::slant_direction);
         cr.register_check(checks::gdef::gdef_mark_chars);
         cr.register_check(checks::gdef::gdef_spacing_marks);
+        cr.register_check(checks::gdef_non_mark_chars::gdef_non_mark_chars);
         cr.register_check(checks::glyf::check_glyf_non_transformed_duplicate_components);
         cr.register_check(checks::glyf::check_point_out_of_bounds);
         cr.register_check(checks::glyf::glyf_unused_data);

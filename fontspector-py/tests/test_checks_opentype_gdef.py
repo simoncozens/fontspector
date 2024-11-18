@@ -81,7 +81,6 @@ def test_check_gdef_mark_chars(check):
     assert_PASS(check(ttFont), "when properly declared...")
 
 
-@pytest.mark.skip(reason="This test is not implemented yet.")
 @check_id("opentype/gdef_non_mark_chars")
 def test_check_gdef_non_mark_chars(check):
     """Are some non-mark characters in GDEF mark glyph class spacing?"""
