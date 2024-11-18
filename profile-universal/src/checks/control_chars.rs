@@ -14,9 +14,10 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 )]
 fn control_chars(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
+    let codepoints = f.codepoints();
     let bad_characters = (0x01..0x1F)
         .filter(|&c| c != 0x0D)
-        .filter(|c| f.codepoints().contains(c))
+        .filter(|c| codepoints.contains(c))
         .map(|c| format!("U+{:04X} ({})", c, f.glyph_name_for_unicode_synthesise(c)))
         .collect::<Vec<String>>();
     if bad_characters.is_empty() {

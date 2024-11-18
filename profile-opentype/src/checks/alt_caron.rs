@@ -54,8 +54,9 @@ fn alt_caron(t: &Testable, _context: &Context) -> CheckFnResult {
         .copied()
         .map(|codepoint| (f.glyph_name_for_unicode_synthesise(codepoint), codepoint))
         .collect();
+    let charmap = f.font().charmap();
     for caron in CARON_CODEPOINTS {
-        if let Some(gid) = f.font().charmap().map(caron) {
+        if let Some(gid) = charmap.map(caron) {
             if let Ok(Some(glyph)) = f.get_glyf_glyph(gid) {
                 match glyph {
                     Glyph::Simple(_) => {
