@@ -90,7 +90,6 @@ def test_check_color_cpal_brightness(check):
     assert_PASS(check(font), "with a colrv0 font with good layer colors")
 
 
-@pytest.mark.skip(reason="Not implemented yet")
 @check_id("empty_glyph_on_gid1_for_colrv0")
 def test_check_empty_glyph_on_gid1_for_colrv0(check):
     """Put an empty glyph on GID 1 right after the .notdef glyph for COLRv0 fonts."""
