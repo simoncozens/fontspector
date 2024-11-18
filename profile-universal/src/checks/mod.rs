@@ -3,6 +3,7 @@ pub mod arabic_spacing_symbols;
 pub mod base_has_width;
 pub mod case_mapping;
 pub mod cjk_chws_feature;
+pub mod cjk_not_enough_glyphs;
 pub mod cmap_format_12;
 pub mod color_cpal_brightness;
 pub mod colorfont_tables;

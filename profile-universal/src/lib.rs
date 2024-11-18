@@ -9,6 +9,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::arabic_high_hamza::arabic_high_hamza);
         cr.register_check(checks::arabic_spacing_symbols::arabic_spacing_symbols);
         cr.register_check(checks::base_has_width::base_has_width);
+        cr.register_check(checks::cjk_not_enough_glyphs::cjk_not_enough_glyphs);
         cr.register_check(checks::cjk_chws_feature::cjk_chws_feature);
         cr.register_check(checks::case_mapping::case_mapping);
         cr.register_check(checks::cmap_format_12::cmap_format_12);

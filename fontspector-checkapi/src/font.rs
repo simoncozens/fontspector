@@ -337,12 +337,12 @@ impl TestFont<'_> {
         (0..self.glyph_count as u32).map(GlyphId::from)
     }
 
+    pub fn cjk_codepoints(&self) -> impl Iterator<Item = u32> {
+        self.codepoints().into_iter().filter(|&cp| is_cjk(cp))
+    }
+
     pub fn is_cjk_font(&self) -> bool {
-        self.codepoints()
-            .into_iter()
-            .filter(|&cp| is_cjk(cp))
-            .count()
-            > 150
+        self.cjk_codepoints().count() > 150
     }
 }
 
