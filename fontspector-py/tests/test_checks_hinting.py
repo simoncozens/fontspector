@@ -5,22 +5,21 @@ from fontbakery.codetesting import (
     assert_results_contain,
     TEST_FILE,
 )
-from fontbakery.status import FAIL, INFO
+from fontbakery.status import FAIL, INFO, SKIP
 from conftest import check_id
 
 import pytest
 
 
-@pytest.mark.skip(reason="This check is not yet implemented.")
 @check_id("hinting_impact")
 def test_check_hinting_impact(check):
     """Show hinting filesize impact."""
-    font = TEST_FILE("mada/Mada-Regular.ttf")
-    assert_results_contain(
-        check(font), INFO, "size-impact", "this check always emits an INFO result..."
-    )
 
-    font = TEST_FILE("rokkitt/Rokkitt-Bold.otf")
+    # Mada is unhinted; fontbakery tests (and dehints) it anyway - we skip
+    font = TEST_FILE("mada/Mada-Regular.ttf")
+    assert_results_contain(check(font), SKIP, "not-hinted")
+
+    font = TEST_FILE("nunito/Nunito-Regular.ttf")
     assert_results_contain(
         check(font), INFO, "size-impact", "this check always emits an INFO result..."
     )

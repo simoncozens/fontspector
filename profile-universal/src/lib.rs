@@ -25,6 +25,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::glyphnames::valid_glyphnames);
         cr.register_check(checks::glyphset::check_rupee);
         cr.register_check(checks::gpos7::gpos7);
+        cr.register_check(checks::hinting_impact::hinting_impact);
         cr.register_check(checks::integer_ppem_if_hinted::integer_ppem_if_hinted);
         cr.register_check(checks::interpolation_issues::interpolation_issues);
         cr.register_check(checks::legacy_accents::legacy_accents);

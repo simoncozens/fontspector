@@ -17,6 +17,7 @@ pub mod glyf_nested_components;
 pub mod glyphnames;
 pub mod glyphset;
 pub mod gpos7;
+pub mod hinting_impact;
 pub mod integer_ppem_if_hinted;
 pub mod interpolation_issues;
 pub mod legacy_accents;
