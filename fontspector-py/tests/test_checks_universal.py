@@ -798,7 +798,6 @@ def test_check_interpolation_issues(check):
     assert "Unfulfilled Conditions: is_ttf" in msg
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("math_signs_width")
 def test_check_math_signs_width(check):
     """Check font math signs have the same width."""
