@@ -51,7 +51,7 @@ fn test_glyph_name(s: &str) -> NameValidity {
         Glyph names must also be unique, as duplicate glyph names prevent font installation on Mac OS X.",
     proposal = "https://github.com/fonttools/fontbakery/issues/2832"
 )]
-fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
+fn valid_glyphnames(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let mut problems: Vec<Status> = vec![];
     let post = font.font().post()?;
@@ -65,12 +65,18 @@ fn valid_glyphnames(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut allnames = HashSet::new();
     let mut duplicates = HashSet::new();
 
-    for name in font.all_glyphs().map(|x| font.glyph_name_for_id(x)) {
+    let all_names = &context
+        .font_cache
+        .get(f)
+        .ok_or_else(|| CheckError::Error("Could not access font cache.".to_string()))?
+        .glyphnames;
+
+    for name in all_names {
         if let Some(name) = name {
             if allnames.contains(&name) {
                 duplicates.insert(name.clone());
             }
-            match test_glyph_name(&name) {
+            match test_glyph_name(name) {
                 NameValidity::OK => {}
                 NameValidity::Naughty => {
                     badnames.insert(name.clone());

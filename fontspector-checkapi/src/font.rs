@@ -45,6 +45,7 @@ pub struct TestFont<'a> {
 pub struct ParsedFont {
     pub glyph_count: usize,
     pub codepoints: HashSet<u32>,
+    pub glyphnames: Vec<Option<String>>,
 }
 
 impl ParsedFont {
@@ -52,6 +53,10 @@ impl ParsedFont {
         ParsedFont {
             glyph_count: font.glyph_count,
             codepoints: font.codepoints(),
+            glyphnames: font
+                .all_glyphs()
+                .map(|gid| font.glyph_name_for_id(gid))
+                .collect(),
         }
     }
 }

@@ -29,8 +29,15 @@ fn unique_glyphnames(t: &Testable, context: &Context) -> CheckFnResult {
     );
     let mut duplicates = vec![];
     let mut seen_glyphs = HashSet::new();
-    for glyph in f.all_glyphs() {
-        if let Some(name) = f.glyph_name_for_id(glyph) {
+
+    let all_names = &context
+        .font_cache
+        .get(t)
+        .ok_or_else(|| CheckError::Error("Could not access font cache.".to_string()))?
+        .glyphnames;
+
+    for maybe_name in all_names.iter() {
+        if let Some(name) = maybe_name {
             if seen_glyphs.contains(&name) {
                 duplicates.push(name);
             } else {
