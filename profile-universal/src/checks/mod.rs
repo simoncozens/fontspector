@@ -19,6 +19,7 @@ pub mod glyphset;
 pub mod gpos7;
 pub mod integer_ppem_if_hinted;
 pub mod interpolation_issues;
+pub mod legacy_accents;
 pub mod linegaps;
 pub mod mandatory_avar_table;
 pub mod mandatory_glyphs;

@@ -328,7 +328,6 @@ def test_check_whitespace_ink(check):
     )
 
 
-@pytest.mark.skip(reason="Check not yet implemented")
 @check_id("legacy_accents")
 def test_check_legacy_accents(check):
     """Check that legacy accents aren't used in composite glyphs."""
