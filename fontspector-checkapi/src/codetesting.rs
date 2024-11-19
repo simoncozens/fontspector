@@ -1,5 +1,5 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)] // No bad thing if we panic in tests
-use crate::{prelude::*, Check, CheckResult, Context, FileTypeConvert, StatusCode};
+use crate::{cache::Cache, prelude::*, Check, CheckResult, Context, FileTypeConvert, StatusCode};
 use read_fonts::{types::NameId, TableProvider};
 use serde_json::Map;
 use write_fonts::{
@@ -38,6 +38,7 @@ pub fn run_check(check: Check<'_>, font: Testable) -> std::option::Option<CheckR
         configuration: Map::new(),
         check_metadata: check.metadata(),
         full_lists: false,
+        font_cache: Cache::default(),
     };
     check.run(&TestableType::Single(&font), &ctx, None)
 }

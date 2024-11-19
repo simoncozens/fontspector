@@ -14,7 +14,8 @@ use args::Args;
 use clap::Parser;
 use fontbakery_bridge::FontbakeryBridge;
 use fontspector_checkapi::{
-    Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
+    cache, Check, CheckResult, Context, FileTypeConvert, FixResult, Plugin, Registry,
+    TestableCollection, TestableType, TTF,
 };
 use itertools::Either;
 use profile_googlefonts::GoogleFonts;
@@ -153,6 +154,16 @@ fn main() {
 
     // Load configuration
     let configuration: Map<String, serde_json::Value> = load_configuration(&args);
+    let mut cache = cache::Cache::default();
+
+    // Prime the cache
+    for testable in &testables {
+        if let TestableType::Single(testable) = testable {
+            if let Some(font) = TTF.from_testable(testable) {
+                cache.store(testable, &font);
+            }
+        }
+    }
 
     // Establish a check order
     let checkorder: Vec<(String, &TestableType, &Check, Context)> = profile.check_order(
@@ -165,6 +176,7 @@ fn main() {
             configuration: Map::new(),
             check_metadata: serde_json::Value::Null,
             full_lists: args.full_lists,
+            font_cache: cache,
         },
         configuration,
         &testables,

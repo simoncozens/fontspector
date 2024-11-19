@@ -1,4 +1,6 @@
+#![feature(mapped_lock_guards)]
 #![deny(clippy::unwrap_used, clippy::expect_used)]
+pub mod cache;
 mod check;
 mod checkresult;
 pub mod codetesting;

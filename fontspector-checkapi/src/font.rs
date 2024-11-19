@@ -41,6 +41,21 @@ pub struct TestFont<'a> {
     _glyphnames: RefCell<Vec<Option<String>>>,
 }
 
+#[derive(Debug)]
+pub struct ParsedFont {
+    pub glyph_count: usize,
+    pub codepoints: HashSet<u32>,
+}
+
+impl ParsedFont {
+    pub fn new(font: &TestFont) -> ParsedFont {
+        ParsedFont {
+            glyph_count: font.glyph_count,
+            codepoints: font.codepoints(),
+        }
+    }
+}
+
 impl Debug for TestFont<'_> {
     fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
         write!(f, "<TestFont:{}>", self.filename.display())

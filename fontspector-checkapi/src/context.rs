@@ -1,6 +1,6 @@
 use serde_json::{Map, Value};
 
-use crate::{Check, Profile};
+use crate::{cache::Cache, Check, Profile};
 
 #[derive(Debug, Clone, Default)]
 pub struct Context {
@@ -9,6 +9,7 @@ pub struct Context {
     pub configuration: Map<String, Value>,
     pub check_metadata: Value,
     pub full_lists: bool,
+    pub font_cache: Cache,
 }
 
 impl Context {
@@ -38,6 +39,7 @@ impl Context {
             configuration: check_config,
             check_metadata: check.metadata(),
             full_lists: self.full_lists,
+            font_cache: self.font_cache.clone(),
         }
     }
 }
