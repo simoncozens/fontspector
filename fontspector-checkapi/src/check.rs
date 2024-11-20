@@ -116,16 +116,25 @@ impl<'a> Check<'a> {
             (CheckImplementation::CheckAll(_), TestableType::Single(_)) => None,
             (CheckImplementation::CheckOne(_), TestableType::Collection(_)) => None,
             (CheckImplementation::CheckOne(check_one), TestableType::Single(f)) => {
+                #[cfg(not(target_family = "wasm"))]
                 let start = std::time::Instant::now();
                 let result = check_one(f, context);
+
+                #[cfg(not(target_family = "wasm"))]
                 let duration = start.elapsed();
+                #[cfg(target_family = "wasm")]
+                let duration = Duration::from_secs(0);
 
                 Some(self.clarify_result(result, Some(f), section, duration))
             }
             (CheckImplementation::CheckAll(check_all), TestableType::Collection(f)) => {
+                #[cfg(not(target_family = "wasm"))]
                 let start = std::time::Instant::now();
                 let result = check_all(f, context);
+                #[cfg(not(target_family = "wasm"))]
                 let duration = start.elapsed();
+                #[cfg(target_family = "wasm")]
+                let duration = Duration::from_secs(0);
 
                 Some(self.clarify_result(result, None, section, duration))
             }
