@@ -18,4 +18,5 @@ itertools = {workspace = true }
 unicode-properties = { workspace = true }
 unicode_names2 = "0.6.0"
 markdown-table = "0.2.0"
+freetype-rs = { version = "*", features = ["bundled"] } # For freetype_rasterizer
 log = {workspace =  true}
