@@ -15,6 +15,8 @@ pub fn version() -> String {
 
 #[wasm_bindgen]
 pub fn check_fonts(fonts: &JsValue, profile: &str) -> Result<String, JsValue> {
+    console_error_panic_hook::set_once();
+
     let mut registry = Registry::new();
     OpenType
         .register(&mut registry)
