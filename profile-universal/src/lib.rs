@@ -22,6 +22,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::family_vertical_metrics::family_vertical_metrics);
         cr.register_check(checks::family_win_ascent_and_descent::family_win_ascent_and_descent);
         cr.register_check(checks::fvar_name_entries::fvar_name_entries);
+        #[cfg(not(target_family = "wasm"))]
         cr.register_check(checks::freetype_rasterizer::freetype_rasterizer);
         cr.register_check(checks::glyf_nested_components::glyf_nested_components);
         cr.register_check(checks::glyphnames::valid_glyphnames);

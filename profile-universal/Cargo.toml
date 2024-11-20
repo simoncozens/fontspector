@@ -7,6 +7,9 @@ authors =  [
     "Felipe Sanches <juca@members.fsf.org>",
 ]
 
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+freetype-rs = { version = "*", features = ["bundled"] } # For freetype_rasterizer
+
 [dependencies]
 interpolatable = { git = "https://github.com/simoncozens/interpolatable", features = [ "skrifa"]} # For interpolation_issues
 fontspector-checkapi = { path = "../fontspector-checkapi" }
@@ -18,5 +21,4 @@ itertools = {workspace = true }
 unicode-properties = { workspace = true }
 unicode_names2 = "0.6.0"
 markdown-table = "0.2.0"
-freetype-rs = { version = "*", features = ["bundled"] } # For freetype_rasterizer
 log = {workspace =  true}
