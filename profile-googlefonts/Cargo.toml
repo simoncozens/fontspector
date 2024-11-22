@@ -7,7 +7,7 @@ edition = "2021"
 chrono = "0.4.38"                                                                              # For metadata date checks
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 google-fonts-languages = "0"
-google-fonts-subsets = { path = "/Users/simon/others-repos/gfsubsets"}
+google-fonts-subsets = "0"
 itertools = { workspace = true }
 protobuf = "3.7.1"
 read-fonts = { workspace = true }
