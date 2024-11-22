@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "start": "webpack-dev-server"
+    "start": "webpack serve"
   },
   "repository": {
     "type": "git",
@@ -31,9 +31,12 @@
   },
   "devDependencies": {
     "copy-webpack-plugin": "^5.0.0",
-    "webpack": "^4",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5",
-    "worker-loader": "^3.0.8"
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0",
+    "worker-loader": "^3.0.8",
+    "@webassemblyjs/ast": "^1.14.1",
+    "@webassemblyjs/wasm-edit": "^1.14.1",
+    "@webassemblyjs/wasm-parser": "^1.14.1"
   }
 }
