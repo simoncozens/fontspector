@@ -31,4 +31,4 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 
 # Markdown/HTML reporters
-tera = "1.20.0"
+tera = { version = "1.20.0", default-features = false}
