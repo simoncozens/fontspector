@@ -6,6 +6,7 @@ mod license;
 mod metadata;
 mod metadata_copyright;
 mod metadata_license;
+mod metadata_subsets_correct;
 mod use_typo_metrics;
 use fontspector_checkapi::prelude::*;
 
@@ -22,6 +23,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(license::name_rfn);
         cr.register_check(metadata::validate_metadatapb);
         cr.register_check(metadata::can_render_samples);
+        cr.register_check(metadata_subsets_correct::metadata_subsets_correct);
         cr.register_check(metadata_copyright::metadata_copyright);
         cr.register_check(metadata_license::metadata_license);
         cr.register_check(use_typo_metrics::os2_fsselectionbit7);
@@ -43,9 +45,7 @@ include_profiles = ["universal"]
     "googlefonts/metadata/category_hints",
     "googlefonts/metadata/consistent_axis_enumeration",
     "googlefonts/metadata/consistent_repo_urls",
-    "googlefonts/metadata/date_added",
     "googlefonts/metadata/designer_profiles",
-    "googlefonts/metadata/designer_values",
     "googlefonts/metadata/empty_designer",
     "googlefonts/metadata/escaped_strings",
     "googlefonts/metadata/family_directory_name",
@@ -57,7 +57,6 @@ include_profiles = ["universal"]
     "googlefonts/metadata/match_fullname_postscript",
     "googlefonts/metadata/match_name_familyname",
     "googlefonts/metadata/match_weight_postscript",
-    "googlefonts/metadata/menu_and_latin",
     "googlefonts/metadata/minisite_url",
     "googlefonts/metadata/nameid/family_and_full_names",
     "googlefonts/metadata/nameid/font_name",
@@ -66,17 +65,20 @@ include_profiles = ["universal"]
     "googlefonts/metadata/parses",
     "googlefonts/metadata/primary_script",
     "googlefonts/metadata/regular_is_400",
-    "googlefonts/metadata/single_cjk_subset",
-    "googlefonts/metadata/subsets_order",
+    "googlefonts/metadata/single_cjk_subset", # To merge into metadata/subsets_correct
     "googlefonts/metadata/undeclared_fonts",
     "googlefonts/metadata/unique_full_name_values",
     "googlefonts/metadata/unique_weight_style_pairs",
     "googlefonts/metadata/unreachable_subsetting",
-    "googlefonts/metadata/unsupported_subsets",
+    "googlefonts/metadata/subsets_correct", # Replacement for metadata/unsupported_subsets
     "googlefonts/metadata/valid_filename_values",
     "googlefonts/metadata/valid_full_name_values",
     "googlefonts/metadata/valid_nameid25",
     "googlefonts/metadata/valid_post_script_name_values",
+    # "googlefonts/metadata/subsets_order", # Merged into metadata/parses
+    # "googlefonts/metadata/menu_and_latin", # Merged into subsets/correct
+    # "googlefonts/metadata/designer_values", # Merged into metadata/parses
+    # "googlefonts/metadata/date_added", # Merged into metadata/parses
 ]
 "Glyphset Checks" = [
     "googlefonts/glyphsets/shape_languages",

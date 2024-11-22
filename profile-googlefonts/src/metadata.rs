@@ -36,12 +36,6 @@ fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
                 )));
         }
     }
-    // Check subsets are in order
-    let mut sorted_subsets = msg.subsets.clone();
-    sorted_subsets.sort();
-    if msg.subsets != sorted_subsets {
-        problems.push(Status::fail("not-sorted", "Subsets are not in order"))
-    }
 
     // Check date added is YYYY-MM-DD
     if msg
