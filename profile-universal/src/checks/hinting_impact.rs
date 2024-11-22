@@ -1,9 +1,9 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
-use read_fonts::ReadError;
-use skrifa::{FontRef, Tag};
+use read_fonts::{tables::glyf::Glyf, ReadError, TableProvider};
+use skrifa::{FontRef, GlyphId, Tag};
 use write_fonts::{
-    // from_obj::{FromObjRef, FromTableRef},
-    // tables::glyf::Glyph,
+    from_obj::FromTableRef,
+    tables::glyf::{GlyfLocaBuilder, Glyph},
     FontBuilder,
 };
 
@@ -17,33 +17,37 @@ fn is_hinted(font: &TestFont) -> bool {
     false
 }
 
-fn dehinted(font: &FontRef) -> Result<Vec<u8>, ReadError> {
+fn dehinted(font: &FontRef) -> Result<Vec<u8>, CheckError> {
     let mut new_font = FontBuilder::new();
+    let glyf_table_hinted = any_glyphs_have_instructions(font)?;
     for table in font.table_directory.table_records() {
         let tag = table.tag.get();
         if tag == Tag::new(b"fpgm") || tag == Tag::new(b"prep") || tag == Tag::new(b"cvt ") {
             continue;
         }
-        if tag == Tag::new(b"glyf") {
+        if tag == Tag::new(b"glyf") && glyf_table_hinted {
             // https://github.com/googlefonts/fontations/issues/1253
-            // let glyf: Glyf = font.glyf()?;
-            // let loca = font.loca(None)?;
-            // let glyph_count: u32 = font.maxp()?.num_glyphs().into();
-            // let mut owned_glyphs: Vec<Glyph> = (0..glyph_count)
-            //     .map(GlyphId::from)
-            //     .flat_map(|gid| loca.get_glyf(gid, &glyf))
-            //     .flatten()
-            //     .map(|g| Glyph::from_table_ref(&g))
-            //     .collect();
-            // for glyph in owned_glyphs.iter_mut() {
-            //     if let Glyph::Simple(ref mut simple) = glyph {
-            //          // Actually there's nothing intelligent I can do here.
-            //     }
-            // }
-
-            log::warn!("glyf table dehinting not implemented");
-            #[allow(clippy::unwrap_used)]
-            new_font.add_raw(tag, font.table_data(tag).unwrap());
+            let glyf: Glyf = font.glyf()?;
+            let loca = font.loca(None)?;
+            let glyph_count: u32 = font.maxp()?.num_glyphs().into();
+            let mut builder = GlyfLocaBuilder::new();
+            let mut owned_glyphs: Vec<Glyph> = (0..glyph_count)
+                .map(GlyphId::from)
+                .flat_map(|gid| loca.get_glyf(gid, &glyf))
+                .flatten()
+                .map(|g| Glyph::from_table_ref(&g))
+                .collect();
+            for glyph in owned_glyphs.iter_mut() {
+                if let Glyph::Simple(ref mut _simple) = glyph {
+                    // Coming to a write-fonts near you soon!
+                    log::warn!("TTF dehinting not yet implemented; upgrade write-fonts");
+                    // simple.instructions = vec![];
+                }
+                builder.add_glyph(glyph)?;
+            }
+            let (glyf, loca, _loca_format) = builder.build();
+            new_font.add_table(&glyf)?;
+            new_font.add_table(&loca)?;
             continue;
         }
         if let Some(table) = font.table_data(tag) {
@@ -51,6 +55,21 @@ fn dehinted(font: &FontRef) -> Result<Vec<u8>, ReadError> {
         }
     }
     Ok(new_font.build())
+}
+
+fn any_glyphs_have_instructions(font: &FontRef<'_>) -> Result<bool, ReadError> {
+    let glyf: Glyf = font.glyf()?;
+    let loca = font.loca(None)?;
+    let glyph_count: u32 = font.maxp()?.num_glyphs().into();
+    Ok((0..glyph_count)
+        .map(GlyphId::from)
+        .flat_map(|gid| loca.get_glyf(gid, &glyf))
+        .flatten()
+        .take(100) // Limit to 100 glyphs to avoid performance issues
+        .any(|g| match g {
+            read_fonts::tables::glyf::Glyph::Simple(simple) => !simple.instructions().is_empty(),
+            _ => false,
+        }))
 }
 
 #[check(
@@ -68,7 +87,7 @@ fn hinting_impact(f: &Testable, _context: &Context) -> CheckFnResult {
     let hinted_size = f.contents.len();
     let dehinted = dehinted(&font.font())?;
     let dehinted_size: usize = dehinted.len();
-    let increase = hinted_size - dehinted_size;
+    let increase = hinted_size as isize - dehinted_size as isize;
     let change = ((hinted_size as f32) / (dehinted_size as f32) - 1.0) * 100.0;
 
     Ok(Status::just_one_info(
