@@ -66,8 +66,6 @@ pub fn set_name_entry(
     nameid: NameId,
     new_string: String,
 ) {
-    use std::collections::BTreeSet;
-
     let f = TTF.from_testable(font).unwrap();
     let name = f.font().name().unwrap();
 
@@ -78,7 +76,7 @@ pub fn set_name_entry(
         nameid,
         new_string.to_string().into(),
     );
-    let mut new_records: BTreeSet<NameRecord> = name
+    let mut new_records: Vec<NameRecord> = name
         .name_record()
         .iter()
         .filter(|record| record.name_id() != nameid)
@@ -98,7 +96,7 @@ pub fn set_name_entry(
             )
         })
         .collect();
-    new_records.insert(new_record);
+    new_records.push(new_record);
     let new_nametable = Name::new(new_records);
     let new_bytes = FontBuilder::new()
         .add_table(&new_nametable)
