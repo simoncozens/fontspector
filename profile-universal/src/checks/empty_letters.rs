@@ -50,7 +50,7 @@ fn is_letter(codepoint: u32) -> bool {
     proposal = "https://github.com/fonttools/fontbakery/pull/2460",
     title = "Letters in font have glyphs that are not empty?"
 )]
-fn empty_letters(t: &Testable, _context: &Context) -> CheckFnResult {
+fn empty_letters(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let blank_ok_set: HashSet<u32> = ALL_HANGUL_SYLLABLES_CODEPOINTS
         .collect::<HashSet<u32>>()
@@ -61,6 +61,7 @@ fn empty_letters(t: &Testable, _context: &Context) -> CheckFnResult {
         )
         .copied()
         .collect();
+    let mut empties = vec![];
     let mut num_blank_hangul = 0;
     let mut problems = vec![];
     for (codepoint, gid) in f.font().charmap().mappings() {
@@ -72,15 +73,15 @@ fn empty_letters(t: &Testable, _context: &Context) -> CheckFnResult {
             && is_letter(codepoint)
             && is_blank_glyph(&f, gid)?
         {
-            problems.push(Status::fail(
-                "empty-letter",
-                &format!(
-                    "U+{:04X} should be visible, but its glyph ('{}') is empty.",
-                    codepoint,
-                    f.glyph_name_for_unicode_synthesise(codepoint)
-                ),
+            empties.push(format!(
+                "U+{:04X} should be visible, but its glyph ('{}') is empty.",
+                codepoint,
+                f.glyph_name_for_unicode_synthesise(codepoint)
             ));
         }
+    }
+    if !empties.is_empty() {
+        problems.push(Status::fail("empty-letter", &bullet_list(context, empties)));
     }
     if num_blank_hangul > 0 {
         problems.push(Status::warn(
