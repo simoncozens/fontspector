@@ -23,7 +23,7 @@ glob-match = "0.2.1"
 glob = "0.3.1"
 
 # Needed so that we can refer to status codes on the command line
-clap = { version = "3.2.5", features = ["derive"] }
+clap = { version = "3.2.5", features = ["derive"], optional= true }
 
 # Serializing and deserializing profiles
 toml = "0.8.14"

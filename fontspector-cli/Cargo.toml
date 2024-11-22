@@ -8,7 +8,7 @@ repository = "https://github.com/simoncozens/fontspector"
 license = "Apache-2.0"
 
 [dependencies]
-fontspector-checkapi = { path = "../fontspector-checkapi" }
+fontspector-checkapi = { path = "../fontspector-checkapi", features =["clap"] }
 # These profiles are baked-in
 fontbakery-bridge = { path = "../fontbakery-bridge" }
 profile-universal = { path = "../profile-universal" }

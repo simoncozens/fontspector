@@ -1,9 +1,6 @@
-use clap::ArgEnum;
 use serde::{Deserialize, Serialize};
-
-#[derive(
-    Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone, ArgEnum, Serialize, Deserialize, Hash,
-)]
+#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone, Serialize, Deserialize, Hash)]
+#[cfg_attr(feature = "clap", derive(clap::ArgEnum))]
 #[serde(rename_all = "UPPERCASE")]
 pub enum StatusCode {
     Skip,
