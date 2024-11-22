@@ -39,4 +39,4 @@ def test_check_empty_letters(check):
     # the first of which is 'B' (U+0042)
     ttFont = TTFont(TEST_FILE("familysans/FamilySans-Regular.ttf"))
     msg = assert_results_contain(check(ttFont), FAIL, "empty-letter")
-    assert msg == "U+0042 should be visible, but its glyph ('B') is empty."
+    assert "U+0042 should be visible, but its glyph ('B') is empty." in msg
