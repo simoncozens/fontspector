@@ -105,9 +105,11 @@ include_profiles = ["opentype"]
     "colorfont_tables",
     "control_chars",
     "empty_glyph_on_gid1_for_colrv0",
+    "empty_letters",
     "family/vertical_metrics",
     "family/win_ascent_and_descent",
     "fvar_name_entries",
+    "freetype_rasterizer",
     "glyf_nested_components",
     "gpos7",
     "integer_ppem_if_hinted",
@@ -150,18 +152,16 @@ include_profiles = ["opentype"]
     # "ttx_roundtrip", # What's ttx? :-)
     # "vttclean", # merged into unwanted_tables
     # "no_debugging_tables", # merged into unwanted_tables
+    # "inconsistencies_between_fvar_stat", # same as stat_has_axis_value_tables https://github.com/fonttools/fontbakery/issues/4916
 
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
     "contour_count",
-    "empty_letters",
     "file_size",
     "fontspector_version",
     "fontdata_namecheck",
-    "freetype_rasterizer",
     "gsub/smallcaps_before_ligatures",
     "hinting_impact",
-    "inconsistencies_between_fvar_stat",
     "legacy_accents",
     "ligature_carets",
     "kerning_for_non_ligated_sequences",
