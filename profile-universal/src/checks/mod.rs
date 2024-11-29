@@ -47,6 +47,7 @@ pub mod transformed_components;
 pub mod typoascender_agrave;
 pub mod typographic_family_name;
 pub mod unique_glyphnames;
+pub mod unreachable_glyphs;
 pub mod unsupported_axes;
 pub mod unwanted_aat_tables;
 pub mod unwanted_tables;
