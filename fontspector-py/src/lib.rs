@@ -115,6 +115,7 @@ impl CheckTester {
 
         let context = Context {
             configuration: fontspector_config,
+            full_lists: true,
             ..Default::default()
         };
 
