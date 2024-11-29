@@ -8,14 +8,19 @@ where
     I: IntoIterator,
     I::Item: Display,
 {
-    let iter: &mut dyn Iterator<Item = I::Item> = if !context.full_lists {
-        &mut items.into_iter().take(5)
+    let mut items = items.into_iter();
+    let first_nine = items.by_ref().take(9);
+    let mut list = first_nine
+        .map(|item| format!("* {}", item))
+        .collect::<Vec<_>>();
+
+    if context.full_lists {
+        list.extend(items.map(|item| format!("* {}", item)));
     } else {
-        &mut items.into_iter()
-    };
-    iter.map(|item| format!("* {}", item))
-        .collect::<Vec<String>>()
-        .join("\n")
+        let remainder = items.count();
+        list.push(format!("... and {} others", remainder));
+    }
+    list.join("\n")
 }
 
 /// Asserts that all the values in a list are the same.
