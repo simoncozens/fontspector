@@ -18,7 +18,9 @@ where
         list.extend(items.map(|item| format!("* {}", item)));
     } else {
         let remainder = items.count();
-        list.push(format!("... and {} others", remainder));
+        if remainder > 0 {
+            list.push(format!("... and {} others", remainder));
+        }
     }
     list.join("\n")
 }
