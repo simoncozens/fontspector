@@ -16,7 +16,10 @@ use pyo3::{
 };
 
 #[pyclass]
-struct CheckTester(String);
+struct CheckTester {
+    check_id: String,
+    profile: Option<String>,
+}
 
 fn obj_to_testable(py: Python, arg: &Bound<'_, PyAny>) -> PyResult<Testable> {
     let ttfont_class = py.import_bound("fontTools.ttLib")?.getattr("TTFont")?;
@@ -50,8 +53,9 @@ fn obj_to_testable(py: Python, arg: &Bound<'_, PyAny>) -> PyResult<Testable> {
 #[pymethods]
 impl CheckTester {
     #[new]
-    fn new(check: String) -> Self {
-        Self(check)
+    #[pyo3(signature = (check_id, profile=None))]
+    fn new(check_id: String, profile: Option<String>) -> Self {
+        Self { check_id, profile }
     }
 
     #[pyo3(signature = (*args, **kwargs))]
@@ -75,7 +79,7 @@ impl CheckTester {
 
         let check = registry
             .checks
-            .get(&self.0)
+            .get(&self.check_id)
             .ok_or_else(|| PyValueError::new_err("Check not found"))?;
 
         // We have almost certainly been handed a TTFont object. Turn it into a testable
@@ -113,11 +117,17 @@ impl CheckTester {
             }
         }
 
-        let context = Context {
+        let mut context = Context {
             configuration: fontspector_config,
             full_lists: true,
             ..Default::default()
         };
+        if let Some(profile_name) = &self.profile {
+            let profile = registry.get_profile(profile_name).ok_or_else(|| {
+                PyValueError::new_err(format!("Profile {} not found", profile_name))
+            })?;
+            context = context.specialize(check, &context.configuration, profile);
+        }
 
         // Run the check!
         let result = check

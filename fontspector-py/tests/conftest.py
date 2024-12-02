@@ -26,15 +26,21 @@ def remove_import_raiser(module_name):
 
 @pytest.fixture
 def check(request):
-    return CheckTester(request.param)
+    if isinstance(request.param, str):
+        return CheckTester(request.param)
+    else:
+        return CheckTester(request.param[0], profile=request.param[1])
 
 
 has_tests = {}
 
 
-def check_id(checkname):
+def check_id(checkname, profile=None):
     has_tests[checkname] = True
-    return pytest.mark.parametrize("check", [checkname], indirect=True)
+    if profile is None:
+        return pytest.mark.parametrize("check", [checkname], indirect=True)
+    else:
+        return pytest.mark.parametrize("check", [(checkname, profile)], indirect=True)
 
 
 @pytest.hookimpl()
