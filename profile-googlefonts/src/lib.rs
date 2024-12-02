@@ -174,6 +174,10 @@ include_profiles = ["universal"]
     "googlefonts/vertical_metrics_regressions",
     "googlefonts/axes_match",
 ]
+
+[configuration_defaults.file_size]
+WARN_SIZE = 1048576 # 1Mb
+FAIL_SIZE = 9437184 # 9Mb
 "#,
         )
         .map_err(|_| "Couldn't parse profile")?;

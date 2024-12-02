@@ -21,6 +21,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::empty_glyph_on_gid1_for_colrv0::empty_glyph_on_gid1_for_colrv0);
         cr.register_check(checks::family_vertical_metrics::family_vertical_metrics);
         cr.register_check(checks::family_win_ascent_and_descent::family_win_ascent_and_descent);
+        cr.register_check(checks::file_size::file_size);
         cr.register_check(checks::fvar_name_entries::fvar_name_entries);
         #[cfg(not(target_family = "wasm"))]
         cr.register_check(checks::freetype_rasterizer::freetype_rasterizer);
@@ -112,6 +113,7 @@ include_profiles = ["opentype"]
     "empty_letters",
     "family/vertical_metrics",
     "family/win_ascent_and_descent",
+    "file_size",
     "fvar_name_entries",
     "freetype_rasterizer",
     "glyf_nested_components",
@@ -166,7 +168,6 @@ include_profiles = ["opentype"]
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
     "contour_count",
-    "file_size",
     "fontspector_version",
     "fontdata_namecheck",
     "legacy_accents",
@@ -178,9 +179,9 @@ include_profiles = ["opentype"]
     "varfont/instances_in_order",
 ]
 
-    [configuration_defaults.file_size]
-    WARN_SIZE = 1048576 # 1Mb
-    FAIL_SIZE = 9437184 # 9Mb
+[configuration_defaults.file_size]
+WARN_SIZE = 1048576 # 1Mb
+FAIL_SIZE = 9437184 # 9Mb
 "#,
         )
         .map_err(|_| "Couldn't parse profile")?;

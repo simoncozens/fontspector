@@ -13,6 +13,7 @@ pub mod empty_glyph_on_gid1_for_colrv0;
 pub mod empty_letters;
 pub mod family_vertical_metrics;
 pub mod family_win_ascent_and_descent;
+pub mod file_size;
 #[cfg(not(target_family = "wasm"))]
 pub mod freetype_rasterizer;
 pub mod fvar_name_entries;
