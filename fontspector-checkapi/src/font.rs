@@ -333,6 +333,11 @@ impl TestFont<'_> {
         }
     }
 
+    pub fn has_feature(&self, gsub_only: bool, tag: &str) -> bool {
+        self.feature_records(gsub_only)
+            .any(|(f, _)| f.feature_tag() == tag)
+    }
+
     pub fn all_glyphs(&self) -> impl Iterator<Item = GlyphId> {
         (0..self.glyph_count as u32).map(GlyphId::from)
     }
