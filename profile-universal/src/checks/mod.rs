@@ -39,6 +39,7 @@ pub mod os2_metrics_match_hhea;
 pub mod render_own_name;
 pub mod required_tables;
 pub mod sfnt_version;
+pub mod smallcaps_before_ligatures;
 pub mod smart_dropout;
 pub mod soft_hyphen;
 pub mod stat_in_statics;

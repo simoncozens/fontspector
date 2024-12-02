@@ -49,6 +49,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::render_own_name::render_own_name);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::sfnt_version::sfnt_version);
+        cr.register_check(checks::smallcaps_before_ligatures::smallcaps_before_ligatures);
         cr.register_check(checks::smart_dropout::smart_dropout);
         cr.register_check(checks::soft_hyphen::soft_hyphen);
         cr.register_check(checks::stat_in_statics::stat_in_statics);
