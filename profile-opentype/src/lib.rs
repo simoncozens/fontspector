@@ -106,20 +106,18 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/weight_class_fvar",
     "opentype/xavgcharwidth",
     "opentype/code_pages",
-
-    # Checks left to port
-    "opentype/cff2_call_depth",
-    "opentype/cff_ascii_strings",
-    "opentype/cff_call_depth",
-    "opentype/cff_deprecated_operators",
-    "opentype/gdef_non_mark_chars",
-    "opentype/gpos_kerning_info",
     "opentype/italic_angle",
     "opentype/loca/maxp_num_glyphs",
     "opentype/monospace",
+    "opentype/gdef_non_mark_chars",
+    "opentype/gpos_kerning_info",
 
     # Blocked
-    "opentype/kern_table", # https://github.com/googlefonts/fontations/issues/1183
+    # "opentype/kern_table", # https://github.com/googlefonts/fontations/issues/1183
+    # "opentype/cff2_call_depth", # We don't have enough CFF support here
+    # "opentype/cff_ascii_strings",
+    # "opentype/cff_call_depth",
+    # "opentype/cff_deprecated_operators",
 
     # Checks we don't need because they have been integrated into other checks
     # "opentype/dsig", (unwanted_tables)
