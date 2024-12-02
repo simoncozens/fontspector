@@ -28,6 +28,7 @@ pub mod linegaps;
 pub mod mandatory_avar_table;
 pub mod mandatory_glyphs;
 pub mod math_signs_width;
+pub mod missing_small_caps_glyphs;
 pub mod name_char_restrictions;
 pub mod name_family_and_style_max;
 pub mod name_italic_names;

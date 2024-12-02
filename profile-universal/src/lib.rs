@@ -41,6 +41,7 @@ impl fontspector_checkapi::Plugin for Universal {
         );
         cr.register_check(checks::mandatory_avar_table::mandatory_avar_table);
         cr.register_check(checks::mandatory_glyphs::mandatory_glyphs);
+        cr.register_check(checks::missing_small_caps_glyphs::missing_small_caps_glyphs);
         cr.register_check(checks::name_char_restrictions::name_char_restrictions);
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::no_mac_entries::no_mac_entries);
