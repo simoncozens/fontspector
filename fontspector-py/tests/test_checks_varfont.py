@@ -75,7 +75,6 @@ def test_check_mandatory_avar_table(check):
     assert_results_contain(check(ttFont), WARN, "missing-avar")
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
 @check_id("varfont/instances_in_order")
 def test_varfont_instances_in_order(check):
     ttFont = TTFont("data/test/cabinvfbeta/CabinVFBeta.ttf")
