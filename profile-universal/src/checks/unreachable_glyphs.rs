@@ -1,102 +1,16 @@
 use std::collections::HashSet;
 
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, GetSubstitutionMap};
 use itertools::Itertools;
 use read_fonts::{
     tables::{
         colr::Paint,
         glyf::Glyph::{Composite, Simple},
-        gsub::{
-            AlternateSubstFormat1, ExtensionSubstFormat1, LigatureSubstFormat1,
-            MultipleSubstFormat1, ReverseChainSingleSubstFormat1, SingleSubst,
-            SubstitutionSubtables,
-        },
-        layout::Subtables,
     },
-    ReadError, TableProvider,
+    TableProvider,
 };
 use skrifa::{charmap::MapVariant, GlyphId, MetadataProvider};
 
-type SubSubtables<'a, T> = Subtables<'a, T, ExtensionSubstFormat1<'a, T>>;
-
-fn handle_gsub1<'a>(
-    st: &SubSubtables<'a, SingleSubst<'a>>,
-    glyphs: &mut HashSet<GlyphId>,
-) -> Result<(), ReadError> {
-    for subtable in st.iter() {
-        match subtable? {
-            SingleSubst::Format1(table_ref) => {
-                let delta = table_ref.delta_glyph_id() as i32;
-                let produced = table_ref
-                    .coverage()?
-                    .iter()
-                    .map(|old_gid| GlyphId::from((old_gid.to_u32() as i32 + delta) as u16));
-                for gid in produced {
-                    glyphs.remove(&gid);
-                }
-            }
-            SingleSubst::Format2(table_ref) => {
-                for produced in table_ref.substitute_glyph_ids() {
-                    glyphs.remove(&produced.get().into());
-                }
-            }
-        }
-    }
-    Ok(())
-}
-
-fn handle_gsub2<'a>(
-    st: &SubSubtables<'a, MultipleSubstFormat1<'a>>,
-    glyphs: &mut HashSet<GlyphId>,
-) -> Result<(), ReadError> {
-    for subtable in st.iter() {
-        for sequence in subtable?.sequences().iter().flatten() {
-            for glyph in sequence.substitute_glyph_ids() {
-                glyphs.remove(&glyph.get().into());
-            }
-        }
-    }
-    Ok(())
-}
-
-fn handle_gsub3<'a>(
-    st: &SubSubtables<'a, AlternateSubstFormat1<'a>>,
-    glyphs: &mut HashSet<GlyphId>,
-) -> Result<(), ReadError> {
-    for subtable in st.iter() {
-        for sequence in subtable?.alternate_sets().iter().flatten() {
-            for glyph in sequence.alternate_glyph_ids() {
-                glyphs.remove(&glyph.get().into());
-            }
-        }
-    }
-    Ok(())
-}
-fn handle_gsub4<'a>(
-    st: &SubSubtables<'a, LigatureSubstFormat1<'a>>,
-    glyphs: &mut HashSet<GlyphId>,
-) -> Result<(), ReadError> {
-    for subtable in st.iter() {
-        for sequence in subtable?.ligature_sets().iter().flatten() {
-            for glyph in sequence.ligatures().iter().flatten() {
-                glyphs.remove(&glyph.ligature_glyph().into());
-            }
-        }
-    }
-    Ok(())
-}
-
-fn handle_gsub7<'a>(
-    st: &SubSubtables<'a, ReverseChainSingleSubstFormat1<'a>>,
-    glyphs: &mut HashSet<GlyphId>,
-) -> Result<(), ReadError> {
-    for subtable in st.iter() {
-        for gid in subtable?.substitute_glyph_ids() {
-            glyphs.remove(&gid.get().into());
-        }
-    }
-    Ok(())
-}
 #[check(
     id = "unreachable_glyphs",
     rationale = "
@@ -178,17 +92,12 @@ fn unreachable_glyphs(t: &Testable, context: &Context) -> CheckFnResult {
     // GSUB productions
     if let Ok(gsub) = f.font().gsub() {
         for lookup in gsub.lookup_list()?.lookups().iter().flatten() {
-            match lookup.subtables()? {
-                SubstitutionSubtables::Single(st) => handle_gsub1(&st, &mut glyphs),
-                SubstitutionSubtables::Multiple(st) => handle_gsub2(&st, &mut glyphs),
-                SubstitutionSubtables::Alternate(st) => handle_gsub3(&st, &mut glyphs),
-                SubstitutionSubtables::Ligature(st) => handle_gsub4(&st, &mut glyphs),
-                // The contextual ones are not needed because all they do is call other
-                // lookups in the list.
-                SubstitutionSubtables::Contextual(_) => Ok(()),
-                SubstitutionSubtables::ChainContextual(_) => Ok(()),
-                SubstitutionSubtables::Reverse(st) => handle_gsub7(&st, &mut glyphs),
-            }?;
+            let substitutions = lookup.subtables()?.substitutions()?;
+            for (_lhs, rhs) in substitutions {
+                for gid in rhs.iter() {
+                    glyphs.remove(&GlyphId::from(*gid));
+                }
+            }
         }
     }
     // Remove components used in TrueType table
