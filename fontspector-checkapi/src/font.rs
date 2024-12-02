@@ -223,6 +223,10 @@ impl TestFont<'_> {
         self.has_table(b"fvar")
     }
 
+    pub fn has_axis(&self, axis: &str) -> bool {
+        self.is_variable_font() && self.font().axes().iter().any(|a| a.tag() == axis)
+    }
+
     pub fn default_location(&self) -> Option<HashMap<String, f32>> {
         Some(
             self.font()
