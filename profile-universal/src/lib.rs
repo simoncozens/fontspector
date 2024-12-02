@@ -63,6 +63,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::unsupported_axes::unsupported_axes);
         cr.register_check(checks::unwanted_aat_tables::unwanted_aat_tables);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
+        cr.register_check(checks::vtt_volt_data::vtt_volt_data);
         cr.register_check(checks::whitespace_ink::whitespace_ink);
         cr.register_check(checks::whitespace_glyphs::whitespace_glyphs);
         cr.register_check(checks::whitespace_widths::whitespace_widths);
@@ -115,12 +116,14 @@ include_profiles = ["opentype"]
     "freetype_rasterizer",
     "glyf_nested_components",
     "gpos7",
+    "hinting_impact",
     "integer_ppem_if_hinted",
     "interpolation_issues",
     "linegaps",
     "valid_glyphnames",
     "mandatory_avar_table",
     "mandatory_glyphs",
+    "missing_small_caps_glyphs",
     "name/char_restrictions",
     "name/family_and_style_max_length",
     "name/italic_names",
@@ -132,6 +135,7 @@ include_profiles = ["opentype"]
     "required_tables",
     "rupee",
     "sfnt_version",
+    "smallcaps_before_ligatures",
     "smart_dropout",
     "soft_hyphen",
     "STAT_in_statics",
@@ -141,10 +145,12 @@ include_profiles = ["opentype"]
     "typoascender_exceeds_Agrave",
     "typographic_family_name",
     "unique_glyphnames",
+    "unreachable_glyphs",
     "unwanted_aat_tables",
     "unwanted_tables",
     "varfont/consistent_axes",
     "varfont/unsupported_axes",
+    "vtt_volt_data",
     "whitespace_glyphs",
     "whitespace_ink",
     "whitespace_widths",
@@ -163,19 +169,18 @@ include_profiles = ["opentype"]
     "file_size",
     "fontspector_version",
     "fontdata_namecheck",
-    "gsub/smallcaps_before_ligatures",
-    "hinting_impact",
     "legacy_accents",
     "ligature_carets",
     "kerning_for_non_ligated_sequences",
     "math_signs_width",
-    "missing_small_caps_glyphs",
     "tabular_kerning",
-    "unreachable_glyphs",
     "varfont/duplexed_axis_reflow",
     "varfont/instances_in_order",
-    "vtt_volt_data",  # very similar to vttclean, may be a good idea to merge them.
 ]
+
+    [configuration_defaults.file_size]
+    WARN_SIZE = 1048576 # 1Mb
+    FAIL_SIZE = 9437184 # 9Mb
 "#,
         )
         .map_err(|_| "Couldn't parse profile")?;

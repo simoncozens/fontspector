@@ -53,6 +53,7 @@ pub mod unreachable_glyphs;
 pub mod unsupported_axes;
 pub mod unwanted_aat_tables;
 pub mod unwanted_tables;
+pub mod vtt_volt_data;
 pub mod whitespace_glyphs;
 pub mod whitespace_ink;
 pub mod whitespace_widths;
