@@ -66,8 +66,7 @@ impl TestFont<'_> {
         font_data: &'a [u8],
     ) -> Result<TestFont<'a>, Box<dyn Error>> {
         let font = FontRef::new(font_data)?;
-        #[allow(clippy::unwrap_used)] // Heck, Skrifa does the same
-        let glyph_count = font.maxp().unwrap().num_glyphs().into();
+        let glyph_count = font.maxp()?.num_glyphs().into();
         Ok(TestFont {
             filename: filename.to_path_buf(),
             font_data,
