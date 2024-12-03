@@ -14,6 +14,7 @@ pub mod empty_letters;
 pub mod family_vertical_metrics;
 pub mod family_win_ascent_and_descent;
 pub mod file_size;
+pub mod fontdata_namecheck;
 #[cfg(not(target_family = "wasm"))]
 pub mod freetype_rasterizer;
 pub mod fvar_name_entries;

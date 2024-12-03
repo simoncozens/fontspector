@@ -24,6 +24,8 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::file_size::file_size);
         cr.register_check(checks::fvar_name_entries::fvar_name_entries);
         #[cfg(not(target_family = "wasm"))]
+        cr.register_check(checks::fontdata_namecheck::fontdata_namecheck);
+        #[cfg(not(target_family = "wasm"))]
         cr.register_check(checks::freetype_rasterizer::freetype_rasterizer);
         cr.register_check(checks::glyf_nested_components::glyf_nested_components);
         cr.register_check(checks::glyphnames::valid_glyphnames);
@@ -117,6 +119,7 @@ include_profiles = ["opentype"]
     "family/win_ascent_and_descent",
     "file_size",
     "fvar_name_entries",
+    "fontdata_namecheck",
     "freetype_rasterizer",
     "glyf_nested_components",
     "gpos7",
@@ -173,7 +176,6 @@ include_profiles = ["opentype"]
     # "caps_vertically_centered",  # Disabled: issue #4274
     "contour_count",
     "fontspector_version",
-    "fontdata_namecheck",
     "legacy_accents",
     "ligature_carets",
     "kerning_for_non_ligated_sequences",
