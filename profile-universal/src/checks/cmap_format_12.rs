@@ -10,8 +10,8 @@ use read_fonts::{tables::cmap::CmapSubtable, TableProvider};
         it should actually contain such codepoints. Additionally, it should also
         contain all characters mapped in the format 4 subtable.
     ",
-    proposal = "https://github.com/fonttools/fontbakery/pull/2430",
-    title = "https://github.com/fonttools/fontbakery/pull/3681"
+    proposal = "https://github.com/fonttools/fontbakery/pull/3681",
+    title = "Check that format 12 cmap subtables are correctly constituted."
 )]
 fn cmap_format_12(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
