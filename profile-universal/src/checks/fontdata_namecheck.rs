@@ -1,5 +1,6 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::tables::name::NameId;
+use reqwest::blocking::Client;
 use skrifa::MetadataProvider;
 
 const NAMECHECK_URL: &str = "http://namecheck.fontdata.com";
@@ -26,7 +27,7 @@ fn fontdata_namecheck(t: &Testable, context: &Context) -> CheckFnResult {
         .english_or_first()
         .ok_or(CheckError::Error("Family name not found".to_string()))?
         .to_string();
-    let client = reqwest::blocking::Client::builder()
+    let client = Client::builder()
         .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)")
         .timeout(context.network_timeout.map(std::time::Duration::from_secs))
         .build()?;
