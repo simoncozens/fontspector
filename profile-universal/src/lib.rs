@@ -56,6 +56,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::stat_in_statics::stat_in_statics);
         cr.register_check(checks::stat_strings::stat_strings);
         cr.register_check(checks::stylistic_sets::stylisticset_description);
+        cr.register_check(checks::tabular_kerning::tabular_kerning);
         cr.register_check(checks::transformed_components::transformed_components);
         cr.register_check(checks::typoascender_agrave::typoascender_exceeds_agrave);
         cr.register_check(checks::typographic_family_name::typographic_family_name);
@@ -144,6 +145,7 @@ include_profiles = ["opentype"]
     "STAT_in_statics",
     "STAT_strings",
     "stylisticset_description",
+    "tabular_kerning",
     "transformed_components",
     "typoascender_exceeds_Agrave",
     "typographic_family_name",
@@ -176,7 +178,6 @@ include_profiles = ["opentype"]
     "ligature_carets",
     "kerning_for_non_ligated_sequences",
     "math_signs_width",
-    "tabular_kerning",
     "varfont/duplexed_axis_reflow",
 ]
 

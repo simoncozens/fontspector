@@ -46,6 +46,7 @@ pub mod soft_hyphen;
 pub mod stat_in_statics;
 pub mod stat_strings;
 pub mod stylistic_sets;
+pub mod tabular_kerning;
 pub mod transformed_components;
 pub mod typoascender_agrave;
 pub mod typographic_family_name;
