@@ -126,10 +126,12 @@ include_profiles = ["opentype"]
     "hinting_impact",
     "integer_ppem_if_hinted",
     "interpolation_issues",
+    "legacy_accents",
     "linegaps",
     "valid_glyphnames",
     "mandatory_avar_table",
     "mandatory_glyphs",
+    "math_signs_width",
     "missing_small_caps_glyphs",
     "name/char_restrictions",
     "name/family_and_style_max_length",
@@ -171,15 +173,13 @@ include_profiles = ["opentype"]
     # "vttclean", # merged into unwanted_tables
     # "no_debugging_tables", # merged into unwanted_tables
     # "inconsistencies_between_fvar_stat", # same as stat_has_axis_value_tables https://github.com/fonttools/fontbakery/issues/4916
+    # "fontspector_version", # we'll just do this once at the start of the program, doesn't make sense for web
 
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
     "contour_count",
-    "fontspector_version",
-    "legacy_accents",
     "ligature_carets",
     "kerning_for_non_ligated_sequences",
-    "math_signs_width",
     "varfont/duplexed_axis_reflow",
 ]
 
