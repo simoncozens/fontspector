@@ -33,7 +33,7 @@ except KeyError:
 
 filename = check.id.replace("/", "_") + ".rs"
 source = inspect.getsource(check)
-source = re.sub("(?s).*?def ", "def ", source)
+source = re.sub("(?s).*?def ", "def ", source, count=1)
 source = re.sub("(?m)^", "    // ", source)
 
 template = Template(
@@ -44,7 +44,7 @@ use skrifa::MetadataProvider;
 #[check(
     id = "{{ check.id }}",
     rationale = "
-        {{ check.rationale }}
+        {{ check.rationale | replace('"', '\\"') }}
     ",
     proposal = "{{ proposal | join(' and ')}}",
     title = "{{ check.__doc__}}"
