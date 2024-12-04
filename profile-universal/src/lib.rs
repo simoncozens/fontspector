@@ -16,6 +16,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::colorfont_tables::colorfont_tables);
         cr.register_check(checks::color_cpal_brightness::color_cpal_brightness);
         cr.register_check(checks::consistent_axes::consistent_axes);
+        cr.register_check(checks::contour_count::contour_count);
         cr.register_check(checks::control_chars::control_chars);
         cr.register_check(checks::empty_letters::empty_letters);
         cr.register_check(checks::empty_glyph_on_gid1_for_colrv0::empty_glyph_on_gid1_for_colrv0);
@@ -112,6 +113,7 @@ include_profiles = ["opentype"]
     "cmap/format_12",
     "color_cpal_brightness",
     "colorfont_tables",
+    "contour_count",
     "control_chars",
     "empty_glyph_on_gid1_for_colrv0",
     "empty_letters",
@@ -177,7 +179,6 @@ include_profiles = ["opentype"]
 
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
-    "contour_count",
     "ligature_carets",
     "kerning_for_non_ligated_sequences",
     "varfont/duplexed_axis_reflow",

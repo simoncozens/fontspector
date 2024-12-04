@@ -8,6 +8,7 @@ pub mod cmap_format_12;
 pub mod color_cpal_brightness;
 pub mod colorfont_tables;
 pub mod consistent_axes;
+pub mod contour_count;
 pub mod control_chars;
 pub mod empty_glyph_on_gid1_for_colrv0;
 pub mod empty_letters;
