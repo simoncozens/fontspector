@@ -178,10 +178,10 @@ include_profiles = ["opentype"]
     # "no_debugging_tables", # merged into unwanted_tables
     # "inconsistencies_between_fvar_stat", # same as stat_has_axis_value_tables https://github.com/fonttools/fontbakery/issues/4916
     # "fontspector_version", # we'll just do this once at the start of the program, doesn't make sense for web
+    # "kerning_for_non_ligated_sequences", # I just think this is a bad check
 
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
-    "kerning_for_non_ligated_sequences",
     "varfont/duplexed_axis_reflow",
 ]
 
