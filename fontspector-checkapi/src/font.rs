@@ -9,6 +9,7 @@ use read_fonts::{
         cmap::Cmap,
         gdef::{Gdef, GlyphClassDef},
         glyf::Glyph,
+        gpos::{PairPos, PairPosFormat1, PairPosFormat2, PositionSubtables},
         layout::{Feature, FeatureRecord},
         os2::SelectionFlags,
         post::DEFAULT_GLYPH_NAMES,
@@ -351,6 +352,34 @@ impl TestFont<'_> {
 
     pub fn is_cjk_font(&self) -> bool {
         self.cjk_codepoints().count() > 150
+    }
+
+    pub fn process_kerning<T>(
+        &self,
+        format1_func: fn(PairPosFormat1) -> Result<Vec<T>, ReadError>,
+        format2_func: fn(PairPosFormat2) -> Result<Vec<T>, ReadError>,
+    ) -> Result<Vec<T>, ReadError> {
+        let gpos = self.font().gpos()?;
+        Ok(
+            gpos.lookup_list()?
+                .lookups()
+                .iter()
+                .flatten()
+                .flat_map(|l| l.subtables())
+                .filter_map(|s| match s {
+                    PositionSubtables::Pair(p) => Some(p),
+                    _ => None,
+                })
+                .flat_map(|p| p.iter())
+                .flatten()
+                .map(|pp| match pp {
+                    PairPos::Format1(pp1) => format1_func(pp1),
+                    PairPos::Format2(pp2) => format2_func(pp2),
+                })
+                .flat_map(|v| v.into_iter())
+                .flatten()
+                .collect(), // NOW WASH YOUR HANDS
+        )
     }
 }
 

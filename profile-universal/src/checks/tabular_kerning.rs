@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, GetSubstitutionMap};
 use itertools::Itertools;
 use read_fonts::{
-    tables::gpos::{PairPos, PairPosFormat1, PairPosFormat2, PositionSubtables},
+    tables::gpos::{PairPosFormat1, PairPosFormat2},
     ReadError, TableProvider,
 };
 use skrifa::{GlyphId, MetadataProvider};
@@ -147,27 +147,8 @@ fn tabular_kerning(t: &Testable, _context: &Context) -> CheckFnResult {
     // the nominal_glyph_func hack in Rust is a bit of a pain; instead we'll
     // just check for any GPOS PairPositioning rules between the involved glyphs.
     // Faster too.
-
-    let gpos = f.font().gpos()?;
-    let kerning = gpos
-        .lookup_list()?
-        .lookups()
-        .iter()
-        .flatten()
-        .flat_map(|l| l.subtables())
-        .filter_map(|s| match s {
-            PositionSubtables::Pair(p) => Some(p),
-            _ => None,
-        })
-        .flat_map(|p| p.iter())
-        .flatten()
-        .map(|pp| match pp {
-            PairPos::Format1(pp1) => involved_pairs_format1(pp1),
-            PairPos::Format2(pp2) => involved_pairs_format2(pp2),
-        })
-        .flat_map(|v| v.into_iter())
-        .flatten()
-        .collect::<Vec<(HashSet<GlyphId>, HashSet<GlyphId>)>>();
+    let kerning: Vec<(HashSet<GlyphId>, HashSet<GlyphId>)> =
+        f.process_kerning(involved_pairs_format1, involved_pairs_format2)?;
 
     let has_kerning = |a: &GlyphId, b: &GlyphId| {
         kerning
