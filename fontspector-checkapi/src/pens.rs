@@ -110,6 +110,28 @@ impl OutlinePen for AnythingPen {
 }
 
 #[derive(Default)]
+pub struct ContourCountPen {
+    contour_count: usize,
+}
+impl ContourCountPen {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn contour_count(&self) -> usize {
+        self.contour_count
+    }
+}
+impl OutlinePen for ContourCountPen {
+    fn move_to(&mut self, _x: f32, _y: f32) {}
+    fn line_to(&mut self, _x: f32, _y: f32) {}
+    fn curve_to(&mut self, _x1: f32, _y1: f32, _x2: f32, _y2: f32, _x3: f32, _y3: f32) {}
+    fn quad_to(&mut self, _cx0: f32, _cy0: f32, _x: f32, _y: f32) {}
+    fn close(&mut self) {
+        self.contour_count += 1;
+    }
+}
+
+#[derive(Default)]
 pub struct AreaPen {
     area: f32,
     start_point: Option<(f32, f32)>,
