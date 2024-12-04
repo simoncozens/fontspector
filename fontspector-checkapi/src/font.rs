@@ -185,7 +185,7 @@ impl TestFont<'_> {
         if let Some(Some(n)) = self._glyphnames.borrow().get(gid.to_u32() as usize) {
             Some(n.to_string())
         } else if synthesize {
-            Some(format!("gid{:}", gid))
+            Some(format!("gid{}", gid.to_u32()))
         } else {
             None
         }
