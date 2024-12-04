@@ -1811,6 +1811,7 @@ dependencies = [
  "markdown-table",
  "read-fonts",
  "reqwest",
+ "serde_json",
  "skrifa",
  "unicode-properties",
  "unicode_names2",
