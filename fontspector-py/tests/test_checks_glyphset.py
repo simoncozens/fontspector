@@ -1,6 +1,5 @@
 from fontTools.ttLib import TTFont
 
-from fontbakery.checks.glyphset import can_shape
 from fontbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
