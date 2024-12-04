@@ -1,6 +1,7 @@
 import pytest
 from fontTools.ttLib import TTFont
 
+from conftest import check_id
 from fontbakery.codetesting import (
     assert_PASS,
     assert_SKIP,
@@ -10,7 +11,6 @@ from fontbakery.codetesting import (
 )
 from fontbakery.constants import NameID
 from fontbakery.status import FAIL, WARN
-from conftest import check_id
 
 
 @pytest.fixture
@@ -18,30 +18,30 @@ def test_ttFont():
     return TTFont(TEST_FILE("selawik/Selawik-fvar-test-VTT.ttf"), lazy=True)
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_name_id_1(test_ttFont):
+@pytest.mark.skip("Not implemented yet")
+@check_id("name_id_1")
+def test_check_name_id_1(check, test_ttFont):
     """Font has a name with ID 1."""
-    check = CheckTester("name_id_1")
 
     assert_PASS(check(test_ttFont), "with a good font...")
 
     # TODO: test a FAIL case
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_name_id_2(test_ttFont):
+@pytest.mark.skip("Not implemented yet")
+@check_id("name_id_2")
+def test_check_name_id_2(check, test_ttFont):
     """Font has a name with ID 2."""
-    check = CheckTester("name_id_2")
 
     assert_PASS(check(test_ttFont), "with a good font...")
 
     # TODO: test a FAIL case
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_name_length_req(test_ttFont):
+@pytest.mark.skip("Not implemented yet")
+@check_id("name_length_req")
+def test_check_name_length_req(check, test_ttFont):
     """Maximum allowed length for family and subfamily names."""
-    check = CheckTester("name_length_req")
 
     assert_PASS(check(test_ttFont), "with a good font...")
 
@@ -49,8 +49,9 @@ def test_check_name_length_req(test_ttFont):
 
 
 @check_id("typographic_family_name")
-def test_check_typographic_family_name(test_ttFont, check):
+def test_check_typographic_family_name(check, test_ttFont):
     """Typographic Family name consistency."""
+
     family = [
         test_ttFont,  # FIXME: This must be tested with more than a single font file!
     ]
@@ -62,6 +63,7 @@ def test_check_typographic_family_name(test_ttFont, check):
 @check_id("name/char_restrictions")
 def test_check_name_char_restrictions(check):
     """Are there disallowed characters in the restricted NAME table entries?"""
+
     # Our reference Merriweather Regular is known to be good
     ttFont = TTFont(TEST_FILE("merriweather/Merriweather-Regular.ttf"))
 
@@ -157,6 +159,7 @@ def test_check_name_char_restrictions(check):
 @check_id("name/family_and_style_max_length")
 def test_check_name_family_and_style_max_length(check):
     """Name table entries should not be too long."""
+
     # Our reference Cabin Regular is known to be good
     ttFont = TTFont(TEST_FILE("cabinvf/Cabin[wdth,wght].ttf"))
 
@@ -200,10 +203,9 @@ def test_check_name_family_and_style_max_length(check):
     )
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def DISABLED_test_check_glyphs_file_name_family_and_style_max_length():
+@check_id("glyphs_file/name/family_and_style_max_length")
+def DISABLED_test_check_glyphs_file_name_family_and_style_max_length(check):
     """Combined length of family and style must not exceed 27 characters."""
-    check = CheckTester("glyphs_file/name/family_and_style_max_length")
 
     # Our reference Comfortaa.glyphs is known to be good
     glyphsFile = GLYPHSAPP_TEST_FILE("Comfortaa.glyphs")
@@ -239,10 +241,9 @@ def DISABLED_test_check_glyphs_file_name_family_and_style_max_length():
         )
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_name_no_mac_entries():
+@check_id("no_mac_entries")
+def test_check_name_no_mac_entries(check):
     """Ensure font doesn't have Mac name table entries (platform=1)."""
-    check = CheckTester("no_mac_entries")
 
     font = TEST_FILE("abeezee/ABeeZee-Italic.ttf")
     assert_results_contain(
@@ -253,10 +254,9 @@ def test_check_name_no_mac_entries():
     assert_PASS(check(font), "with a font without Mac names")
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_name_no_copyright_on_description():
+@check_id("name/no_copyright_on_description")
+def test_check_name_no_copyright_on_description(check):
     """Description strings in the name table must not contain copyright info."""
-    check = CheckTester("name/no_copyright_on_description")
 
     # Our reference Mada Regular is know to be good here.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -272,10 +272,8 @@ def test_check_name_no_copyright_on_description():
     )
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
-def test_check_italic_names():
-    check = CheckTester("name/italic_names")
-
+@check_id("name/italic_names")
+def test_check_italic_names(check):
     def get_name(font, nameID):
         for entry in font["name"].names:
             if entry.nameID == nameID:
