@@ -406,7 +406,7 @@ fn varfont_valid_nameids(t: &Testable, _context: &Context) -> CheckFnResult {
 
 #[check(
     id = "opentype/varfont/valid_default_instance_nameids",
-    title = "Validates that when an instance record is included for the default instance, its subfamilyNameID value is set to a name ID whose string is equal to the string of either name ID 2 or 17, and its postScriptNameID value is set to a name ID whose string is equal to the string of name ID 6.",
+    title = "Validates subfamilyNameID and postScriptNameID for the default instance record",
     rationale = r#"
         According to the 'fvar' documentation in OpenType spec v1.9.1
         https://docs.microsoft.com/en-us/typography/opentype/spec/fvar
