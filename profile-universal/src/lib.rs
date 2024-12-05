@@ -69,6 +69,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::unsupported_axes::unsupported_axes);
         cr.register_check(checks::unwanted_aat_tables::unwanted_aat_tables);
         cr.register_check(checks::unwanted_tables::unwanted_tables);
+        cr.register_check(checks::varfont_duplexed_axis_reflow::varfont_duplexed_axis_reflow);
         cr.register_check(checks::varfont_instances_in_order::varfont_instances_in_order);
         cr.register_check(checks::vtt_volt_data::vtt_volt_data);
         cr.register_check(checks::whitespace_ink::whitespace_ink);

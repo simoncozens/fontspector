@@ -148,7 +148,7 @@ fn tabular_kerning(t: &Testable, _context: &Context) -> CheckFnResult {
     // just check for any GPOS PairPositioning rules between the involved glyphs.
     // Faster too.
     let kerning: Vec<(HashSet<GlyphId>, HashSet<GlyphId>)> =
-        f.process_kerning(involved_pairs_format1, involved_pairs_format2)?;
+        f.process_kerning(&involved_pairs_format1, &involved_pairs_format2)?;
 
     let has_kerning = |a: &GlyphId, b: &GlyphId| {
         kerning

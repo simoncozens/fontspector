@@ -20,7 +20,6 @@ def test_check_varfont_consistent_axes():
     # TODO: Implement-me!
 
 
-@pytest.mark.skip(reason="Not implemented yet.")
 @check_id("varfont/duplexed_axis_reflow")
 def test_check_varfont_duplexed_axis_reflow(check):
     """Ensure VFs with the GRAD axis do not vary horizontal advance."""
