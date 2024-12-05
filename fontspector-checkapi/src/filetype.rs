@@ -12,13 +12,16 @@ use glob_match::glob_match;
 /// conducive to performing operations on that testable. (i.e. `TTF` can
 /// turn a `Testable` into a `TestFont`.)
 pub struct FileType<'a> {
+    /// A glob pattern to match against the file name
     pub pattern: &'a str,
 }
 impl FileType<'_> {
+    /// Create a new file type with a glob pattern
     pub fn new(pattern: &str) -> FileType {
         FileType { pattern }
     }
 
+    /// Check if this file type applies to a testable
     pub fn applies(&self, file: &Testable) -> bool {
         if let Some(basename) = file.basename() {
             glob_match(self.pattern, &basename)
@@ -28,11 +31,14 @@ impl FileType<'_> {
     }
 }
 
+/// Convert a generic [Testable] into a specific file type
 pub trait FileTypeConvert<'a, T: 'a> {
     #[allow(clippy::wrong_self_convention)]
+    /// Convert a single [Testable] into a specific type
     fn from_testable(&self, t: &'a Testable) -> Option<T>;
 
     #[allow(clippy::wrong_self_convention)]
+    /// Convert a collection of [Testable]s into a specific type
     fn from_collection(&self, t: &'a TestableCollection) -> Vec<T> {
         t.iter().filter_map(|f| self.from_testable(f)).collect()
     }

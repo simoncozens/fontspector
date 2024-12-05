@@ -1,4 +1,6 @@
-#![allow(clippy::unwrap_used, clippy::expect_used)] // No bad thing if we panic in tests
+#![allow(clippy::unwrap_used, clippy::expect_used)]
+
+// No bad thing if we panic in tests
 use crate::{prelude::*, Check, CheckResult, Context, FileTypeConvert, StatusCode};
 use read_fonts::{types::NameId, TableProvider};
 use serde_json::Map;
@@ -8,6 +10,7 @@ use write_fonts::{
 };
 
 #[macro_export]
+/// Create a Testable object from a file in the test resources directory
 macro_rules! TEST_FILE {
     ($fname:expr) => {{
         // The usual thing to use here is env!("CARGO_MANIFEST_DIR"), but that's a pain
@@ -31,7 +34,8 @@ macro_rules! TEST_FILE {
     }};
 }
 
-pub fn run_check(check: Check<'_>, font: Testable) -> std::option::Option<CheckResult> {
+/// Run a check on a font and return the result
+pub fn run_check(check: Check<'_>, font: Testable) -> Option<CheckResult> {
     let ctx: Context = Context {
         skip_network: false,
         network_timeout: Some(10),
@@ -42,13 +46,17 @@ pub fn run_check(check: Check<'_>, font: Testable) -> std::option::Option<CheckR
     check.run(&TestableType::Single(&font), &ctx, None)
 }
 
-pub fn assert_pass(check_result: std::option::Option<CheckResult>) {
+/// Assert that a check passes
+///
+/// Takes a `CheckResult` and asserts that the worst status is `Pass`
+pub fn assert_pass(check_result: Option<CheckResult>) {
     let status = check_result.unwrap().worst_status();
     assert_eq!(status, StatusCode::Pass);
 }
 
+/// Assert that a check result contains an expected status and code
 pub fn assert_results_contain(
-    check_result: std::option::Option<CheckResult>,
+    check_result: Option<CheckResult>,
     severity: StatusCode,
     code: Option<String>,
 ) {
@@ -58,6 +66,7 @@ pub fn assert_results_contain(
         .any(|subresult| subresult.severity == severity && subresult.code == code));
 }
 
+/// Manipulate a font by changing a name table entry (for testing purposes only)
 pub fn set_name_entry(
     font: &mut Testable,
     platform: u16,

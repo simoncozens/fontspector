@@ -1,15 +1,21 @@
 use skrifa::outline::OutlinePen;
 
 #[derive(Debug, Default)]
+/// A pen for determining the delta between the highest and lowest points in an outline
 pub struct XDeltaPen {
+    /// The highest point in the outline
     highest_point: Option<(f32, f32)>,
+    /// The lowest point in the outline
     lowest_point: Option<(f32, f32)>,
 }
 
 impl XDeltaPen {
+    /// Create a new XDeltaPen
     pub fn new() -> Self {
         Self::default()
     }
+
+    /// Given a point on the outline, update internal data
     fn update(&mut self, x: f32, y: f32) {
         if let Some((_hx, hy)) = self.highest_point {
             if y > hy {
@@ -27,6 +33,7 @@ impl XDeltaPen {
         }
     }
 
+    /// Horizontal delta between the highest and lowest points
     pub fn x_delta(&self) -> f32 {
         if let (Some((hx, _)), Some((lx, _))) = (self.highest_point, self.lowest_point) {
             hx - lx
@@ -56,11 +63,14 @@ impl OutlinePen for XDeltaPen {
 }
 
 #[derive(Default)]
+/// A pen to determine if an outline has any ink
 pub struct HasInkPen(bool);
 impl HasInkPen {
+    /// Create a new HasInkPen
     pub fn new() -> Self {
         Self::default()
     }
+    /// Does the outline have any ink?
     pub fn has_ink(&self) -> bool {
         self.0
     }
@@ -84,13 +94,17 @@ impl OutlinePen for HasInkPen {
 }
 
 #[derive(Default)]
+/// A pen to determine if an outline has any contours
 pub struct AnythingPen {
+    /// Does the outline have anything?
     anything: bool,
 }
 impl AnythingPen {
+    /// Create a new AnythingPen
     pub fn new() -> Self {
         Self::default()
     }
+    /// Does the outline have anything?
     pub fn anything(&self) -> bool {
         self.anything
     }
@@ -110,13 +124,17 @@ impl OutlinePen for AnythingPen {
 }
 
 #[derive(Default)]
+/// A pen to count the number of contours in an outline
 pub struct ContourCountPen {
+    /// The number of contours in the outline
     contour_count: usize,
 }
 impl ContourCountPen {
+    /// Create a new ContourCountPen
     pub fn new() -> Self {
         Self::default()
     }
+    /// The number of contours in the outline
     pub fn contour_count(&self) -> usize {
         self.contour_count
     }
@@ -132,16 +150,22 @@ impl OutlinePen for ContourCountPen {
 }
 
 #[derive(Default)]
+/// A pen to determine the area of an outline
 pub struct AreaPen {
+    /// Result area
     area: f32,
+    /// Start point of the current curve
     start_point: Option<(f32, f32)>,
+    /// On-curve point of the current segment
     p0: Option<(f32, f32)>,
 }
 
 impl AreaPen {
+    /// Create a new AreaPen
     pub fn new() -> Self {
         Self::default()
     }
+    /// The area of the outline
     pub fn area(&self) -> f32 {
         self.area
     }

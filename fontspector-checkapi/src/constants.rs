@@ -1,6 +1,8 @@
 use std::ops::Range;
 
+/// The names of the RIBBI styles
 pub const RIBBI_STYLE_NAMES: [&str; 5] = ["Regular", "Italic", "Bold", "BoldItalic", "Bold Italic"];
+/// A list of known static style names
 pub const STATIC_STYLE_NAMES: [&str; 18] = [
     "Thin",
     "ExtraLight",
@@ -22,6 +24,7 @@ pub const STATIC_STYLE_NAMES: [&str; 18] = [
     "Black Italic",
 ];
 
+/// Valid OpenType script names as of OpenType 1.9.1
 pub const VALID_SCRIPT_TAGS: [&str; 170] = [
     "DFLT", "adlm", "ahom", "hluw", "arab", "armn", "avst", "bali", "bamu", "bass", "batk", "beng",
     "bng2", "bhks", "bopo", "brah", "brai", "bugi", "buhd", "byzm", "cans", "cari", "aghb", "cakm",
@@ -40,6 +43,7 @@ pub const VALID_SCRIPT_TAGS: [&str; 170] = [
     "yi  ", "zanb",
 ];
 
+/// Valid OpenType language tags as of OpenType 1.9.1
 pub const VALID_LANG_TAGS: [&str; 612] = [
     "dflt", "ABA ", "ABK ", "ACH ", "ACR ", "ADY ", "AFK ", "AFR ", "AGW ", "AIO ", "AKA ", "AKB ",
     "ALS ", "ALT ", "AMH ", "ANG ", "APPH", "ARA ", "ARG ", "ARI ", "ARK ", "ASM ", "AST ", "ATH ",
@@ -94,6 +98,7 @@ pub const VALID_LANG_TAGS: [&str; 612] = [
     "YIM ", "ZEA ", "ZGH ", "ZHA ", "ZHH ", "ZHP ", "ZHS ", "ZHT ", "ZHTM", "ZND ", "ZUL ", "ZZA ",
 ];
 
+/// Valid OpenType feature tags as of OpenType 1.9.1
 pub const VALID_FEATURE_TAGS: [&str; 122] = [
     "aalt", "abvf", "abvm", "abvs", "afrc", "akhn", "blwf", "blwm", "blws", "c2pc", "c2sc", "calt",
     "case", "ccmp", "cfar", "chws", "cjct", "clig", "cpct", "cpsp", "cswh", "curs", "dist", "dlig",
@@ -108,6 +113,7 @@ pub const VALID_FEATURE_TAGS: [&str; 122] = [
     "vrtr", "zero",
 ];
 
+/// Ranges of Unicode codepoints containing CJK characters
 pub const CJK_UNICODE_RANGES: [Range<u32>; 20] = [
     0x1100..0x11FF,   // Hangul Jamo
     0x3040..0x309F,   // Hiragana
@@ -131,7 +137,9 @@ pub const CJK_UNICODE_RANGES: [Range<u32>; 20] = [
     0x2F800..0x2FA1F, // CJK Compatibility Ideographs Supplement (CJK Strokes)
 ];
 
+/// Ranges of Unicode codepoints containing Hangul characters
 pub const ALL_HANGUL_SYLLABLES_CODEPOINTS: std::ops::Range<u32> = 0xAC00..(0xD7A3 + 1);
+/// List of Unicode codepoints containing modern Hangul characters
 pub const MODERN_HANGUL_SYLLABLES_CODEPOINTS: [u32; 2350] = [
     0xAC00, 0xAC01, 0xAC04, 0xAC07, 0xAC08, 0xAC09, 0xAC0A, 0xAC10, 0xAC11, 0xAC12, 0xAC13, 0xAC14,
     0xAC15, 0xAC16, 0xAC17, 0xAC19, 0xAC1A, 0xAC1B, 0xAC1C, 0xAC1D, 0xAC20, 0xAC24, 0xAC2C, 0xAC2D,

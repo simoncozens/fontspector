@@ -3,11 +3,26 @@ use serde_json::{Map, Value};
 use crate::{Check, Profile};
 
 #[derive(Debug, Clone, Default)]
+/// The context of a check
+///
+/// Generally this means options set by the user on the command line which
+/// should be provided to each check.
 pub struct Context {
+    /// Whether to skip network operations
     pub skip_network: bool,
+    /// The network timeout in seconds
     pub network_timeout: Option<u64>,
+    /// Additional configuration
     pub configuration: Map<String, Value>,
+    /// Metadata in the check's definition
+    ///
+    /// The purpose of this is to allow multiple checks to share an implementation
+    /// function, but differ only in the metadata. For example, in `fontbakery-bridge`
+    /// all checks have the same Rust implementation function ("Call a function in a Python
+    /// and marshal the results back into Rust"), but need to know which Python function to
+    /// call.
     pub check_metadata: Value,
+    /// Whether to return full or abbreviated lists of items in check results
     pub full_lists: bool,
 }
 

@@ -6,8 +6,7 @@ use crate::{
 use itertools::Either;
 use read_fonts::{
     tables::{
-        cmap::Cmap,
-        gdef::{Gdef, GlyphClassDef},
+        gdef::GlyphClassDef,
         glyf::Glyph,
         gpos::{PairPos, PairPosFormat1, PairPosFormat2, PositionSubtables},
         layout::{Feature, FeatureRecord},
@@ -33,12 +32,17 @@ use std::{
     path::{Path, PathBuf},
 };
 
+/// A Font to be tested
 pub struct TestFont<'a> {
+    /// The path to the font file
     pub filename: PathBuf,
+    /// The font's binary data
     font_data: &'a [u8],
     // Try to avoid caching stuff here unless you really need to, the conversion Testable->TestFont
     // should be cheap as it is run for each check.
+    /// The number of glyphs in the font
     pub glyph_count: usize,
+    /// A cache of the glyph names
     _glyphnames: RefCell<Vec<Option<String>>>,
 }
 
@@ -48,6 +52,7 @@ impl Debug for TestFont<'_> {
     }
 }
 
+/// A file type for TrueType fonts
 pub const TTF: FileType = FileType {
     pattern: "*.[ot]tf",
 };
@@ -62,6 +67,7 @@ impl<'a> FileTypeConvert<'a, TestFont<'a>> for FileType<'a> {
 }
 
 impl TestFont<'_> {
+    /// Create a new TestFont from a file path and binary data
     pub fn new_from_data<'a>(
         filename: &Path,
         font_data: &'a [u8],
@@ -76,11 +82,17 @@ impl TestFont<'_> {
         })
     }
 
+    /// A [read-fonts](https://docs.rs/read-fonts/) font object
     pub fn font(&self) -> FontRef {
         #[allow(clippy::expect_used)] // We just tested for it in the initializer
         FontRef::new(self.font_data).expect("Can't happen")
     }
 
+    /// Get the font's style name
+    ///
+    /// For a variable font, we try to determine the style from the default location
+    /// and whether the name contains `Italic`. For a static font, we try to match
+    /// the style name part of the filename to a list of known styles.
     pub fn style(&self) -> Option<&str> {
         if self.is_variable_font() {
             if let Some(default_location) = self.default_location() {
@@ -108,33 +120,28 @@ impl TestFont<'_> {
         None
     }
 
+    /// Is this a RIBBI font?
+    ///
+    /// A RIBBI font is one that is Regular, Italic, Bold, BoldItalic. We determine
+    /// the style using the [style](TestFont::style) method.
     pub fn is_ribbi(&self) -> bool {
         self.style()
             .map_or(false, |s| RIBBI_STYLE_NAMES.iter().any(|r| r == &s))
     }
 
+    /// Does this font contain a given TrueType table?
     pub fn has_table(&self, table: &[u8; 4]) -> bool {
         self.font().table_data(Tag::new(table)).is_some()
     }
 
-    pub fn get_cmap(&self) -> Result<Cmap, CheckError> {
-        let cmap = self
-            .font()
-            .cmap()
-            .map_err(|_| CheckError::Error("Font lacks a cmap table".to_string()))?;
-        Ok(cmap)
-    }
-
-    pub fn get_gdef(&self) -> Result<Gdef, CheckError> {
-        let gdef = self
+    /// Return the GDEF class for a glyph
+    pub fn gdef_class(&self, glyph_id: impl Into<GlyphId>) -> GlyphClassDef {
+        if let Some(Ok(class_def)) = self
             .font()
             .gdef()
-            .map_err(|_| CheckError::Error("Font lacks a GDEF table".to_string()))?;
-        Ok(gdef)
-    }
-
-    pub fn gdef_class(&self, glyph_id: impl Into<GlyphId>) -> GlyphClassDef {
-        if let Some(Ok(class_def)) = self.get_gdef().ok().and_then(|gdef| gdef.glyph_class_def()) {
+            .ok()
+            .and_then(|gdef| gdef.glyph_class_def())
+        {
             GlyphId16::try_from(glyph_id.into())
                 .map(|gid| class_def.get(gid))
                 .map_or(GlyphClassDef::Unknown, GlyphClassDef::new)
@@ -143,17 +150,20 @@ impl TestFont<'_> {
         }
     }
 
+    /// Return the OS/2 table FsSelection flags
     pub fn get_os2_fsselection(&self) -> Result<SelectionFlags, CheckError> {
         let os2 = self.font().os2()?;
         Ok(os2.fs_selection())
     }
 
+    /// Get a string from the font's name table by Name ID
     pub fn get_name_entry_strings(&self, name_id: StringId) -> impl Iterator<Item = String> + '_ {
         self.font()
             .localized_strings(name_id)
             .map(|s| s.to_string())
     }
 
+    /// Internal implementation for getting a glyph name
     fn glyph_name_for_id_impl(&self, gid: impl Into<GlyphId>, synthesize: bool) -> Option<String> {
         let gid: GlyphId = gid.into();
         if self._glyphnames.borrow().is_empty() {
@@ -192,41 +202,52 @@ impl TestFont<'_> {
         }
     }
 
+    /// Get a glyph's name by Glyph ID, if present in the font
     pub fn glyph_name_for_id(&self, gid: impl Into<GlyphId>) -> Option<String> {
         self.glyph_name_for_id_impl(gid, false)
     }
+    /// Get a glyph's name by Glyph ID, synthesizing a name if not present in the font
+    ///
+    /// For example GID 1024 will be named "gid1024".
     pub fn glyph_name_for_id_synthesise(&self, gid: impl Into<GlyphId>) -> String {
         #[allow(clippy::unwrap_used)]
         self.glyph_name_for_id_impl(gid, true).unwrap()
     }
+    /// Internal implementation for getting a glyph name by Unicode codepoint
     fn glyph_name_for_unicode_impl(&self, u: impl Into<u32>, synthesize: bool) -> Option<String> {
         self.font()
             .charmap()
             .map(u)
             .and_then(|gid| self.glyph_name_for_id_impl(gid, synthesize))
     }
+    /// Get a glyph's name by Unicode codepoint, if present in the font
     pub fn glyph_name_for_unicode(&self, u: impl Into<u32>) -> Option<String> {
         self.glyph_name_for_unicode_impl(u, false)
     }
+    /// Get a glyph's name by Unicode codepoint, synthesizing a name if not present in the font
     pub fn glyph_name_for_unicode_synthesise(&self, u: impl Into<u32>) -> String {
         #[allow(clippy::unwrap_used)]
         self.glyph_name_for_unicode_impl(u, true).unwrap()
     }
 
+    /// Retrieve a glyph by ID from the `glyf` table
     pub fn get_glyf_glyph(&self, gid: GlyphId) -> Result<Option<Glyph>, ReadError> {
         let loca = self.font().loca(None)?;
         let glyf = self.font().glyf()?;
         loca.get_glyf(gid, &glyf)
     }
 
+    /// Is this font a variable font?
     pub fn is_variable_font(&self) -> bool {
         self.has_table(b"fvar")
     }
 
+    /// Does this font have a given variation axis?
     pub fn has_axis(&self, axis: &str) -> bool {
         self.is_variable_font() && self.font().axes().iter().any(|a| a.tag() == axis)
     }
 
+    /// The font's default location in userspace coordinates
     pub fn default_location(&self) -> Option<HashMap<String, f32>> {
         Some(
             self.font()
@@ -244,6 +265,7 @@ impl TestFont<'_> {
         )
     }
 
+    /// The set of Unicode codepoints in the font
     pub fn codepoints(&self) -> HashSet<u32> {
         self.font()
             .charmap()
@@ -271,6 +293,9 @@ impl TestFont<'_> {
         })
     }
 
+    /// Return the ranges of the font's variation space
+    ///
+    /// This returns an iterator of items `name, min, default, max` for each axis.
     pub fn axis_ranges(&self) -> impl Iterator<Item = (String, f32, f32, f32)> + '_ {
         self.font().axes().iter().map(|axis| {
             let tag = axis.tag().to_string();
@@ -281,6 +306,7 @@ impl TestFont<'_> {
         })
     }
 
+    /// Draw a glyph at the given location using the provided Pen.
     pub fn draw_glyph<I>(
         &self,
         gid: GlyphId,
@@ -305,6 +331,9 @@ impl TestFont<'_> {
         Ok(())
     }
 
+    /// Returns the font's FeatureRecord and associated Feature tables
+    ///
+    /// If `gsub_only` is true, only searches in the `GSUB` table.
     pub fn feature_records(
         &self,
         gsub_only: bool,
@@ -337,23 +366,39 @@ impl TestFont<'_> {
         }
     }
 
+    /// Does the font have a given feature?
+    ///
+    /// If `gsub_only` is true, only searches in the `GSUB` table.
     pub fn has_feature(&self, gsub_only: bool, tag: &str) -> bool {
         self.feature_records(gsub_only)
             .any(|(f, _)| f.feature_tag() == tag)
     }
 
+    /// An iterator of all glyphs in the font
     pub fn all_glyphs(&self) -> impl Iterator<Item = GlyphId> {
         (0..self.glyph_count as u32).map(GlyphId::from)
     }
 
+    /// An iterator of all glyphs in the font that are CJK
     pub fn cjk_codepoints(&self) -> impl Iterator<Item = u32> {
         self.codepoints().into_iter().filter(|&cp| is_cjk(cp))
     }
 
+    /// Is this font a CJK font?
+    ///
+    /// A font is considered a CJK font if it contains more than 150 CJK codepoints.
+    /// This is because 150 is the minimal number of CJK glyphs to support a Korean font,
+    /// which in turn is the smallest CJK set.
     pub fn is_cjk_font(&self) -> bool {
         self.cjk_codepoints().count() > 150
     }
 
+    /// Walk a font's kern pairs
+    ///
+    /// This function looks at all  the pair positioning rules in a font's GPOS table
+    /// gathering information about the kerning pairs. It needs two functions to process
+    /// the two different PairPos format tables. See the [tabular_kerning](../../profile-universal/checks/tabular_kerning.html) check for
+    /// an example of how to use it.
     pub fn process_kerning<T>(
         &self,
         format1_func: &dyn Fn(PairPosFormat1) -> Result<Vec<T>, ReadError>,
@@ -383,10 +428,12 @@ impl TestFont<'_> {
     }
 }
 
+/// Is a codepoint a CJK character?
 fn is_cjk(cp: u32) -> bool {
     crate::constants::CJK_UNICODE_RANGES
         .iter()
         .any(|range| range.contains(&cp))
 }
 
+/// An empty [VariationSetting] for use in default location.
 pub const DEFAULT_LOCATION: &[VariationSetting] = &[];

@@ -11,12 +11,17 @@ use read_fonts::{
     ReadError,
 };
 use skrifa::GlyphId16;
+
+/// A map of substitutions, input glyphs on the left, output glyphs on the right
 pub type SubstitutionMap = Vec<(Vec<GlyphId16>, Vec<GlyphId16>)>;
 
+/// A trait to get a substitution map from a GSUB subtable
 pub trait GetSubstitutionMap {
+    /// Get the substitution map from the subtable
     fn substitutions(&self) -> Result<SubstitutionMap, ReadError>;
 }
 
+/// This type isn't public in `read-fonts` so copy it in
 type SubSubtables<'a, T> = Subtables<'a, T, ExtensionSubstFormat1<'a, T>>;
 
 impl<'a> GetSubstitutionMap for SubSubtables<'a, SingleSubst<'a>> {

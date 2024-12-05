@@ -8,18 +8,24 @@ use crate::{
     CheckResult, Registry, Status, Testable,
 };
 
+/// A check ID is a unique identifier for a check
 pub type CheckId = String;
+/// The function signature for a check taking a single testable
 type CheckOneSignature = dyn Fn(&Testable, &Context) -> CheckFnResult;
+/// The function signature for a check taking a collection of testables
 type CheckAllSignature = dyn Fn(&TestableCollection, &Context) -> CheckFnResult;
 
 #[derive(Clone)]
+/// Additional flags added to a check
 pub struct CheckFlags {
+    /// Whether the check is experimental
     pub experimental: bool,
 }
 
 impl CheckFlags {
     // We can't use Default trait here because we want to use
     // it in const context.
+    /// Create a new CheckFlags with default values
     pub const fn default() -> Self {
         Self {
             experimental: false,
@@ -28,22 +34,40 @@ impl CheckFlags {
 }
 
 #[derive(Clone)]
+/// A check definition
+///
+/// This wraps a check function which may take either a single file, or
+/// a collection of files. The check function is wrapped in an enum to
+/// unify the different signatures.
 pub enum CheckImplementation<'a> {
+    /// A check that takes a single file
     CheckOne(&'a CheckOneSignature),
+    /// A check that takes a collection of files
     CheckAll(&'a CheckAllSignature),
 }
 
 #[derive(Clone)]
+/// A check definition
 pub struct Check<'a> {
+    /// The check's unique identifier
     pub id: &'a str,
+    /// Title to be displayed to the user
     pub title: &'a str,
+    /// A short description of the check
     pub rationale: &'a str,
+    /// URL where the check was proposed
     pub proposal: &'a str,
+    /// Function pointer implementing the actual check
     pub implementation: CheckImplementation<'a>,
+    /// Function pointer implementing a hotfix to the binary file
     pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
+    /// Function pointer implementing a hotfix to the font source file
     pub fix_source: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
+    /// A registered file type that this check applies to
     pub applies_to: &'a str,
+    /// Additional flags for the check
     pub flags: CheckFlags,
+    /// Metadata for the check in JSON format
     pub _metadata: Option<&'static str>,
 }
 
@@ -51,9 +75,15 @@ pub struct Check<'a> {
 unsafe impl Sync for Check<'_> {}
 
 impl<'a> Check<'a> {
+    /// Does this check run on a collection of files?
     pub fn runs_on_collection(&self) -> bool {
         matches!(self.implementation, CheckImplementation::CheckAll(_))
     }
+    /// Should the check run on the given testable?
+    ///
+    /// Checks declare themselves to either run on a collection of files, or
+    /// on a single file of a given file type; this function checks if the
+    /// check is applicable to the given testable.
     pub fn applies(&self, f: &'a TestableType, registry: &Registry) -> bool {
         match (&self.implementation, f) {
             (CheckImplementation::CheckAll(_), TestableType::Collection(_)) => true,
@@ -76,6 +106,10 @@ impl<'a> Check<'a> {
             .unwrap_or_default()
     }
 
+    /// Clarify the result of a check function
+    ///
+    /// Wraps the bare result with additional metadata identifying the check,
+    /// the file, etc. so that it can be reported back to the user.
     fn clarify_result(
         &'a self,
         fn_result: CheckFnResult,
@@ -142,6 +176,9 @@ impl<'a> Check<'a> {
     }
 }
 
+/// Utility function for returning a check result
+///
+/// Interprets the case of an empty list of problems to mean a PASS status.
 pub fn return_result(problems: Vec<Status>) -> CheckFnResult {
     if problems.is_empty() {
         Ok(Status::just_one_pass())

@@ -84,10 +84,12 @@ impl Testable {
 /// Imagine it as a slice of a filesystem. This is the basic unit of testing.
 #[derive(Debug, PartialEq, Eq)]
 pub struct TestableCollection {
+    /// The files to be tested
     pub testables: Vec<Testable>,
 }
 
 impl TestableCollection {
+    /// Create a new TestableCollection from a list of filenames.
     pub fn from_filenames<P: Into<PathBuf> + AsRef<Path> + Clone>(
         filenames: &[P],
     ) -> Result<Self, std::io::Error> {
@@ -98,20 +100,24 @@ impl TestableCollection {
         })
     }
 
+    /// Create a new TestableCollection from a list of [Testable]s.
     pub fn from_testables(testables: Vec<Testable>) -> Self {
         Self { testables }
     }
 
+    /// Return each [Testable] in the collection.
     pub fn iter(&self) -> impl Iterator<Item = &Testable> {
         self.testables.iter()
     }
 
+    /// Return each [Testable] in the collection, along with the collection itself.
     pub fn collection_and_files(&self) -> impl Iterator<Item = TestableType> {
         vec![TestableType::Collection(self)]
             .into_iter()
             .chain(self.testables.iter().map(TestableType::Single))
     }
 
+    /// Find a file in the collection by filename.
     pub fn get_file(&self, filename: &str) -> Option<&Testable> {
         self.testables
             .iter()
@@ -120,12 +126,20 @@ impl TestableCollection {
 }
 
 #[derive(Debug, PartialEq, Eq)]
+/// Union of objects to be passed to a check
+///
+/// A fontspector check can either be run on a single file or a collection of files;
+/// this enum allows us to have a single signature for both kinds of check. Macros
+/// such as `testfont!` can be used to extract a single file.
 pub enum TestableType<'a> {
+    /// A single file to be tested
     Single(&'a Testable),
+    /// A collection of files to be tested
     Collection(&'a TestableCollection),
 }
 
 impl TestableType<'_> {
+    /// Return true if the object is a single file.
     pub fn is_single(&self) -> bool {
         matches!(self, TestableType::Single(_))
     }
