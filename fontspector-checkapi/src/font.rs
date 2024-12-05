@@ -356,8 +356,8 @@ impl TestFont<'_> {
 
     pub fn process_kerning<T>(
         &self,
-        format1_func: fn(PairPosFormat1) -> Result<Vec<T>, ReadError>,
-        format2_func: fn(PairPosFormat2) -> Result<Vec<T>, ReadError>,
+        format1_func: &dyn Fn(PairPosFormat1) -> Result<Vec<T>, ReadError>,
+        format2_func: &dyn Fn(PairPosFormat2) -> Result<Vec<T>, ReadError>,
     ) -> Result<Vec<T>, ReadError> {
         let gpos = self.font().gpos()?;
         Ok(
