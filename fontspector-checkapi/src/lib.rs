@@ -29,7 +29,7 @@ mod filetype;
 mod font;
 /// Routines to make dealing with GSUB tables more tractable
 mod gsub;
-/// [OutlinePen](https://docs.rs/fonttools/0.1.0/fonttools/pen/trait.OutlinePen.html) implementations useful for check implementors
+/// [OutlinePen](https://docs.rs/skrifa/latest/skrifa/outline/trait.OutlinePen.html) implementations useful for check implementors
 pub mod pens;
 /// Sets of checks that declare a particular "standard" of QA testing
 mod profile;
