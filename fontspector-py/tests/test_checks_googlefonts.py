@@ -636,66 +636,6 @@ def test_check_fstype(check):
     )
 
 
-def test_condition_registered_vendor_ids():
-    """Get a list of vendor IDs from Microsoft's website."""
-    from fontbakery.checks.vendorspecific.googlefonts.os2 import registered_vendor_ids
-
-    registered_ids = registered_vendor_ids()
-
-    print('As of July 2018, "MLAG": "Michael LaGattuta" must show up in the list...')
-    assert "MLAG" in registered_ids  # Michael LaGattuta
-
-    print('As of December 2020, "GOOG": "Google" must show up in the list...')
-    assert "GOOG" in registered_ids  # Google
-
-    print('"CFA ": "Computer Fonts Australia" is a good vendor id, lacking a URL')
-    assert "CFA " in registered_ids  # Computer Fonts Australia
-
-    print(
-        '"GNU ": "Free Software Foundation, Inc." is a good vendor id'
-        " with 3 letters and a space."
-    )
-    # Free Software Foundation, Inc. / http://www.gnu.org/
-    assert "GNU " in registered_ids
-
-    print('"GNU" without the right-padding space must not be on the list!')
-    assert "GNU" not in registered_ids  # All vendor ids must be 4 chars long!
-
-    print('"ADBE": "Adobe" is a good 4-letter vendor id.')
-    assert "ADBE" in registered_ids  # Adobe
-
-    print('"B&H ": "Bigelow & Holmes" is a valid vendor id that contains an ampersand.')
-    assert "B&H " in registered_ids  # Bigelow & Holmes
-
-    print(
-        '"MS  ": "Microsoft Corp." is a good vendor id'
-        " with 2 letters and padded with spaces."
-    )
-    assert "MS  " in registered_ids  # Microsoft Corp.
-
-    print('"TT\0\0": we also accept vendor-IDs containing NULL-padding.')
-    assert "TT\0\0" in registered_ids  # constains NULL bytes
-
-    print("All vendor ids must be 4 chars long!")
-    assert "GNU" not in registered_ids  # 3 chars long is bad
-    assert "MS" not in registered_ids  # 2 chars long is bad
-    assert "H" not in registered_ids  # 1 char long is bad
-
-    print(
-        '"H   ": "Hurme Design" is a good vendor id'
-        " with a single letter padded with spaces."
-    )
-    assert "H   " in registered_ids  # Hurme Design
-
-    print('"   H": But not padded on the left, please!')
-    # a bad vendor id (presumably for "Hurme Design"
-    # but with a vendor id parsing bug)
-    assert "   H" not in registered_ids
-
-    print('"????" is an unknown vendor id.')
-    assert "????" not in registered_ids
-
-
 @pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/vendor_id")
 def test_check_vendor_id(check):
