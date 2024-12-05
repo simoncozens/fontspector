@@ -61,17 +61,7 @@ static GLYPHS_BY_UNICODE: LazyLock<HashMap<u32, HashSet<usize>>> = LazyLock::new
     
     ",
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",
-    title = "Check if each glyph has the recommended amount of contours.
-
-    This check is useful to assure glyphs aren't incorrectly constructed.
-
-    The desired_glyph_data module contains the 'recommended' countour count
-    for encoded glyphs. The contour counts are derived from fonts which were
-    chosen for their quality and unique design decisions for particular glyphs.
-
-    In the future, additional glyph data can be included. A good addition would
-    be the 'recommended' anchor counts for each glyph.
-    "
+    title = "Check if each glyph has the recommended amount of contours."
 )]
 fn contour_count(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
