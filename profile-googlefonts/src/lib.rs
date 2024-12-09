@@ -1,4 +1,5 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
+mod checks;
 pub mod constants;
 mod description;
 mod family;
@@ -17,6 +18,8 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         let desc = FileType::new("DESCRIPTION.en_us.html");
         cr.register_filetype("MDPB", mdpb);
         cr.register_filetype("DESC", desc);
+        cr.register_check(checks::fstype::googlefonts_fstype);
+        cr.register_check(checks::name_description_max_length::name_description_max_length);
         cr.register_check(description::description_min_length);
         cr.register_check(description::description_eof_linebreak);
         cr.register_check(family::family_equal_codepoint_coverage);

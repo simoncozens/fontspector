@@ -616,7 +616,6 @@ def test_check_family_equal_codepoint_coverage(check, mada_ttFonts, cabin_ttFont
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/fstype")
 def test_check_fstype(check):
     """Checking OS/2 fsType"""
@@ -894,7 +893,6 @@ def test_check_name_license(check, mada_ttFonts):
     # WARN, "http" / "http-in-description"
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/name/description_max_length")
 def test_check_name_description_max_length(check):
     """Description strings in the name table must not exceed 200 characters."""
