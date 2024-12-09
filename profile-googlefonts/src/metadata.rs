@@ -2,7 +2,7 @@
 include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 
 use chrono::prelude::*;
-use fonts_public::FamilyProto;
+pub(crate) use fonts_public::FamilyProto;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 
 pub(crate) fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {

@@ -23,6 +23,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(checks::axes_match::axes_match);
         cr.register_check(checks::fstype::googlefonts_fstype);
         cr.register_check(checks::name_description_max_length::name_description_max_length);
+        cr.register_check(checks::tofu::googlefonts_tofu);
         cr.register_check(description::description_min_length);
         cr.register_check(description::description_eof_linebreak);
         cr.register_check(family::family_equal_codepoint_coverage);
@@ -88,6 +89,7 @@ include_profiles = ["universal"]
 ]
 "Glyphset Checks" = [
     "googlefonts/glyphsets/shape_languages",
+    "googlefonts/tofu",
 ]
 "Description Checks" = [
     "googlefonts/description/broken_links",

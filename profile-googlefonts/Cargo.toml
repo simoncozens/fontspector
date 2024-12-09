@@ -7,7 +7,7 @@ edition = "2021"
 reqwest = { version = "0.12", features = ["blocking"] }
 
 [dependencies]
-chrono = "0.4.38"                                                                              # For metadata date checks
+chrono = "0.4.38"                                           # For metadata date checks
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 google-fonts-languages = "0"
 google-fonts-subsets = "0"
@@ -19,5 +19,7 @@ regex = "1.10.6"
 skrifa = { workspace = true }
 serde_json = { workspace = true }
 
+unicode-properties = { workspace = true }
+unicode-normalization = "0"
 [build-dependencies]
 protobuf-codegen = "3.7.1"
