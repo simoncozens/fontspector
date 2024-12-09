@@ -1,5 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
-mod checks;
+pub mod checks;
+
 use fontspector_checkapi::{Profile, Registry};
 
 pub struct Universal;
