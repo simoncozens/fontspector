@@ -146,6 +146,13 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
         Some(metadata) => quote!(Some(&#metadata)),
         None => quote!(None),
     };
+    let doc_string = format!(
+        "`{}`: {}\n\n{}\n\n## Proposal\n\n{}",
+        id.value(),
+        title.value(),
+        new_rationale,
+        proposal.value()
+    );
     quote!(
         #(#attrs)*
         #vis #new_sig {
@@ -153,6 +160,7 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
         }
 
         #[allow(non_upper_case_globals)]
+        #[doc=#doc_string]
         pub const #check_ident : Check = Check {
             id: #id,
             proposal: #proposal,
