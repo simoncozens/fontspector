@@ -131,6 +131,12 @@ fn main() {
     // We create one collection for each set of testable files in a directory.
     // So let's group the inputs per directory, and then map them into a FontCollection
     let grouped_inputs = group_inputs(&args);
+
+    if grouped_inputs.is_empty() {
+        log::error!("No input files");
+        std::process::exit(1);
+    }
+
     let testables: Vec<TestableType> = grouped_inputs
         .iter()
         .flat_map(|x| x.collection_and_files())
@@ -259,33 +265,32 @@ fn main() {
 // It feels like this takes an inordinately long time, but remember that this also
 // reads the input files.
 fn group_inputs(args: &Args) -> Vec<TestableCollection> {
-    let grouped_inputs: Vec<TestableCollection> = args
+    let inputs = args
         .inputs
         .iter()
         .map(PathBuf::from)
         .filter(|x| x.is_file())
-        .fold(Vec::new(), |mut acc: Vec<Vec<PathBuf>>, path| {
-            if let Some(directory) = path.parent().map(|p| p.to_path_buf()) {
-                if let Some(group) = acc
-                    .iter_mut()
-                    .find(|group| group[0].parent() == Some(&directory))
-                {
-                    group.push(path);
-                } else {
-                    acc.push(vec![path]);
-                }
-            }
-            acc
+        .filter(|x| x.parent().is_some());
+    inputs
+        .map(|file| {
+            #[allow(clippy::unwrap_used)] // We tested for parent
+            (file.parent().unwrap().to_owned(), file)
         })
+        .fold(
+            HashMap::new(),
+            |mut acc: HashMap<PathBuf, Vec<PathBuf>>, (directory, file)| {
+                acc.entry(directory).or_default().push(file);
+                acc
+            },
+        )
         .into_iter()
-        .map(|group| {
-            TestableCollection::from_filenames(&group).unwrap_or_else(|e| {
+        .map(|(directory, group)| {
+            TestableCollection::from_filenames(&group, directory.to_str()).unwrap_or_else(|e| {
                 log::error!("Could not load files from {:?}: {:}", group[0].parent(), e);
                 std::process::exit(1)
             })
         })
-        .collect();
-    grouped_inputs
+        .collect()
 }
 
 fn load_configuration(args: &Args) -> Map<String, serde_json::Value> {

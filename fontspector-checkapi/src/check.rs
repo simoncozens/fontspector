@@ -113,7 +113,7 @@ impl<'a> Check<'a> {
     fn clarify_result(
         &'a self,
         fn_result: CheckFnResult,
-        file: Option<&'a Testable>,
+        filename: Option<&str>,
         section: Option<&str>,
         duration: Duration,
     ) -> CheckResult {
@@ -127,13 +127,7 @@ impl<'a> Check<'a> {
         } else {
             subresults
         };
-        CheckResult::new(
-            self,
-            file.and_then(|f| f.filename.to_str()),
-            section,
-            res,
-            duration,
-        )
+        CheckResult::new(self, filename, section, res, duration)
     }
 
     /// Run the check, either on a collection or a single file.
@@ -159,7 +153,12 @@ impl<'a> Check<'a> {
                 #[cfg(target_family = "wasm")]
                 let duration = Duration::from_secs(0);
 
-                Some(self.clarify_result(result, Some(f), section, duration))
+                Some(self.clarify_result(
+                    result,
+                    Some(f).and_then(|f| f.filename.to_str()),
+                    section,
+                    duration,
+                ))
             }
             (CheckImplementation::CheckAll(check_all), TestableType::Collection(f)) => {
                 #[cfg(not(target_family = "wasm"))]
@@ -170,7 +169,7 @@ impl<'a> Check<'a> {
                 #[cfg(target_family = "wasm")]
                 let duration = Duration::from_secs(0);
 
-                Some(self.clarify_result(result, None, section, duration))
+                Some(self.clarify_result(result, Some(&f.directory), section, duration))
             }
         }
     }

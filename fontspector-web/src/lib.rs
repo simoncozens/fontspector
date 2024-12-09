@@ -40,7 +40,7 @@ pub fn check_fonts(fonts: &JsValue, profile: &str) -> Result<String, JsValue> {
             }
         })
         .collect();
-    let collection = TestableCollection::from_testables(testables);
+    let collection = TestableCollection::from_testables(testables, None);
 
     let profile = registry
         .get_profile(profile)

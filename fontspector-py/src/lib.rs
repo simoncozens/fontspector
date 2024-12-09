@@ -95,7 +95,10 @@ impl CheckTester {
         } else {
             vec![obj_to_testable(py, &first_arg)?]
         };
-        let collection = TestableCollection { testables };
+        let collection = TestableCollection {
+            testables,
+            directory: "".to_string(),
+        };
         let newargs = if matches!(check.implementation, CheckImplementation::CheckOne(_)) {
             TestableType::Single(&collection.testables[0])
         } else {

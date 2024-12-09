@@ -86,23 +86,32 @@ impl Testable {
 pub struct TestableCollection {
     /// The files to be tested
     pub testables: Vec<Testable>,
+    /// The directory or identifier for this collection
+    pub directory: String,
 }
 
 impl TestableCollection {
     /// Create a new TestableCollection from a list of filenames.
     pub fn from_filenames<P: Into<PathBuf> + AsRef<Path> + Clone>(
         filenames: &[P],
+        identifier: Option<&str>,
     ) -> Result<Self, std::io::Error> {
         let collection: Result<Vec<Testable>, _> =
             filenames.iter().map(|x| Testable::new(x.clone())).collect();
         Ok(Self {
             testables: collection?,
+            directory: identifier
+                .map(|x| x.to_string())
+                .unwrap_or("A collection".to_string()),
         })
     }
 
     /// Create a new TestableCollection from a list of [Testable]s.
-    pub fn from_testables(testables: Vec<Testable>) -> Self {
-        Self { testables }
+    pub fn from_testables(testables: Vec<Testable>, identifier: Option<String>) -> Self {
+        Self {
+            testables,
+            directory: identifier.unwrap_or("A collection".to_string()),
+        }
     }
 
     /// Return each [Testable] in the collection.
