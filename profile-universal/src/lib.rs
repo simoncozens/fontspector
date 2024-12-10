@@ -65,6 +65,8 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::transformed_components::transformed_components);
         cr.register_check(checks::typoascender_agrave::typoascender_exceeds_agrave);
         cr.register_check(checks::typographic_family_name::typographic_family_name);
+        // This check is unused, but we keep it registered in case some other profile
+        // specifically wants it rather than valid_glyphnames.
         cr.register_check(checks::unique_glyphnames::unique_glyphnames);
         cr.register_check(checks::unreachable_glyphs::unreachable_glyphs);
         cr.register_check(checks::unsupported_axes::unsupported_axes);
@@ -160,7 +162,6 @@ include_profiles = ["opentype"]
     "transformed_components",
     "typoascender_exceeds_Agrave",
     "typographic_family_name",
-    "unique_glyphnames",
     "unreachable_glyphs",
     "unwanted_aat_tables",
     "unwanted_tables",
@@ -181,6 +182,7 @@ include_profiles = ["opentype"]
     # "inconsistencies_between_fvar_stat", # same as stat_has_axis_value_tables https://github.com/fonttools/fontbakery/issues/4916
     # "fontspector_version", # we'll just do this once at the start of the program, doesn't make sense for web
     # "kerning_for_non_ligated_sequences", # I just think this is a bad check
+    # "unique_glyphnames", # valid_glyphnames also checks for uniqueness
 
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
