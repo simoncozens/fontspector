@@ -11,6 +11,8 @@ mod metadata_subsets_correct;
 mod use_typo_metrics;
 use fontspector_checkapi::prelude::*;
 
+mod network_conditions;
+
 pub struct GoogleFonts;
 impl fontspector_checkapi::Plugin for GoogleFonts {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
@@ -18,6 +20,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         let desc = FileType::new("DESCRIPTION.en_us.html");
         cr.register_filetype("MDPB", mdpb);
         cr.register_filetype("DESC", desc);
+        cr.register_check(checks::axes_match::axes_match);
         cr.register_check(checks::fstype::googlefonts_fstype);
         cr.register_check(checks::name_description_max_length::name_description_max_length);
         cr.register_check(description::description_min_length);
