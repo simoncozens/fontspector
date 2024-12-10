@@ -33,16 +33,24 @@ pub(crate) fn production_metadata(context: &Context) -> Result<Map<String, Value
 
 pub(crate) fn is_listed_on_google_fonts(family: &str, context: &Context) -> Result<bool, String> {
     // println!("Looking for family {}", family);
-    let metadata = production_metadata(context)?;
-    let family_metadata_list = metadata
-        .get("familyMetadataList")
-        .ok_or("Failed to find familyMetadataList in production metadata".to_string())?
-        .as_array()
-        .ok_or("familyMetadataList is not an object".to_string())?;
-    Ok(family_metadata_list.iter().any(|f| {
-        // println!("Looking at family {:?}", f.get("family"));
-        f.get("family")
-            .and_then(Value::as_str)
-            .map_or(false, |f_str| f_str == family)
-    }))
+    let key = format!("is_listed_on_google_fonts:{}", family);
+    context.cached_question(
+        &key,
+        || {
+            let metadata = production_metadata(context)?;
+            let family_metadata_list = metadata
+                .get("familyMetadataList")
+                .ok_or("Failed to find familyMetadataList in production metadata".to_string())?
+                .as_array()
+                .ok_or("familyMetadataList is not an object".to_string())?;
+            Ok(family_metadata_list.iter().any(|f| {
+                // println!("Looking at family {:?}", f.get("family"));
+                f.get("family")
+                    .and_then(Value::as_str)
+                    .map_or(false, |f_str| f_str == family)
+            }))
+        },
+        Value::Bool,
+        |v| v.as_bool().ok_or("Expected a boolean".to_string()),
+    )
 }
