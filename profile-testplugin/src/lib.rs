@@ -1,5 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 use fontspector_checkapi::prelude::*;
+use serde_json::json;
 
 struct Test;
 
@@ -11,6 +12,10 @@ struct Test;
 )]
 fn say_hello(_c: &Testable, context: &Context) -> CheckFnResult {
     println!("Hello from the test plugin!");
+    context
+        .cache
+        .write()?
+        .insert("Hello".to_string(), json!("World"));
     println!("My context was: {:?}", context);
     return_result(vec![])
 }
@@ -51,12 +56,34 @@ fn check_metadata(_c: &Testable, context: &Context) -> CheckFnResult {
     }
 }
 
+#[check(
+    id = "test/test_check_cache",
+    title = "Check we can pull stuff out of the cache again",
+    rationale = "This check is part of the example of how to create plugins.",
+    proposal = "None",
+    applies_to = "TTF"
+)]
+fn check_cache(_c: &Testable, context: &Context) -> CheckFnResult {
+    println!("My context was: {:?}", context);
+    if context.cache.read()?.contains_key("Hello") {
+        Ok(Status::just_one_pass())
+    } else {
+        Ok(Status::just_one_fail(
+            "metadata-mismatch",
+            "Metadata mismatch",
+        ))
+    }
+}
+
 impl fontspector_checkapi::Plugin for Test {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         let toml = FileType::new("*.toml");
         cr.register_filetype("TOML", toml);
 
-        cr.register_simple_profile("test", vec![validate_toml, say_hello, check_metadata])
+        cr.register_simple_profile(
+            "test",
+            vec![validate_toml, say_hello, check_metadata, check_cache],
+        )
     }
 }
 
