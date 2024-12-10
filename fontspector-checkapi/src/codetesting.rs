@@ -42,6 +42,7 @@ pub fn run_check(check: Check<'_>, font: Testable) -> Option<CheckResult> {
         configuration: Map::new(),
         check_metadata: check.metadata(),
         full_lists: false,
+        cache: Default::default(),
     };
     check.run(&TestableType::Single(&font), &ctx, None)
 }

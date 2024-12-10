@@ -165,6 +165,7 @@ fn main() {
             configuration: Map::new(),
             check_metadata: serde_json::Value::Null,
             full_lists: args.full_lists,
+            cache: Default::default(),
         },
         configuration,
         &testables,

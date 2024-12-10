@@ -1,3 +1,5 @@
+use std::sync::{Arc, RwLock};
+
 use serde_json::{Map, Value};
 
 use crate::{Check, Profile};
@@ -24,9 +26,23 @@ pub struct Context {
     pub check_metadata: Value,
     /// Whether to return full or abbreviated lists of items in check results
     pub full_lists: bool,
+    /// A cache, specific to this testable
+    pub cache: Arc<RwLock<Map<String, Value>>>,
 }
 
 impl Context {
+    /// Copy a context, but with a new cache
+    pub fn with_new_cache(&self) -> Context {
+        Context {
+            skip_network: self.skip_network,
+            network_timeout: self.network_timeout,
+            configuration: self.configuration.clone(),
+            check_metadata: self.check_metadata.clone(),
+            full_lists: self.full_lists,
+            cache: Arc::new(RwLock::new(Map::new())),
+        }
+    }
+
     /// Extract a specialized context for a specific check using a configuration map
     ///
     /// For example, if the check is `googlefonts/has_metadata`, the configuration map
@@ -53,6 +69,7 @@ impl Context {
             configuration: check_config,
             check_metadata: check.metadata(),
             full_lists: self.full_lists,
+            cache: self.cache.clone(),
         }
     }
 }
