@@ -1768,6 +1768,8 @@ dependencies = [
  "protobuf-codegen",
  "read-fonts",
  "regex",
+ "reqwest",
+ "serde_json",
  "skrifa",
  "write-fonts",
 ]
