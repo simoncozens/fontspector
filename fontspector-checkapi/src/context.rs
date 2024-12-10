@@ -72,4 +72,29 @@ impl Context {
             cache: self.cache.clone(),
         }
     }
+
+    /// Ask a question, using the cache
+    pub fn cached_question<T>(
+        &self,
+        key: &str,
+        func: impl FnOnce() -> Result<T, String>,
+        serialize: impl FnOnce(T) -> Value,
+        deserialize: impl FnOnce(&Value) -> Result<T, String>,
+    ) -> Result<T, String>
+    where
+        T: Clone,
+    {
+        if let Ok(cache) = self.cache.read() {
+            if let Some(answer) = cache.get(key) {
+                let answer_as_t: T = deserialize(answer)?;
+                return Ok(answer_as_t);
+            }
+        }
+        let answer = func()?;
+        if let Ok(mut cache) = self.cache.write() {
+            let answer_as_value: Value = serialize(answer.clone());
+            cache.insert(key.to_string(), answer_as_value);
+        }
+        Ok(answer)
+    }
 }
