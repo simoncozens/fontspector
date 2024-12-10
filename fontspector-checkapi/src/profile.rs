@@ -201,7 +201,9 @@ impl Profile {
     }
 }
 
-/// Filter out checks that don't apply
+/// Apply inclusions and exclusions to a list of checks
+///
+/// Returns true if the check should be included, false if it should be excluded.
 fn included_excluded(
     checkname: &str,
     include_checks: &Option<Vec<String>>,
