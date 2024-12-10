@@ -40,7 +40,7 @@ fn dehinted(font: &FontRef) -> Result<Vec<u8>, CheckError> {
             for glyph in owned_glyphs.iter_mut() {
                 if let Glyph::Simple(ref mut _simple) = glyph {
                     // Coming to a write-fonts near you soon!
-                    log::warn!("TTF dehinting not yet implemented; upgrade write-fonts");
+                    // log::warn!("TTF dehinting not yet implemented; upgrade write-fonts");
                     // simple.instructions = vec![];
                 }
                 builder.add_glyph(glyph)?;

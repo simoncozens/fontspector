@@ -63,29 +63,13 @@ fn missing_small_caps_glyphs(t: &Testable, context: &Context) -> CheckFnResult {
                 })
             })
             .collect();
-        println!(
-            "{} Before: {}",
-            feature,
-            glyphset
-                .iter()
-                .map(|g| f.glyph_name_for_id_synthesise(*g))
-                .collect::<Vec<_>>()
-                .join(", ")
-        );
+
         remove_lhs_glyphs(
             &mut glyphset,
             &f.font().gsub()?.lookup_list()?,
             lookups.iter().map(|i| i.get()),
         )?;
-        println!(
-            "{} After: {}",
-            feature,
-            glyphset
-                .iter()
-                .map(|g| f.glyph_name_for_id_synthesise(*g))
-                .collect::<Vec<_>>()
-                .join(", ")
-        );
+
         if !glyphset.is_empty() {
             problems.push(Status::fail(
                 error_code,
