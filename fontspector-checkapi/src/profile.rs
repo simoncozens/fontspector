@@ -154,42 +154,78 @@ impl Profile {
         configuration: Map<String, serde_json::Value>,
         testables: &'t [TestableType],
     ) -> Vec<(String, &'t TestableType<'t>, &'r Check<'r>, Context)> {
-        self.sections
+        // Each testable gets its own context-specific cache.
+        let testable_and_cache = testables
             .iter()
-            .flat_map(|(sectionname, checknames)| {
-                checknames
-                    .iter()
-                    .filter(|checkname| {
-                        included_excluded(checkname, include_checks, exclude_checks)
-                    })
-                    .map(|checkname| {
-                        (
-                            sectionname.clone(),
-                            registry.checks.get(checkname),
-                            checkname,
-                        )
-                    })
-                    .filter_map(|(sectionname, check, checkname)| {
-                        let ck = check.map(|check| {
-                            (
-                                sectionname,
-                                check,
-                                general_context.specialize(check, &configuration, self),
-                            )
-                        });
-                        if ck.is_none() {
-                            log::warn!("Unknown check: {}", checkname);
-                        }
-                        ck
-                    })
-            })
-            .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
-                testables
-                    .iter()
-                    .filter(|testable| check.applies(testable, registry))
-                    .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
-            })
-            .collect()
+            .map(|t| (t, general_context.with_new_cache()));
+        // I'm just going to cheat and use nested for loops instead of iterator madness.
+        let mut order = vec![];
+        let mut sections_and_checks = vec![];
+        for (section_name, check_ids) in self.sections.iter() {
+            for check_id in check_ids.iter() {
+                if !included_excluded(check_id, include_checks, exclude_checks) {
+                    continue;
+                }
+                if registry.checks.contains_key(check_id) {
+                    sections_and_checks.push((section_name, check_id))
+                } else {
+                    log::warn!("Unknown check: {}", check_id);
+                }
+            }
+        }
+
+        for (testable, context) in testable_and_cache.into_iter() {
+            for (section_name, check_id) in sections_and_checks.iter() {
+                #[allow(clippy::unwrap_used)] // We checked for this above
+                let check = registry.checks.get(check_id.as_str()).unwrap();
+                if check.applies(testable, registry) {
+                    let specialized_context = context.specialize(check, &configuration, self);
+                    order.push((
+                        section_name.to_string(),
+                        testable,
+                        check,
+                        specialized_context,
+                    ));
+                }
+            }
+        }
+        order
+        // self.sections
+        //     .iter()
+        //     .flat_map(|(sectionname, checknames)| {
+        //         checknames
+        //             .iter()
+        //             .filter(|checkname| {
+        //                 included_excluded(checkname, include_checks, exclude_checks)
+        //             })
+        //             .map(|checkname| {
+        //                 (
+        //                     sectionname.clone(),
+        //                     registry.checks.get(checkname),
+        //                     checkname,
+        //                 )
+        //             })
+        //             .filter_map(|(sectionname, check, checkname)| {
+        //                 let ck = check.map(|check| {
+        //                     (
+        //                         sectionname,
+        //                         check,
+        //                         general_context.specialize(check, &configuration, self),
+        //                     )
+        //                 });
+        //                 if ck.is_none() {
+        //                     log::warn!("Unknown check: {}", checkname);
+        //                 }
+        //                 ck
+        //             })
+        //     })
+        //     .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
+        //         testables
+        //             .iter()
+        //             .filter(|testable| check.applies(testable, registry))
+        //             .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
+        //     })
+        //     .collect()
     }
 
     /// Get the default configuration for a check
