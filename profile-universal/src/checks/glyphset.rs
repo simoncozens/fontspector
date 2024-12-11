@@ -24,9 +24,9 @@ const INDIC_DETECTION_CODEPOINTS: [u32; 11] = [
     proposal = "https://github.com/fonttools/fontbakery/issues/2967",
     title = "Ensure indic fonts have the Indian Rupee Sign glyph."
 )]
-fn check_rupee(f: &Testable, _context: &Context) -> CheckFnResult {
+fn check_rupee(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
-    let codepoints = font.codepoints();
+    let codepoints = font.codepoints(Some(context));
     if codepoints.contains(&0x20B9) {
         return Ok(Status::just_one_pass());
     }

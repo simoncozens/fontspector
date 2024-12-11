@@ -17,11 +17,11 @@ use read_fonts::TableProvider;
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Checking OS/2 Metrics match hhea Metrics."
 )]
-fn os2_metrics_match_hhea(t: &Testable, _context: &Context) -> CheckFnResult {
+fn os2_metrics_match_hhea(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
 
     skip!(
-        f.is_cjk_font(),
+        f.is_cjk_font(Some(context)),
         "cjk-font",
         "Actually I'm not sure why we don't check this on CJK fonts."
     );

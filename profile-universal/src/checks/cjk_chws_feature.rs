@@ -16,10 +16,14 @@ use skrifa::Tag;
     title = "Does the font contain chws and vchw features?",
     proposal = "https://github.com/fonttools/fontbakery/issues/3363"
 )]
-fn cjk_chws_feature(f: &Testable, _context: &Context) -> CheckFnResult {
+fn cjk_chws_feature(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let mut problems = vec![];
-    skip!(!font.is_cjk_font(), "not-cjk", "Not a CJK font.");
+    skip!(
+        !font.is_cjk_font(Some(context)),
+        "not-cjk",
+        "Not a CJK font."
+    );
     let message = "feature not found in font. Use chws_tool (https://github.com/googlefonts/chws_tool) to add it.";
     let tags: HashSet<Tag> = font
         .feature_records(false)

@@ -51,7 +51,7 @@ fn cjk_not_enough_glyphs(f: &Testable, context: &Context) -> CheckFnResult {
         "not-cjk",
         "Not a CJK font."
     );
-    let cjk_glyphs: Vec<_> = font.cjk_codepoints().collect();
+    let cjk_glyphs: Vec<_> = font.cjk_codepoints(Some(context)).collect();
     let cjk_glyph_count = cjk_glyphs.len();
     Ok(if cjk_glyph_count > 0 && cjk_glyph_count < 150 {
         let num_cjk_glyphs = if cjk_glyph_count == 1 {

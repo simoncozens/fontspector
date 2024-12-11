@@ -55,10 +55,10 @@ const CASE_MAPPING_EXCEPTIONS: [u32; 22] = [
     proposal = "https://github.com/googlefonts/fontbakery/issues/3230",
     title = "Ensure the font supports case swapping for all its glyphs."
 )]
-fn case_mapping(t: &Testable, _context: &Context) -> CheckFnResult {
+fn case_mapping(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut missing_counterparts_table = vec![];
-    let codepoints = f.codepoints();
+    let codepoints = f.codepoints(Some(context));
     for codepoint in codepoints.iter() {
         if CASE_MAPPING_EXCEPTIONS.contains(codepoint) {
             continue;

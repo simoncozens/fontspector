@@ -1,7 +1,7 @@
 use crate::{
     constants::{RIBBI_STYLE_NAMES, STATIC_STYLE_NAMES},
     filetype::FileTypeConvert,
-    CheckError, FileType, Testable,
+    CheckError, Context, FileType, Testable,
 };
 use itertools::Either;
 use read_fonts::{
@@ -266,12 +266,28 @@ impl TestFont<'_> {
     }
 
     /// The set of Unicode codepoints in the font
-    pub fn codepoints(&self) -> HashSet<u32> {
-        self.font()
-            .charmap()
-            .mappings()
-            .map(|(u, _gid)| u)
-            .collect()
+    pub fn codepoints(&self, context: Option<&Context>) -> HashSet<u32> {
+        let get_codepoints = || {
+            Ok(self
+                .font()
+                .charmap()
+                .mappings()
+                .map(|(u, _gid)| u)
+                .collect::<HashSet<u32>>())
+        };
+        if let Some(context) = context {
+            #[allow(clippy::unwrap_used)] // How can it fail?!
+            context
+                .cached_question(
+                    "codepoints",
+                    get_codepoints,
+                    |hashset| serde_json::to_value(hashset).unwrap(),
+                    |value| serde_json::from_value(value.clone()).map_err(|e| e.to_string()),
+                )
+                .unwrap_or_default()
+        } else {
+            get_codepoints().unwrap_or_default()
+        }
     }
 
     /// Returns an iterator over the named instances in the font.
@@ -380,8 +396,10 @@ impl TestFont<'_> {
     }
 
     /// An iterator of all glyphs in the font that are CJK
-    pub fn cjk_codepoints(&self) -> impl Iterator<Item = u32> {
-        self.codepoints().into_iter().filter(|&cp| is_cjk(cp))
+    pub fn cjk_codepoints(&self, context: Option<&Context>) -> impl Iterator<Item = u32> {
+        self.codepoints(context)
+            .into_iter()
+            .filter(|&cp| is_cjk(cp))
     }
 
     /// Is this font a CJK font?
@@ -389,8 +407,8 @@ impl TestFont<'_> {
     /// A font is considered a CJK font if it contains more than 150 CJK codepoints.
     /// This is because 150 is the minimal number of CJK glyphs to support a Korean font,
     /// which in turn is the smallest CJK set.
-    pub fn is_cjk_font(&self) -> bool {
-        self.cjk_codepoints().count() > 150
+    pub fn is_cjk_font(&self, context: Option<&Context>) -> bool {
+        self.cjk_codepoints(context).count() > 150
     }
 
     /// Walk a font's kern pairs

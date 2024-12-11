@@ -22,9 +22,9 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
     proposal = "https://github.com/fonttools/fontbakery/issues/4046 and https://github.com/fonttools/fontbakery/issues/3486",
     title = "Does the font contain a soft hyphen?"
 )]
-fn soft_hyphen(t: &Testable, _context: &Context) -> CheckFnResult {
+fn soft_hyphen(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
-    Ok(if f.codepoints().contains(&0x00AD) {
+    Ok(if f.codepoints(Some(context)).contains(&0x00AD) {
         Status::just_one_warn("softhyphen", "This font has a 'Soft Hyphen' character.")
     } else {
         Status::just_one_pass()

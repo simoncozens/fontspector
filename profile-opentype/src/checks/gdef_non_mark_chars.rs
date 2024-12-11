@@ -28,7 +28,7 @@ fn gdef_non_mark_chars(t: &Testable, context: &Context) -> CheckFnResult {
     let glyph_classdef = gdef.glyph_class_def().ok_or_else(|| {
         CheckError::skip("no-glyph-class-def", "GDEF table has no GlyphClassDef")
     })??;
-    let codepoints = f.codepoints();
+    let codepoints = f.codepoints(Some(context));
     let non_mark_gids = codepoints
         .iter()
         .flat_map(|cp| char::from_u32(*cp))

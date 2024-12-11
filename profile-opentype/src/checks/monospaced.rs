@@ -63,7 +63,7 @@ fn monospace(t: &Testable, context: &Context) -> CheckFnResult {
         }
     }
 
-    let statistics = glyph_metrics_stats(&font)?;
+    let statistics = glyph_metrics_stats(&font, context)?;
     let mut problems = vec![];
     // Funny place to be checking it but OK
     let advance_width_max = font.font().hhea()?.advance_width_max().to_u16();
@@ -189,7 +189,7 @@ where
     map.into_iter().max_by_key(|(_, count)| *count)
 }
 
-fn glyph_metrics_stats(f: &TestFont) -> Result<GlyphMetricsStats, ReadError> {
+fn glyph_metrics_stats(f: &TestFont, context: &Context) -> Result<GlyphMetricsStats, ReadError> {
     let metrics = f.font().hmtx()?;
     let ascii_glyph_ids = (32u32..127)
         .flat_map(|ch| f.font().charmap().map(ch))
@@ -221,7 +221,7 @@ fn glyph_metrics_stats(f: &TestFont) -> Result<GlyphMetricsStats, ReadError> {
     }
 
     let mut widths = HashSet::new();
-    for codepoint in f.codepoints() {
+    for codepoint in f.codepoints(Some(context)) {
         #[allow(clippy::unwrap_used)] // We know it's mapped!
         let glyphid = f.font().charmap().map(codepoint).unwrap();
         // Skip separators, control and GDEF marks

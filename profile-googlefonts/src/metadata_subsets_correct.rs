@@ -53,7 +53,7 @@ fn support_percentage(
     title="METADATA.pb subsets are correct?",
     implementation = "all"
 )]
-fn metadata_subsets_correct(c: &TestableCollection, _context: &Context) -> CheckFnResult {
+fn metadata_subsets_correct(c: &TestableCollection, context: &Context) -> CheckFnResult {
     let mdpb = c
         .get_file("METADATA.pb")
         .ok_or_else(|| CheckError::skip("no-mdpb", "No METADATA.pb file found"))?;
@@ -114,7 +114,7 @@ fn metadata_subsets_correct(c: &TestableCollection, _context: &Context) -> Check
     // Calculate actual subset for representative font
     let first_font = fonts[0]; // we know it's not empty
     let ttf = testfont!(first_font);
-    let codepoints = ttf.codepoints();
+    let codepoints = ttf.codepoints(Some(context));
     let supported_percentage: HashMap<String, f32> = google_subsets
         .iter()
         .map(|(k, v)| (k.to_string(), support_percentage(k, v, &codepoints)))

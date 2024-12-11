@@ -63,7 +63,7 @@ fn validate_metadatapb(c: &Testable, _context: &Context) -> CheckFnResult {
     applies_to = "MDPB",
     implementation = "all"
 )]
-fn can_render_samples(c: &TestableCollection, _context: &Context) -> CheckFnResult {
+fn can_render_samples(c: &TestableCollection, context: &Context) -> CheckFnResult {
     let mdpb = c
         .get_file("METADATA.pb")
         .ok_or_else(|| CheckError::skip("no-mdpb", "No METADATA.pb file found"))?;
@@ -104,7 +104,7 @@ fn can_render_samples(c: &TestableCollection, _context: &Context) -> CheckFnResu
         // the only way you get a .notdef is if you can't use cmap to map
         // the character to a glyph, so we'll just use that.
         let ttf = testfont!(font);
-        let codepoints = ttf.codepoints();
+        let codepoints = ttf.codepoints(Some(context));
         for (langid, sample) in samples.iter() {
             if sample.chars().any(|c| !codepoints.contains(&(c as u32))) {
                 problems.push(Status::fail(

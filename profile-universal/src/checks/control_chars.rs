@@ -14,7 +14,7 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 )]
 fn control_chars(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
-    let codepoints = f.codepoints();
+    let codepoints = f.codepoints(Some(context));
     let bad_characters = (0x01..0x1F)
         .filter(|&c| c != 0x0D)
         .filter(|c| codepoints.contains(c))

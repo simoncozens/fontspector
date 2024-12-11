@@ -45,12 +45,12 @@ fn mangle_name(glyph: &str) -> String {
     ",
     proposal = "https://github.com/fonttools/fontbakery/issues/3308"
 )]
-fn alt_caron(t: &Testable, _context: &Context) -> CheckFnResult {
+fn alt_caron(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
     let charmap = f.font().charmap();
     let glyphname_to_codepoint: HashMap<String, u32> = f
-        .codepoints()
+        .codepoints(Some(context))
         .iter()
         .copied()
         .map(|codepoint| {

@@ -22,9 +22,9 @@ const ARABIC_LETTER_HIGH_HAMZA: u32 = 0x0675;
     ",
     proposal = "https://github.com/googlefonts/fontbakery/issues/4290"
 )]
-fn arabic_high_hamza(t: &Testable, _context: &Context) -> CheckFnResult {
+fn arabic_high_hamza(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
-    let codepoints = f.codepoints();
+    let codepoints = f.codepoints(Some(context));
     let mut problems = vec![];
     skip!(
         !codepoints.contains(&ARABIC_LETTER_HIGH_HAMZA)

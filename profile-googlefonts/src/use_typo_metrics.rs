@@ -25,10 +25,10 @@ use read_fonts::{tables::os2::SelectionFlags, TableProvider};
     proposal = "https://github.com/fonttools/fontbakery/issues/3241",
     title = "OS/2.fsSelection bit 7 (USE_TYPO_METRICS) is set in all fonts."
 )]
-fn os2_fsselectionbit7(t: &Testable, _context: &Context) -> CheckFnResult {
+fn os2_fsselectionbit7(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     skip!(
-        f.is_cjk_font(),
+        f.is_cjk_font(Some(context)),
         "cjk",
         "This check does not apply to CJK fonts."
     );

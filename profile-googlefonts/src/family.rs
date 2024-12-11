@@ -14,7 +14,7 @@ use fontspector_checkapi::{prelude::*, FileTypeConvert};
     proposal = "https://github.com/fonttools/fontbakery/issues/4180",
     implementation = "all"
 )]
-fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -> CheckFnResult {
+fn family_equal_codepoint_coverage(c: &TestableCollection, context: &Context) -> CheckFnResult {
     let fonts = TTF.from_collection(c);
     if fonts.len() < 2 {
         return Err(CheckError::Skip {
@@ -26,10 +26,10 @@ fn family_equal_codepoint_coverage(c: &TestableCollection, _context: &Context) -
     let mut we_have_they_dont: HashSet<u32> = HashSet::new();
     let mut they_have_we_dont: HashSet<u32> = HashSet::new();
     #[allow(clippy::unwrap_used)] // We checked the length above
-    let my_codepoints = fonts.first().unwrap().codepoints();
+    let my_codepoints = fonts.first().unwrap().codepoints(Some(context));
     let siblings = fonts.iter().skip(1);
     for sibling in siblings {
-        let their_codepoints = sibling.codepoints();
+        let their_codepoints = sibling.codepoints(None);
         we_have_they_dont.extend(my_codepoints.difference(&their_codepoints));
         they_have_we_dont.extend(their_codepoints.difference(&my_codepoints));
     }

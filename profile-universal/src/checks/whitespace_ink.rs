@@ -21,7 +21,7 @@ const BUT_NOT: [u32; 2] = [0xAD, 0x1680];
 fn whitespace_ink(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let inky = f
-        .codepoints()
+        .codepoints(Some(context))
         .into_iter()
         .filter(|cp| {
             (EXTRA_NON_DRAWING.contains(cp)
