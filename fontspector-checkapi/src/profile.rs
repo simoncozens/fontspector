@@ -174,7 +174,7 @@ impl Profile {
             }
         }
 
-        for (testable, context) in testable_and_cache.into_iter() {
+        for (testable, context) in testable_and_cache {
             for (section_name, check_id) in sections_and_checks.iter() {
                 #[allow(clippy::unwrap_used)] // We checked for this above
                 let check = registry.checks.get(check_id.as_str()).unwrap();
@@ -190,42 +190,6 @@ impl Profile {
             }
         }
         order
-        // self.sections
-        //     .iter()
-        //     .flat_map(|(sectionname, checknames)| {
-        //         checknames
-        //             .iter()
-        //             .filter(|checkname| {
-        //                 included_excluded(checkname, include_checks, exclude_checks)
-        //             })
-        //             .map(|checkname| {
-        //                 (
-        //                     sectionname.clone(),
-        //                     registry.checks.get(checkname),
-        //                     checkname,
-        //                 )
-        //             })
-        //             .filter_map(|(sectionname, check, checkname)| {
-        //                 let ck = check.map(|check| {
-        //                     (
-        //                         sectionname,
-        //                         check,
-        //                         general_context.specialize(check, &configuration, self),
-        //                     )
-        //                 });
-        //                 if ck.is_none() {
-        //                     log::warn!("Unknown check: {}", checkname);
-        //                 }
-        //                 ck
-        //             })
-        //     })
-        //     .flat_map(|(sectionname, check, context): (String, &Check, Context)| {
-        //         testables
-        //             .iter()
-        //             .filter(|testable| check.applies(testable, registry))
-        //             .map(move |testable| (sectionname.clone(), testable, check, context.clone()))
-        //     })
-        //     .collect()
     }
 
     /// Get the default configuration for a check

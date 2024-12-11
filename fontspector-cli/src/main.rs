@@ -50,10 +50,11 @@ fn main() {
 
     #[cfg(not(debug_assertions))]
     if let Some(threads) = args.jobs {
-        rayon::ThreadPoolBuilder::new()
-            .num_threads(threads)
-            .build_global()
-            .expect("Could not set thread count");
+        let mut builder = rayon::ThreadPoolBuilder::new().num_threads(threads);
+        if threads == 1 {
+            builder = builder.use_current_thread();
+        }
+        builder.build_global().expect("Could not set thread count");
     }
 
     // Set up the check registry
@@ -110,46 +111,18 @@ fn main() {
         }
         std::process::exit(0);
     }
-
     // We create one collection for each set of testable files in a directory.
     // So let's group the inputs per directory, and then map them into a FontCollection
-    let grouped_inputs: Vec<TestableCollection> = args
-        .inputs
-        .iter()
-        .map(PathBuf::from)
-        .filter(|x| x.is_file())
-        .filter(|x| x.parent().is_some())
-        .fold(Vec::new(), |mut acc: Vec<Vec<PathBuf>>, path| {
-            #[allow(clippy::unwrap_used)] // We checked for is_some above
-            let directory = path.parent().unwrap().to_path_buf();
-            if let Some(group) = acc
-                .iter_mut()
-                .find(|group| group[0].parent() == Some(&directory))
-            {
-                group.push(path);
-            } else {
-                acc.push(vec![path]);
-            }
-            acc
-        })
-        .into_iter()
-        .map(|group| {
-            TestableCollection::from_filenames(&group).unwrap_or_else(|e| {
-                log::error!("Could not load files from {:?}: {:}", group[0].parent(), e);
-                std::process::exit(1)
-            })
-        })
-        .collect();
-
-    if grouped_inputs.is_empty() {
-        log::error!("No input files");
-        std::process::exit(1);
-    }
-
+    let grouped_inputs = group_inputs(&args);
     let testables: Vec<TestableType> = grouped_inputs
         .iter()
         .flat_map(|x| x.collection_and_files())
         .collect();
+
+    if testables.is_empty() {
+        log::error!("No input files");
+        std::process::exit(1);
+    }
 
     // Load configuration
     let configuration: Map<String, serde_json::Value> = load_configuration(&args);
@@ -187,36 +160,6 @@ fn main() {
     );
     // }
 
-    let apply_fixes = |(testable, check, mut result): (&&TestableType, &&Check, CheckResult)| {
-        if let TestableType::Single(testable) = testable {
-            if args.hotfix {
-                if let Some(fix) = check.hotfix {
-                    result.hotfix_result = match fix(testable) {
-                        Ok(_) => Some(FixResult::Fixed),
-                        Err(e) => Some(FixResult::FixError(e)),
-                    }
-                } else {
-                    result.hotfix_result = Some(FixResult::Unfixable);
-                }
-            } else if check.hotfix.is_some() {
-                result.hotfix_result = Some(FixResult::Available);
-            }
-            if args.fix_sources {
-                if let Some(fix) = check.fix_source {
-                    result.sourcefix_result = match fix(testable) {
-                        Ok(_) => Some(FixResult::Fixed),
-                        Err(e) => Some(FixResult::FixError(e)),
-                    }
-                } else {
-                    result.sourcefix_result = Some(FixResult::Unfixable);
-                }
-            } else if check.fix_source.is_some() {
-                result.sourcefix_result = Some(FixResult::Available);
-            }
-        }
-        result
-    };
-
     // Run all the things! Check all the fonts! Fix all the binaries! Fix all the sources!
 
     // Do this in parallel for release, serial for debug
@@ -242,9 +185,9 @@ fn main() {
                 check.run(testable, context, Some(sectionname)),
             )
         })
-        .filter(|(_, _, result)| result.is_some())
-        .map(|(testable, check, result)| (testable, check, result.unwrap()))
-        .map(apply_fixes)
+        .filter_map(|(testable, check, result)| {
+            result.map(|result| apply_fixes(testable, check, result, &args))
+        })
         .collect::<Vec<CheckResult>>()
         .into();
 
@@ -273,7 +216,6 @@ fn main() {
         );
     }
     TerminalReporter::summary_report(results.summary());
-    // }
 
     if args.verbose > 1 {
         let mut per_test_time = HashMap::new();
@@ -294,6 +236,39 @@ fn main() {
     if worst_status >= args.error_code_on {
         std::process::exit(1);
     }
+}
+
+// Group each file into a set per directory, and wrap that in a TestableCollection.
+// It feels like this takes an inordinately long time, but remember that this also
+// reads the input files.
+fn group_inputs(args: &Args) -> Vec<TestableCollection> {
+    let grouped_inputs: Vec<TestableCollection> = args
+        .inputs
+        .iter()
+        .map(PathBuf::from)
+        .filter(|x| x.is_file())
+        .fold(Vec::new(), |mut acc: Vec<Vec<PathBuf>>, path| {
+            if let Some(directory) = path.parent().map(|p| p.to_path_buf()) {
+                if let Some(group) = acc
+                    .iter_mut()
+                    .find(|group| group[0].parent() == Some(&directory))
+                {
+                    group.push(path);
+                } else {
+                    acc.push(vec![path]);
+                }
+            }
+            acc
+        })
+        .into_iter()
+        .map(|group| {
+            TestableCollection::from_filenames(&group).unwrap_or_else(|e| {
+                log::error!("Could not load files from {:?}: {:}", group[0].parent(), e);
+                std::process::exit(1)
+            })
+        })
+        .collect();
+    grouped_inputs
 }
 
 fn load_configuration(args: &Args) -> Map<String, serde_json::Value> {
@@ -320,4 +295,39 @@ fn load_configuration(args: &Args) -> Map<String, serde_json::Value> {
                 .clone()
         })
         .unwrap_or_default()
+}
+
+fn apply_fixes(
+    testable: &&TestableType,
+    check: &&Check,
+    mut result: CheckResult,
+    args: &Args,
+) -> CheckResult {
+    if let TestableType::Single(testable) = testable {
+        if args.hotfix {
+            if let Some(fix) = check.hotfix {
+                result.hotfix_result = match fix(testable) {
+                    Ok(_) => Some(FixResult::Fixed),
+                    Err(e) => Some(FixResult::FixError(e)),
+                }
+            } else {
+                result.hotfix_result = Some(FixResult::Unfixable);
+            }
+        } else if check.hotfix.is_some() {
+            result.hotfix_result = Some(FixResult::Available);
+        }
+        if args.fix_sources {
+            if let Some(fix) = check.fix_source {
+                result.sourcefix_result = match fix(testable) {
+                    Ok(_) => Some(FixResult::Fixed),
+                    Err(e) => Some(FixResult::FixError(e)),
+                }
+            } else {
+                result.sourcefix_result = Some(FixResult::Unfixable);
+            }
+        } else if check.fix_source.is_some() {
+            result.sourcefix_result = Some(FixResult::Available);
+        }
+    }
+    result
 }

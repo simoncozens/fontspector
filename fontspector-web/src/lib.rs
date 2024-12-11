@@ -51,6 +51,7 @@ pub fn check_fonts(fonts: &JsValue, profile: &str) -> Result<String, JsValue> {
         configuration: serde_json::Map::new(),
         check_metadata: serde_json::Value::Null,
         full_lists: false,
+        cache: Default::default(),
     };
     let all_testables: Vec<TestableType> = collection.collection_and_files().collect();
 
