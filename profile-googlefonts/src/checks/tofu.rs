@@ -64,7 +64,7 @@ impl OurLang<'_> {
         } else {
             let sample_set: HashSet<char> = samples
                 .iter()
-                .flat_map(|(_title, s)| s.chars())
+                .flat_map(|(_title, s)| parse_chars(s))
                 .filter(|c| {
                     !(c.is_whitespace()
                         || matches!(
@@ -102,7 +102,7 @@ impl OurLang<'_> {
         for (sample_name, sample) in self.samples.iter() {
             let sample = sample.replace("\u{0a}", "");
             let missing_for_sample: HashSet<char> =
-                sample.chars().filter(|c| !codepoints.contains(c)).collect();
+                sample.nfc().filter(|c| !codepoints.contains(c)).collect();
             let unique_missing: HashSet<char> = missing_for_sample
                 .difference(&missing_codepoints.clone())
                 .copied()
@@ -151,7 +151,7 @@ impl OurLang<'_> {
         for (sample_name, sample) in self.samples.iter() {
             let sample = sample.replace("\u{0a}", "");
             let missing_for_sample: HashSet<char> = sample
-                .chars()
+                .nfc()
                 .filter(|c| !subsetted_codepoints.contains(c))
                 .collect();
             let unique_missing: HashSet<char> = missing_for_sample
