@@ -17,6 +17,10 @@ pub struct Args {
     #[clap(short = 'L', long)]
     pub list_checks: bool,
 
+    /// List the checks available in the selected profile
+    #[clap(short = 'Y', long)]
+    pub list_checks_json: bool,
+
     #[cfg(not(debug_assertions))]
     /// Number of worker processes. Defaults to the number of logical CPUs.
     #[clap(short = 'J', long)]

@@ -111,6 +111,52 @@ fn main() {
         }
         std::process::exit(0);
     }
+
+    if args.list_checks_json {
+        let mut json_data = String::from("[\n");
+        for (section, checks) in profile.sections.iter() {
+            let checks: Vec<&Check> = checks
+                .iter()
+                .flat_map(|check| registry.checks.get(check))
+                .collect();
+            if checks.is_empty() {
+                continue;
+            }
+        
+            json_data.push_str(&format!(
+                "  {{\n    \"profileTitle\": \"{}\",\n    \"checks\": [\n",
+                section
+            ));
+        
+            for check in checks.iter() {
+                json_data.push_str(&format!(
+                    "      {{\n        \"check_id\": \"{}\",\n        \"title\": \"{}\"\n      }},\n",
+                    check.id, check.title.replace('"', "\\\"")
+                ));
+            }
+        
+            // Remove the last trailing comma and newline
+            if json_data.ends_with(",\n") {
+                json_data.pop(); // Remove '\n'
+                json_data.pop(); // Remove ','
+            }
+        
+            json_data.push_str("\n    ]\n  },\n");
+        }
+        
+        // Remove the trailing comma from the JSON array
+        if json_data.ends_with(",\n") {
+            json_data.pop(); // Remove '\n'
+            json_data.pop(); // Remove ','
+        }
+        
+        json_data.push_str("\n]");
+        
+        // Print the final JSON
+        println!("{}", json_data);
+        std::process::exit(0);
+    }
+
     // We create one collection for each set of testable files in a directory.
     // So let's group the inputs per directory, and then map them into a FontCollection
     let grouped_inputs = group_inputs(&args);
