@@ -24,7 +24,7 @@ use reporters::{
     json::JsonReporter, markdown::MarkdownReporter, terminal::TerminalReporter, Reporter,
     RunResults,
 };
-use serde_json::Map;
+use serde_json::{json, Map};
 
 #[cfg(not(debug_assertions))]
 use indicatif::ParallelProgressIterator;
@@ -93,21 +93,38 @@ fn main() {
         std::process::exit(1);
     });
 
-    if args.list_checks {
+    if args.list_checks || args.list_checks_json {
+        let mut checks_per_section = HashMap::new();
         for (section, checks) in profile.sections.iter() {
-            let checks: Vec<&Check> = checks
+            let checks: Vec<_> = checks
                 .iter()
                 .flat_map(|check| registry.checks.get(check))
+                .map(|check| json!({ "id": check.id, "title": check.title }))
                 .collect();
             if checks.is_empty() {
                 continue;
             }
-            termimad::print_text(&format!("\n# {:}\n\n", section));
-            let mut table = "|Check ID|Title|\n|---|---|\n".to_string();
-            for check in checks {
-                table.push_str(&format!("|{:}|{:}|\n", check.id, check.title));
+            checks_per_section.insert(section.clone(), checks);
+        }
+        if args.list_checks_json {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&checks_per_section).unwrap_or("{}".to_string())
+            );
+        } else {
+            for (section, checks) in checks_per_section.iter() {
+                termimad::print_text(&format!("\n# {:}\n\n", section));
+                let mut table = "|Check ID|Title|\n|---|---|\n".to_string();
+                for check in checks {
+                    #[allow(clippy::unwrap_used)] // We know these keys are present, we made them
+                    table.push_str(&format!(
+                        "|{}|{}|\n",
+                        check.get("id").unwrap().as_str().unwrap(),
+                        check.get("title").unwrap().as_str().unwrap()
+                    ));
+                }
+                termimad::print_text(&table);
             }
-            termimad::print_text(&table);
         }
         std::process::exit(0);
     }
