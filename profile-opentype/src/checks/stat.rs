@@ -361,8 +361,19 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
     id = "opentype/stat/ital_axis",
     rationale = "
         Check that related Upright and Italic VFs have an
-        'ital' axis in the STAT table; that if there is a stat axis,
-        it is the last one, and that it is boolean and set correctly.
+        'ital' axis in the STAT table.
+        
+        Since the STAT table can be used to create new instances, it is
+        important to ensure that such an 'ital' axis be the last one
+        declared in the STAT table so that the eventual naming of new
+        instances follows the subfamily traditional scheme (RIBBI / WWS)
+        where "Italic" is always last.
+
+        The 'ital' axis should also be strictly boolean, only accepting
+        values of 0 (for Uprights) or 1 (for Italics). This usually works
+        as a mechanism for selecting between two linked variable font files. 
+
+        Also, the axis value name for uprights must be set as elidable.
     ",
     proposal = "https://github.com/fonttools/fontbakery/issues/2934 and https://github.com/fonttools/fontbakery/issues/3668 and https://github.com/fonttools/fontbakery/issues/3669",
     implementation = "all",
