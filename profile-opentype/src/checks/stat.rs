@@ -367,7 +367,7 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
         important to ensure that such an 'ital' axis be the last one
         declared in the STAT table so that the eventual naming of new
         instances follows the subfamily traditional scheme (RIBBI / WWS)
-        where "Italic" is always last.
+        where \"Italic\" is always last.
 
         The 'ital' axis should also be strictly boolean, only accepting
         values of 0 (for Uprights) or 1 (for Italics). This usually works
