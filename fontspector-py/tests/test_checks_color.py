@@ -11,8 +11,8 @@ from conftest import check_id
 import pytest
 
 
-@check_id("colorfont_tables")
-def test_check_colorfont_tables(check):
+@check_id("googlefonts/color_fonts")
+def test_check_color_fonts(check):
     """Ensure font has the expected color font tables."""
     noto = TEST_FILE("color_fonts/noto-glyf_colr_1.ttf")
     ttFont = TTFont(noto)

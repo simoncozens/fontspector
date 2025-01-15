@@ -14,7 +14,6 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::cjk_chws_feature::cjk_chws_feature);
         cr.register_check(checks::case_mapping::case_mapping);
         cr.register_check(checks::cmap_format_12::cmap_format_12);
-        cr.register_check(checks::colorfont_tables::colorfont_tables);
         cr.register_check(checks::color_cpal_brightness::color_cpal_brightness);
         cr.register_check(checks::consistent_axes::consistent_axes);
         cr.register_check(checks::contour_count::contour_count);
@@ -112,12 +111,12 @@ include_profiles = ["opentype"]
     "alt_caron",
     "arabic_high_hamza",
     "arabic_spacing_symbols",
+    "base_has_width",
     "case_mapping",
     "cjk_chws_feature",
     "cjk_not_enough_glyphs",
     "cmap/format_12",
     "color_cpal_brightness",
-    "colorfont_tables",
     "contour_count",
     "control_chars",
     "empty_glyph_on_gid1_for_colrv0",

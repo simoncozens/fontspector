@@ -21,6 +21,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_filetype("MDPB", mdpb);
         cr.register_filetype("DESC", desc);
         cr.register_check(checks::axes_match::axes_match);
+        cr.register_check(checks::color_fonts::color_fonts);
         cr.register_check(checks::fstype::googlefonts_fstype);
         cr.register_check(checks::name_description_max_length::name_description_max_length);
         cr.register_check(checks::tofu::googlefonts_tofu);
@@ -151,6 +152,7 @@ include_profiles = ["universal"]
     "googlefonts/canonical_filename",
     "googlefonts/cjk_vertical_metrics",
     "googlefonts/cjk_vertical_metrics_regressions",
+    "googlefonts/color_fonts",
     "googlefonts/epar",
     "googlefonts/font_names",
     "googlefonts/fstype",

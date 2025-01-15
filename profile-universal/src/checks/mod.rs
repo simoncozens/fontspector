@@ -6,7 +6,6 @@ pub mod cjk_chws_feature;
 pub mod cjk_not_enough_glyphs;
 pub mod cmap_format_12;
 pub mod color_cpal_brightness;
-pub mod colorfont_tables;
 pub mod consistent_axes;
 pub mod contour_count;
 pub mod control_chars;
