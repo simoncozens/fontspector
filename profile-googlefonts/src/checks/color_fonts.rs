@@ -4,7 +4,7 @@ use read_fonts::TableProvider;
 const NANOEMOJI_ADVICE : &str = "You can do it by using the maximum_color tool provided by the nanoemoji project:\nhttps://github.com/googlefonts/nanoemoji";
 
 #[check(
-    id = "colorfont_tables",
+    id = "googlefonts/color_fonts",
     rationale = "
         COLR v0 fonts are widely supported in most browsers so they do not require
         an SVG color table. However, some environments (e.g. Safari, Adobe apps)
@@ -19,7 +19,7 @@ const NANOEMOJI_ADVICE : &str = "You can do it by using the maximum_color tool p
     proposal = "https://googlefonts.github.io/gf-guide/color.html and https://github.com/fonttools/fontbakery/issues/3886 and https://github.com/fonttools/fontbakery/issues/3888 and https://github.com/fonttools/fontbakery/pull/3889 and https://github.com/fonttools/fontbakery/issues/4131",
     title = "Ensure font has the expected color font tables."
 )]
-fn colorfont_tables(t: &Testable, _context: &Context) -> CheckFnResult {
+fn color_fonts(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
     if f.has_table(b"COLR") {
