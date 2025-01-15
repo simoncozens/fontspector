@@ -9,8 +9,8 @@ from conftest import check_id
 from fontbakery.status import FAIL
 
 
-@check_id("glyf_nested_components")
-def test_check_glyf_nested_components(check):
+@check_id("nested_components")
+def test_check_nested_components(check):
     """Ensure glyphs do not have components which are themselves components."""
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
     assert_PASS(check(ttFont))
