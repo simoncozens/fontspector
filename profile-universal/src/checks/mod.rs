@@ -19,7 +19,6 @@ pub mod fontdata_namecheck;
 #[cfg(not(target_family = "wasm"))]
 pub mod freetype_rasterizer;
 pub mod fvar_name_entries;
-pub mod glyf_nested_components;
 pub mod glyphnames;
 pub mod glyphset;
 pub mod gpos7;
@@ -38,6 +37,7 @@ pub mod name_family_and_style_max;
 pub mod name_italic_names;
 pub mod name_no_copyright_on_description;
 pub mod name_trailing_spaces;
+pub mod nested_components;
 pub mod no_mac_entries;
 pub mod os2_metrics_match_hhea;
 pub mod render_own_name;

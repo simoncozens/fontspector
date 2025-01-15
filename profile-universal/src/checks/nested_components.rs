@@ -5,7 +5,7 @@ use read_fonts::{tables::glyf::Glyph, TableProvider};
 use skrifa::GlyphId;
 
 #[check(
-    id = "glyf_nested_components",
+    id = "nested_components",
     rationale = "
         There have been bugs rendering variable fonts with nested components.
         Additionally, some static fonts with nested components have been reported
@@ -18,7 +18,7 @@ use skrifa::GlyphId;
     proposal = "https://github.com/fonttools/fontbakery/issues/2961",
     title = "Ensure glyphs do not have components which are themselves components."
 )]
-fn glyf_nested_components(f: &Testable, context: &Context) -> CheckFnResult {
+fn nested_components(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let loca = font
         .font()

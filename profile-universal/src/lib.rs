@@ -28,7 +28,6 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::fontdata_namecheck::fontdata_namecheck);
         #[cfg(not(target_family = "wasm"))]
         cr.register_check(checks::freetype_rasterizer::freetype_rasterizer);
-        cr.register_check(checks::glyf_nested_components::glyf_nested_components);
         cr.register_check(checks::glyphnames::valid_glyphnames);
         cr.register_check(checks::glyphset::check_rupee);
         cr.register_check(checks::gpos7::gpos7);
@@ -44,6 +43,7 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(
             checks::name_no_copyright_on_description::name_no_copyright_on_description,
         );
+        cr.register_check(checks::nested_components::nested_components);
         cr.register_check(checks::mandatory_avar_table::mandatory_avar_table);
         cr.register_check(checks::mandatory_glyphs::mandatory_glyphs);
         cr.register_check(checks::missing_small_caps_glyphs::missing_small_caps_glyphs);
@@ -124,10 +124,9 @@ include_profiles = ["opentype"]
     "family/vertical_metrics",
     "family/win_ascent_and_descent",
     "file_size",
-    "fvar_name_entries",
     "fontdata_namecheck",
     "freetype_rasterizer",
-    "glyf_nested_components",
+    "fvar_name_entries",
     "gpos7",
     "hinting_impact",
     "integer_ppem_if_hinted",
@@ -145,6 +144,7 @@ include_profiles = ["opentype"]
     "name/italic_names",
     "name/no_copyright_on_description",
     "name/trailing_spaces",
+    "nested_components",
     "no_mac_entries",
     "os2_metrics_match_hhea",
     "render_own_name",
