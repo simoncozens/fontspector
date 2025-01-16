@@ -22,6 +22,7 @@ pub mod fvar_name_entries;
 pub mod glyphnames;
 pub mod glyphset;
 pub mod gpos7;
+pub mod gpos_kerning_info;
 pub mod hinting_impact;
 pub mod integer_ppem_if_hinted;
 pub mod interpolation_issues;

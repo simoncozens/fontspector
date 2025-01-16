@@ -2,7 +2,7 @@ use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::{tables::gpos::PositionSubtables, TableProvider};
 
 #[check(
-    id = "opentype/gpos_kerning_info",
+    id = "gpos_kerning_info",
     rationale = "
         Well-designed fonts use kerning to improve the spacing between
         specific pairs of glyphs. This check ensures that the font has
