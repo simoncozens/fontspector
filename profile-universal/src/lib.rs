@@ -142,7 +142,6 @@ include_profiles = ["opentype"]
     "missing_small_caps_glyphs",
     "name/char_restrictions",
     "name/family_and_style_max_length",
-    "name/italic_names",
     "name/no_copyright_on_description",
     "name/trailing_spaces",
     "nested_components",
@@ -183,6 +182,7 @@ include_profiles = ["opentype"]
     # "fontspector_version", # we'll just do this once at the start of the program, doesn't make sense for web
     # "kerning_for_non_ligated_sequences", # I just think this is a bad check
     # "unique_glyphnames", # valid_glyphnames also checks for uniqueness
+    # "name/italic_names", # GF-specific: https://github.com/fonttools/fontbakery/issues/4971
 
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
