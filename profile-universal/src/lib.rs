@@ -180,7 +180,6 @@ include_profiles = ["opentype"]
     # "ttx_roundtrip", # What's ttx? :-)
     # "vttclean", # merged into unwanted_tables
     # "no_debugging_tables", # merged into unwanted_tables
-    # "inconsistencies_between_fvar_stat", # same as stat_has_axis_value_tables https://github.com/fonttools/fontbakery/issues/4916
     # "fontspector_version", # we'll just do this once at the start of the program, doesn't make sense for web
     # "kerning_for_non_ligated_sequences", # I just think this is a bad check
     # "unique_glyphnames", # valid_glyphnames also checks for uniqueness
@@ -188,6 +187,7 @@ include_profiles = ["opentype"]
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
     "varfont/duplexed_axis_reflow",
+    "inconsistencies_between_fvar_STAT",  # https://github.com/simoncozens/fontspector/issues/30
 ]
 
 [configuration_defaults.file_size]
