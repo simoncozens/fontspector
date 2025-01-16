@@ -54,7 +54,6 @@ impl fontspector_checkapi::Plugin for OpenType {
         cr.register_check(checks::post::underline_thickness);
         cr.register_check(checks::stat::ital_axis);
         cr.register_check(checks::stat::stat_axis_record);
-        cr.register_check(checks::stat::stat_has_axis_value_tables);
         cr.register_check(checks::stat::weight_class_fvar);
 
         let opentype_profile = Profile::from_toml(
@@ -91,7 +90,6 @@ impl fontspector_checkapi::Plugin for OpenType {
     "opentype/postscript_name",
     "opentype/post_table_version",
     "opentype/slant_direction",
-    "opentype/stat_has_axis_value_tables",
     "opentype/stat/ital_axis",
     "opentype/unitsperem",
     "opentype/varfont/distinct_instance_records",
