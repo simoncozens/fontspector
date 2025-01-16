@@ -5,7 +5,6 @@ pub mod fvar;
 pub mod gdef;
 pub mod gdef_non_mark_chars;
 pub mod glyf;
-pub mod gpos;
 pub mod head;
 pub mod hhea;
 pub mod italic_angle;

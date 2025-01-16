@@ -9,7 +9,7 @@ from conftest import check_id
 from fontbakery.status import WARN, SKIP
 
 
-@check_id("opentype/gpos_kerning_info")
+@check_id("gpos_kerning_info")
 def test_check_gpos_kerning_info(check):
     """Does GPOS table have kerning information?"""
     # Our reference Mada Regular is known to have kerning-info
@@ -51,7 +51,7 @@ def test_check_gpos_kerning_info(check):
     )
 
 
-@check_id("opentype/gpos_kerning_info")
+@check_id("gpos_kerning_info")
 def test_check_gpos_kerning_info_monospaced_font(check):
     """Does GPOS table have kerning information in a monospaced font?"""
     # Even though our reference Overpass Mono lacks kerning info
