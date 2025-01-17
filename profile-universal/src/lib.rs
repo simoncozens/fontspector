@@ -164,6 +164,7 @@ include_profiles = ["opentype"]
     "unwanted_tables",
     "valid_glyphnames",
     "varfont/consistent_axes",
+    "varfont/duplexed_axis_reflow",
     "varfont/instances_in_order",
     "varfont/unsupported_axes",
     "vtt_volt_data",
@@ -185,7 +186,6 @@ include_profiles = ["opentype"]
     # "caps_vertically_centered",  # Disabled: issue #4274
     "inconsistencies_between_fvar_STAT",  # https://github.com/simoncozens/fontspector/issues/30
     "varfont/bold_wght_coord",
-    "varfont/duplexed_axis_reflow",
 ]
 
 [configuration_defaults.file_size]
