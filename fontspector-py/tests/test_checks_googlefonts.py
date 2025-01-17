@@ -3978,3 +3978,13 @@ def test_check_metadata_minisite_url(check):
         "trailing-clutter",
         "with a minisite_url with unnecessary trailing /index.html",
     )
+
+
+@check_id("googlefonts/render_own_name")
+def test_check_render_own_name(check):
+    """Check family directory name."""
+    ttFont = TEST_FILE("overpassmono/OverpassMono-Regular.ttf")
+    assert_PASS(check(ttFont))
+
+    ttFont = TEST_FILE("noto_sans_tamil_supplement/NotoSansTamilSupplement-Regular.ttf")
+    assert_results_contain(check(ttFont), FAIL, "render-own-name")

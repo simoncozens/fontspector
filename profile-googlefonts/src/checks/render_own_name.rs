@@ -3,7 +3,7 @@ use read_fonts::tables::name::NameId;
 use skrifa::MetadataProvider;
 
 #[check(
-    id = "render_own_name",
+    id = "googlefonts/render_own_name",
     title = "Ensure font can render its own name.",
     rationale = "
         A base expectation is that a font family's regular/default (400 roman) style
