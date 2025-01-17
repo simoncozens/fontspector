@@ -41,7 +41,7 @@ const EXCUSES = {
   "googlefonts/version_bump": NEEDS_NETWORK,
   "googlefonts/production_glyphs_similarity": NEEDS_NETWORK,
   // Shaping checks
-  render_own_name: CANT_COMPILE("Freetype"),
+  "googlefonts/render_own_name": CANT_COMPILE("Freetype"),
   dotted_circle: CANT_COMPILE("cffsubr [required by ufo2ft]"),
   "googlefonts/metadata/can_render_samples": CANT_COMPILE("Harfbuzz"),
   "opentype/slant_direction": CANT_COMPILE("Harfbuzz"),

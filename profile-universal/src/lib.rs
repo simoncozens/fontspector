@@ -52,7 +52,6 @@ impl fontspector_checkapi::Plugin for Universal {
         cr.register_check(checks::name_trailing_spaces::name_trailing_spaces);
         cr.register_check(checks::no_mac_entries::no_mac_entries);
         cr.register_check(checks::os2_metrics_match_hhea::os2_metrics_match_hhea);
-        cr.register_check(checks::render_own_name::render_own_name);
         cr.register_check(checks::required_tables::required_tables);
         cr.register_check(checks::sfnt_version::sfnt_version);
         cr.register_check(checks::smallcaps_before_ligatures::smallcaps_before_ligatures);
@@ -147,7 +146,6 @@ include_profiles = ["opentype"]
     "nested_components",
     "no_mac_entries",
     "os2_metrics_match_hhea",
-    "render_own_name",
     "required_tables",
     "rupee",
     "sfnt_version",
