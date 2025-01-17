@@ -175,7 +175,6 @@ include_profiles = ["universal"]
     "googlefonts/STAT/axisregistry",
     "googlefonts/unitsperem",
     "googlefonts/usweightclass",
-    "googlefonts/varfont/duplicate_instance_names",
     "googlefonts/varfont/generate_static",
     "googlefonts/varfont/has_HVAR",
     "googlefonts/vendor_id",

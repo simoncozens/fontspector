@@ -186,6 +186,7 @@ include_profiles = ["opentype"]
     # "caps_vertically_centered",  # Disabled: issue #4274
     "inconsistencies_between_fvar_STAT",  # https://github.com/simoncozens/fontspector/issues/30
     "varfont/bold_wght_coord",
+    "varfont/duplicate_instance_names",
 ]
 
 [configuration_defaults.file_size]
