@@ -183,8 +183,9 @@ include_profiles = ["opentype"]
 
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
-    "varfont/duplexed_axis_reflow",
     "inconsistencies_between_fvar_STAT",  # https://github.com/simoncozens/fontspector/issues/30
+    "varfont/bold_wght_coord",
+    "varfont/duplexed_axis_reflow",
 ]
 
 [configuration_defaults.file_size]
