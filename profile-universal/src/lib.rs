@@ -185,6 +185,7 @@ include_profiles = ["opentype"]
     # Checks left to port
     # "caps_vertically_centered",  # Disabled: issue #4274
     "inconsistencies_between_fvar_STAT",  # https://github.com/simoncozens/fontspector/issues/30
+    "overlapping_path_segments",
     "varfont/bold_wght_coord",
     "varfont/duplicate_instance_names",
 ]
