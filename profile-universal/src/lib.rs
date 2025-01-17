@@ -176,7 +176,6 @@ include_profiles = ["opentype"]
     # "family/single_directory", # Fontspector assumes families are in a directory
     # "ots", # ots checks need to be directly integrated
     # "ttx_roundtrip", # What's ttx? :-)
-    # "vttclean", # merged into unwanted_tables
     # "fontspector_version", # we'll just do this once at the start of the program, doesn't make sense for web
     # "kerning_for_non_ligated_sequences", # I just think this is a bad check
     # "unique_glyphnames", # valid_glyphnames also checks for uniqueness
