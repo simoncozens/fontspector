@@ -1,5 +1,14 @@
 use std::ops::Range;
 
+/// A font's outline type
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OutlineType {
+    /// TrueType outlines, with a glyf table and quadratic curves
+    TrueType,
+    /// CFF outlines, with a CFF table and cubic curves
+    CFF,
+}
+
 /// The names of the RIBBI styles
 pub const RIBBI_STYLE_NAMES: [&str; 5] = ["Regular", "Italic", "Bold", "BoldItalic", "Bold Italic"];
 /// A list of known static style names

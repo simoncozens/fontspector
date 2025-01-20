@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RIBBI_STYLE_NAMES, STATIC_STYLE_NAMES},
+    constants::{OutlineType, RIBBI_STYLE_NAMES, STATIC_STYLE_NAMES},
     filetype::FileTypeConvert,
     CheckError, Context, FileType, Testable,
 };
@@ -242,6 +242,15 @@ impl TestFont<'_> {
         self.has_table(b"fvar")
     }
 
+    /// Return the font's outline type
+    pub fn outline_type(&self) -> OutlineType {
+        if self.has_table(b"glyf") {
+            OutlineType::TrueType
+        } else {
+            OutlineType::CFF
+        }
+    }
+
     /// Does this font have a given variation axis?
     pub fn has_axis(&self, axis: &str) -> bool {
         self.is_variable_font() && self.font().axes().iter().any(|a| a.tag() == axis)
@@ -443,6 +452,34 @@ impl TestFont<'_> {
                 .flatten()
                 .collect(), // NOW WASH YOUR HANDS
         )
+    }
+
+    /// Get the best name from a list of name IDs
+    pub fn get_best_name(&self, ids: &[StringId]) -> Option<String> {
+        for id in ids {
+            if let Some(name) = self.font().localized_strings(*id).english_or_first() {
+                return Some(name.chars().collect());
+            }
+        }
+        None
+    }
+
+    /// Returns the best English family name for a font
+    pub fn best_familyname(&self) -> Option<String> {
+        self.get_best_name(&[
+            StringId::WWS_FAMILY_NAME,
+            StringId::TYPOGRAPHIC_FAMILY_NAME,
+            StringId::FAMILY_NAME,
+        ])
+    }
+
+    /// Returns the best English subfamily name for a font
+    pub fn best_subfamilyname(&self) -> Option<String> {
+        self.get_best_name(&[
+            StringId::WWS_SUBFAMILY_NAME,
+            StringId::TYPOGRAPHIC_SUBFAMILY_NAME,
+            StringId::SUBFAMILY_NAME,
+        ])
     }
 }
 
