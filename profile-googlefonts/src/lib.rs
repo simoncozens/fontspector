@@ -23,6 +23,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(checks::axes_match::axes_match);
         cr.register_check(checks::color_fonts::color_fonts);
         cr.register_check(checks::fstype::googlefonts_fstype);
+        cr.register_check(checks::metadata_date_added::metadata_date_added);
         cr.register_check(checks::name_description_max_length::name_description_max_length);
         cr.register_check(checks::render_own_name::render_own_name);
         cr.register_check(checks::tofu::googlefonts_tofu);
@@ -54,6 +55,7 @@ include_profiles = ["universal"]
     "googlefonts/metadata/category_hints",
     "googlefonts/metadata/consistent_axis_enumeration",
     "googlefonts/metadata/consistent_repo_urls",
+    "googlefonts/metadata/date_added",
     "googlefonts/metadata/designer_profiles",
     "googlefonts/metadata/empty_designer",
     "googlefonts/metadata/escaped_strings",

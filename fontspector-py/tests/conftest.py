@@ -1,7 +1,9 @@
 import importlib
 import sys
+from fontbakery.status import ERROR as FATAL # Try to minimize diff with fontbakery repo
 from fontspector import CheckTester, registered_checks
 import pytest
+
 
 
 def reload_module(module_name):

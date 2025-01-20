@@ -5,7 +5,7 @@ import tempfile
 
 import pytest
 import requests
-from conftest import check_id
+from conftest import check_id, FATAL
 from fontTools.ttLib import TTFont
 
 from fontbakery.checks.vendorspecific.googlefonts.conditions import (
@@ -29,7 +29,7 @@ from fontbakery.constants import (
     WindowsEncodingID,
     WindowsLanguageID,
 )
-from fontbakery.status import DEBUG, ERROR, FAIL, FATAL, INFO, PASS, SKIP, WARN
+from fontbakery.status import DEBUG, ERROR, FAIL, INFO, PASS, SKIP, WARN
 from fontbakery.testable import Font
 
 check_statuses = (ERROR, FAIL, SKIP, PASS, WARN, INFO, DEBUG)
@@ -539,7 +539,6 @@ def test_check_metadata_designer_values(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/date_added")
 def test_check_metadata_date_added(check):
     """Validate 'date_added' field on METADATA.pb."""
