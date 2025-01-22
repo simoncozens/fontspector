@@ -212,6 +212,63 @@ impl OutlinePen for AreaPen {
     }
 }
 
+#[cfg(feature = "kurbo")]
+use kurbo::BezPath;
+
+#[derive(Default, Debug)]
+#[cfg(feature = "kurbo")]
+/// A pen for converting an outline to a series of Kurbo paths
+pub struct BezGlyph(pub Vec<BezPath>);
+
+#[cfg(feature = "kurbo")]
+impl BezGlyph {
+    /// Create a new BezGlyph if we know the paths already
+    pub fn new_from_paths(b: Vec<BezPath>) -> Self {
+        BezGlyph(b)
+    }
+    /// Add a new, empty path to the glyph
+    fn next(&mut self) -> &mut BezPath {
+        self.0.push(BezPath::new());
+        #[allow(clippy::unwrap_used)] // We just added it
+        self.0.last_mut().unwrap()
+    }
+    /// Get the current path, in preparation for adding segments to it
+    fn current(&mut self) -> &mut BezPath {
+        if self.0.is_empty() {
+            self.0.push(BezPath::new());
+        }
+        #[allow(clippy::unwrap_used)] // We know it's not empty
+        self.0.last_mut().unwrap()
+    }
+
+    /// Iterate over the paths in the glyph
+    pub fn iter(&self) -> impl Iterator<Item = &BezPath> {
+        self.0.iter()
+    }
+}
+
+impl skrifa::outline::OutlinePen for BezGlyph {
+    fn move_to(&mut self, x: f32, y: f32) {
+        self.next().move_to((x, y));
+    }
+
+    fn line_to(&mut self, x: f32, y: f32) {
+        self.current().line_to((x, y));
+    }
+
+    fn quad_to(&mut self, cx0: f32, cy0: f32, x: f32, y: f32) {
+        self.current().quad_to((cx0, cy0), (x, y));
+    }
+
+    fn curve_to(&mut self, cx0: f32, cy0: f32, cx1: f32, cy1: f32, x: f32, y: f32) {
+        self.current().curve_to((cx0, cy0), (cx1, cy1), (x, y));
+    }
+
+    fn close(&mut self) {
+        self.current().close_path();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
