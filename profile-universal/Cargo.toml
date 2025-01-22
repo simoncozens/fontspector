@@ -2,26 +2,30 @@
 name = "profile-universal"
 version = "0.1.0"
 edition = "2021"
-authors =  [
+authors = [
     "Simon Cozens <simon@simon-cozens.org>",
     "Felipe Sanches <juca@members.fsf.org>",
 ]
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-freetype-rs = { version = "*", features = ["bundled"] } # For freetype_rasterizer
+freetype-rs = { version = "*", features = [
+    "bundled",
+] } # For freetype_rasterizer
 reqwest = { version = "0.12", features = ["blocking"] } # For fontdata namecheck
 
 [dependencies]
-interpolatable = { git = "https://github.com/simoncozens/interpolatable", features = [ "skrifa"]} # For interpolation_issues
+interpolatable = { git = "https://github.com/simoncozens/interpolatable", features = [
+    "skrifa",
+] } # For interpolation_issues
 fontspector-checkapi = { path = "../fontspector-checkapi" }
 fontspector-checkhelper = { workspace = true }
-read-fonts = {workspace = true}
-write-fonts = {workspace = true}
-skrifa = {workspace = true}
-itertools = {workspace = true }
+read-fonts = { workspace = true }
+write-fonts = { workspace = true }
+skrifa = { workspace = true }
+itertools = { workspace = true }
 unicode-properties = { workspace = true }
 unicode_names2 = "0.6.0"
-markdown-table = "0.2.0"
-log = {workspace =  true}
+markdown-table = { workspace = true }
+log = { workspace = true }
 humansize = "2.1.3"
 serde_json = { workspace = true }
