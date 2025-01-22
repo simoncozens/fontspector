@@ -119,7 +119,7 @@ def test_check_outline_jaggy_segments(check):
 def test_check_outline_semi_vertical(check):
     """Check for semi-vertical/semi-horizontal lines."""
 
-    filename = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.otf")
+    filename = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.ttf")
     results = check(filename)
     assert_results_contain(results, WARN, "found-semi-vertical")
     messages = "".join([m.message.message for m in results])
@@ -129,12 +129,9 @@ def test_check_outline_semi_vertical(check):
     # TODO: PASS
 
     font = TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Roman.otf")
-    msg = assert_results_contain(check(font), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: not is_variable_font" in msg
-
+    msg = assert_results_contain(check(font), SKIP, "variable-font")
     font = TEST_FILE("source-sans-pro/OTF/SourceSansPro-Italic.otf")
-    msg = assert_results_contain(check(font), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: not is_italic" in msg
+    msg = assert_results_contain(check(font), SKIP, "italic")
 
 
 @check_id("outline_direction")
