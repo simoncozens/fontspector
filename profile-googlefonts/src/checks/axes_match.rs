@@ -1,5 +1,4 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
-use skrifa::MetadataProvider;
 
 use crate::{metadata::family_proto, network_conditions::is_listed_on_google_fonts};
 

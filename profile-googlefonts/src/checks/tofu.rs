@@ -7,9 +7,9 @@ use unicode_normalization::UnicodeNormalization;
 use unicode_properties::{GeneralCategoryGroup, UnicodeGeneralCategory};
 
 struct OurLang<'a> {
-    id: String,
+    // id: String,
     name: String,
-    bases: Vec<char>,
+    // bases: Vec<char>,
     samples: Vec<(&'a str, String)>,
     supported: Option<String>,
 }
@@ -83,9 +83,9 @@ impl OurLang<'_> {
         // println!("{}: {:?}", lang.name(), supported);
         // }
         OurLang {
-            id: lang.id().to_owned(),
+            // id: lang.id().to_owned(),
             name: lang.name().to_owned(),
-            bases: bases.into_iter().collect(),
+            // bases: bases.into_iter().collect(),
             samples,
             supported,
         }
