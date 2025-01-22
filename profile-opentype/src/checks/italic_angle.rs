@@ -1,5 +1,6 @@
-use crate::bezglyph::BezGlyph;
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION};
+use fontspector_checkapi::{
+    pens::BezGlyph, prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION,
+};
 use kurbo::{BezPath, ParamCurve};
 use read_fonts::{types::BoundingBox, TableProvider};
 use skrifa::{
