@@ -142,9 +142,6 @@ def test_check_outline_semi_vertical(check):
 def test_check_outline_direction(check):
     """Check for misaligned points."""
 
-    font = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.otf")
-    assert_results_contain(check(font), SKIP, "unfulfilled-conditions")
-
     font = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.ttf")
     results = check(font)
     assert_results_contain(results, WARN, "ccw-outer-contour")

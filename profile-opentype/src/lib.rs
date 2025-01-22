@@ -1,5 +1,4 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
-mod bezglyph;
 mod checks;
 
 use fontspector_checkapi::{ProfileBuilder, Registry};
