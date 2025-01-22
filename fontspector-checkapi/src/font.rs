@@ -9,6 +9,7 @@ use read_fonts::{
         gdef::GlyphClassDef,
         glyf::Glyph,
         gpos::{PairPos, PairPosFormat1, PairPosFormat2, PositionSubtables},
+        head::MacStyle,
         layout::{Feature, FeatureRecord},
         os2::SelectionFlags,
         post::DEFAULT_GLYPH_NAMES,
@@ -127,6 +128,30 @@ impl TestFont<'_> {
     pub fn is_ribbi(&self) -> bool {
         self.style()
             .map_or(false, |s| RIBBI_STYLE_NAMES.iter().any(|r| r == &s))
+    }
+
+    /// Is this font italic?
+    pub fn is_italic(&self) -> Result<bool, ReadError> {
+        let font = self.font();
+        let os2 = font.os2()?;
+        if os2.fs_selection().contains(SelectionFlags::ITALIC) {
+            return Ok(true);
+        }
+        let head = font.head()?;
+        if head.mac_style().contains(MacStyle::ITALIC) {
+            return Ok(true);
+        }
+        if self
+            .get_name_entry_strings(StringId::FULL_NAME)
+            .any(|x| x.to_lowercase().contains("italic"))
+        {
+            return Ok(true);
+        }
+        let post = font.post()?;
+        if post.italic_angle().to_f32() != 0.0 {
+            return Ok(true);
+        }
+        Ok(false)
     }
 
     /// Does this font contain a given TrueType table?
