@@ -1,7 +1,8 @@
 use fontspector_checkapi::{constants::OutlineType, prelude::*, testfont, FileTypeConvert};
-use google_fonts_axisregistry::build_name_table;
 use read_fonts::TableProvider;
 use skrifa::FontRef;
+
+use crate::utils::build_expected_font;
 
 #[check(
     id = "googlefonts/weightclass",
@@ -30,8 +31,7 @@ fn googlefonts_weightclass(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
     let value = f.font().os2()?.us_weight_class();
-    let expected_names = build_name_table(f.font(), None, None, &[])
-        .map_err(|e| CheckError::Error(e.to_string()))?;
+    let expected_names = build_expected_font(&f, &[])?;
     let expected_value = FontRef::new(&expected_names)?.os2()?.us_weight_class();
     let style_name = f.best_subfamilyname().unwrap_or("Regular".to_string());
     if f.is_variable_font() {
