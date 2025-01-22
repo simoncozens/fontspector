@@ -247,6 +247,7 @@ impl BezGlyph {
     }
 }
 
+#[cfg(feature = "kurbo")]
 impl skrifa::outline::OutlinePen for BezGlyph {
     fn move_to(&mut self, x: f32, y: f32) {
         self.next().move_to((x, y));
