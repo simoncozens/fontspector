@@ -21,7 +21,7 @@ pluginator = "1.0.1"
 
 # Font-related deps
 read-fonts = "0"
-write-fonts = "0"
+write-fonts = "0.33.1"
 skrifa = "0"
 # Don't use font-types! Use the re-exported types from read-fonts instead.
 unicode-properties = "0.1.3"
@@ -36,3 +36,6 @@ itertools = "0.13.0"
 
 # Fontbakery bridge / Python module
 pyo3 = "0.22"
+
+indexmap = { version = "2", features = ["serde"] }
+markdown-table = "0.2.0"
