@@ -9,7 +9,7 @@ import fontbakery
 import fontbakery.fonts_profile
 from jinja2 import Template
 
-FONTBAKERY_DIR = "/home/fsanches/fb"
+FONTBAKERY_DIR = os.path.dirname(fontbakery.__file__)
 
 parser = argparse.ArgumentParser(
     description="Port a check from fontbakery to fontspector"
