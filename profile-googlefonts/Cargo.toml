@@ -23,6 +23,7 @@ regex = "1.10.6"
 serde_json = { workspace = true }
 skrifa = { workspace = true }
 kurbo = { workspace = true }
+num-traits = "0.2.19"
 
 unicode-normalization = "0"
 unicode-properties = { workspace = true }
