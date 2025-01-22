@@ -99,7 +99,7 @@ def test_check_outline_colinear_vectors(check):
 def test_check_outline_jaggy_segments(check):
     """Check for jaggy segments."""
 
-    filename = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.otf")
+    filename = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.ttf")
     results = check(filename)
     assert_results_contain(results, WARN, "found-jaggy-segments")
     messages = "".join([m.message.message for m in results])
@@ -112,8 +112,7 @@ def test_check_outline_jaggy_segments(check):
     assert_PASS(check(filename))
 
     font = TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Roman.otf")
-    msg = assert_results_contain(check(font), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: not is_variable_font" in msg
+    msg = assert_results_contain(check(font), SKIP, "variable-font")
 
 
 @check_id("outline_semi_vertical")
