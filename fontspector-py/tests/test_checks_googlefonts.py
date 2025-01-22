@@ -697,9 +697,8 @@ def test_check_glyph_coverage(check):
     assert_PASS(check(ttFont))
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/usweightclass")
-def test_check_usweightclass(check):
+@check_id("googlefonts/weightclass")
+def test_check_weightclass(check):
     """Checking OS/2 usWeightClass."""
 
     # Our reference Mada Regular is know to be bad here.
@@ -2357,7 +2356,6 @@ def test_check_varfont_has_HVAR(check):
     assert_results_contain(check(ttFont), FAIL, "lacks-HVAR")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/fvar_instances")
 def test_check_fvar_instances__another_test(check):  # TODO: REVIEW THIS.
     """Check variable font instances."""
@@ -2378,7 +2376,6 @@ def test_check_fvar_instances__another_test(check):  # TODO: REVIEW THIS.
     assert_PASS(check(ttFont), "with a good font...")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/fvar_instances")
 def test_check_fvar_instances__yet_another_test(check):  # TODO: REVIEW THIS.
     """A variable font must have named instances."""
@@ -2400,7 +2397,6 @@ def test_check_fvar_instances__yet_another_test(check):  # TODO: REVIEW THIS.
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/fvar_instances")
 def test_check_fvar_instances__whats_going_on_here(check):  # TODO: REVIEW THIS.
     """Variable font weight coordinates must be multiples of 100."""
@@ -3099,7 +3095,6 @@ def test_check_cjk_vertical_metrics_regressions(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/fvar_instances")
 def test_check_varfont_instance_coordinates(check, vf_ttFont):
     # OpenSans-Roman-VF is correct
@@ -3640,7 +3635,6 @@ def test_check_metadata_category_hints(check):
         (TEST_FILE("cabinvf/Cabin[wdth,wght].ttf"), [("Book", 450)], FAIL),
     ],
 )
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/fvar_instances")
 def test_check_fvar_instances(check, fp, mod, result):
     """Check font fvar instances are correct"""
@@ -3652,7 +3646,7 @@ def test_check_fvar_instances(check, fp, mod, result):
         for name, wght_val in mod:
             inst = NamedInstance()
             inst.subfamilyNameID = ttFont["name"].addName(name)
-            inst.coordinates = {"wght": wght_val}
+            inst.coordinates = {"wght": wght_val, "wdth": 100}
             ttFont["fvar"].instances.append(inst)
 
     if result == PASS:
