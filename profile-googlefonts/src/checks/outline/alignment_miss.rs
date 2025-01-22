@@ -1,8 +1,10 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::Sub};
 
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION};
 use read_fonts::TableProvider;
 use skrifa::{outline::OutlinePen, MetadataProvider};
+
+use super::close_but_not_on;
 const ALIGNMENT_MISS_EPSILON: i16 = 2; // Four point lee-way on alignment misses
 
 struct AlignmentMissPen<'a> {
@@ -11,10 +13,6 @@ struct AlignmentMissPen<'a> {
     alignments: &'a HashMap<String, i16>,
     epsilon: i16,
     warnings: Vec<String>,
-}
-
-fn close_but_not_on(expected: i16, actual: i16, epsilon: i16) -> bool {
-    (actual - expected).abs() <= epsilon && actual != expected
 }
 
 impl AlignmentMissPen<'_> {
