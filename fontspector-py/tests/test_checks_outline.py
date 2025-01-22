@@ -17,7 +17,7 @@ def test_check_outline_alignment_miss(check):
     results = check(filename)
     assert_results_contain(results, WARN, "found-misalignments")
     messages = "".join([m.message.message for m in results])
-    assert "A (U+0041): X=3.0,Y=-2.0 (should be at baseline 0?)" in messages
+    assert "A (U+0041): X=3,Y=-2 (should be at baseline 0?)" in messages
 
     # TODO: PASS
 
