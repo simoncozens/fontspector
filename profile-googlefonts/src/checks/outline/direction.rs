@@ -4,13 +4,10 @@ use fontspector_checkapi::{
 use kurbo::{Rect, Shape};
 use skrifa::MetadataProvider;
 
-// XXX This check passes tests, but I have my doubts about whether it is
-// dealing with the correct problem. It's very hard to get fontmake to
-// output a path with wrong directions; you have to use `--keep-direction`
-// and that'll invert *all* glyphs, not just one. The problem that people
-// might be wanting to solve is the path ordering; i.e. that the outermost
-// path appears first in the glyf table followed by anything enclosing it.
-// Needs further research.
+// Although this check is per-glyph, the problem of contours being oriented
+// the wrong way by the compiler tends to affect all glyphs in a font.
+// It's generally caused by something like passing --keep-direction in
+// fontmake when doing things with cubic sources.
 #[check(
     id = "outline_direction",
     rationale = "
