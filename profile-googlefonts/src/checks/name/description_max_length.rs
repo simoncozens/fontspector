@@ -18,7 +18,7 @@ use skrifa::raw::tables::name::NameId;
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Description strings in the name table must not exceed 200 characters."
 )]
-fn name_description_max_length(t: &Testable, _context: &Context) -> CheckFnResult {
+fn description_max_length(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     if f.get_name_entry_strings(NameId::DESCRIPTION)
         .any(|s| s.len() > 200)

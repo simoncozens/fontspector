@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::metadata::family_proto;
+use crate::checks::metadata::family_proto;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use google_fonts_subsets::{LATIN, SUBSETS};
 
@@ -53,7 +53,7 @@ fn support_percentage(
     title="METADATA.pb subsets are correct?",
     implementation = "all"
 )]
-fn metadata_subsets_correct(c: &TestableCollection, context: &Context) -> CheckFnResult {
+fn subsets_correct(c: &TestableCollection, context: &Context) -> CheckFnResult {
     let mdpb = c
         .get_file("METADATA.pb")
         .ok_or_else(|| CheckError::skip("no-mdpb", "No METADATA.pb file found"))?;

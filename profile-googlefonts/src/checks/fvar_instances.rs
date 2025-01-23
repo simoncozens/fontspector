@@ -20,7 +20,7 @@ use crate::utils::build_expected_font;
     proposal = "https://github.com/fonttools/fontbakery/pull/3800",
     title = "Check variable font instances"
 )]
-fn googlefonts_fvar_instances(t: &Testable, _context: &Context) -> CheckFnResult {
+fn fvar_instances(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
     skip!(f.has_axis("MORF"), "has-morf", "Font has a MORF axis");

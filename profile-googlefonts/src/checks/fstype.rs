@@ -34,18 +34,18 @@ const FSTYPE_RESTRICTIONS: [(u16, &str); 5] = [
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Checking OS/2 fsType does not impose restrictions."
 )]
-fn googlefonts_fstype(t: &Testable, _context: &Context) -> CheckFnResult {
+fn fstype(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
-    let fstype = f.font().os2()?.fs_type();
-    if fstype == 0 {
+    let fstype_value = f.font().os2()?.fs_type();
+    if fstype_value == 0 {
         return Ok(Status::just_one_pass());
     }
     let mut restrictions = FSTYPE_RESTRICTIONS
         .iter()
-        .filter(|(bit_mask, _)| fstype & bit_mask != 0)
+        .filter(|(bit_mask, _)| fstype_value & bit_mask != 0)
         .map(|(_, restriction)| restriction.to_string())
         .collect::<Vec<String>>();
-    if fstype & 0b1111110011110001 != 0 {
+    if fstype_value & 0b1111110011110001 != 0 {
         restrictions
             .push("* There are reserved bits set, which indicates an invalid setting.".to_string());
     }
@@ -53,7 +53,7 @@ fn googlefonts_fstype(t: &Testable, _context: &Context) -> CheckFnResult {
         "drm",
         &format!(
             "In this font fsType is set to {} meaning that:\n{}\n\nNo such DRM restrictions can be enabled on the Google Fonts collection, so the fsType field must be set to zero (Installable Embedding) instead.",
-            fstype,
+            fstype_value,
             restrictions.join("\n")
         ),
     ))

@@ -1,0 +1,2 @@
+mod equal_codepoint_coverage;
+pub use equal_codepoint_coverage::equal_codepoint_coverage;

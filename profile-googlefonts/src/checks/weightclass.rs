@@ -27,7 +27,7 @@ use crate::utils::build_expected_font;
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Check the OS/2 usWeightClass is appropriate for the font's best SubFamily name."
 )]
-fn googlefonts_weightclass(t: &Testable, _context: &Context) -> CheckFnResult {
+fn weightclass(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
     let value = f.font().os2()?.us_weight_class();
