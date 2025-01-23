@@ -1,9 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
 use read_fonts::{
     tables::stat::{AxisValue, AxisValueTableFlags},
-    types::Fixed,
     ReadError, TableProvider,
 };
 use skrifa::MetadataProvider;
@@ -52,7 +51,6 @@ fn stat_axis_record(t: &Testable, context: &Context) -> CheckFnResult {
         )
     })
 }
-
 
 #[check(
     id = "opentype/weight_class_fvar",
