@@ -221,3 +221,101 @@ fn included_excluded(
     }
     true
 }
+
+/// A builder for creating a profile
+///
+/// This is a convenience builder for creating a profile in code, rather than
+/// through a TOML document.
+pub struct ProfileBuilder<'a> {
+    /// The profile being built
+    profile: Profile,
+    /// Current section name
+    current_section: Option<String>,
+    /// Checks to be registered, when we have a registry
+    checks_to_register: Vec<Check<'a>>,
+}
+
+impl<'a> ProfileBuilder<'a> {
+    /// Create a new profile builder
+    pub fn new() -> Self {
+        ProfileBuilder {
+            checks_to_register: vec![],
+            profile: Profile::default(),
+            current_section: None,
+        }
+    }
+
+    /// Add a new section to the profile
+    pub fn add_section(mut self, name: &str) -> Self {
+        self.current_section = Some(name.to_string());
+        if !self.profile.sections.contains_key(name) {
+            self.profile.sections.insert(name.to_string(), vec![]);
+        } else {
+            log::warn!("Section {} already exists", name);
+        }
+        self
+    }
+
+    /// Add a check to the current section, registering it with the registry
+    pub fn add_and_register_check(mut self, check: Check<'static>) -> Self {
+        let check_id = check.id.to_string();
+        if let Some(section) = &self.current_section {
+            self.checks_to_register.push(check);
+            #[allow(clippy::unwrap_used)] // current_section is only Some if we added that section
+            self.profile
+                .sections
+                .get_mut(section)
+                .unwrap()
+                .push(check_id);
+        } else {
+            panic!("No section to add check to");
+        }
+        self
+    }
+
+    /// Include another profile
+    pub fn include_profile(mut self, profile: &str) -> Self {
+        self.profile.include_profiles.push(profile.to_string());
+        self
+    }
+
+    /// Exclude a check
+    pub fn exclude_check(mut self, check: &str) -> Self {
+        self.profile.exclude_checks.push(check.to_string());
+        self
+    }
+
+    /// Add an override for a check
+    pub fn with_overrides(mut self, check_id: &str, overrides: Vec<Override>) -> Self {
+        self.profile
+            .overrides
+            .insert(check_id.to_string(), overrides);
+        self
+    }
+
+    /// Add configuration defaults for a check
+    pub fn with_configuration_defaults(
+        mut self,
+        check_id: &str,
+        configuration_defaults: HashMap<String, serde_json::Value>,
+    ) -> Self {
+        self.profile
+            .configuration_defaults
+            .insert(check_id.to_string(), configuration_defaults);
+        self
+    }
+
+    /// Register the profile
+    pub fn build(self, name: &str, registry: &mut Registry<'a>) -> Result<(), String> {
+        for check in self.checks_to_register {
+            registry.register_check(check);
+        }
+        registry.register_profile(name, self.profile)
+    }
+}
+
+impl<'a> Default for ProfileBuilder<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
