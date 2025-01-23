@@ -28,6 +28,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(checks::weightclass::googlefonts_weightclass);
         cr.register_check(checks::name_description_max_length::name_description_max_length);
         cr.register_check(checks::outline::alignment_miss);
+        cr.register_check(checks::outline::colinear_vectors);
         cr.register_check(checks::outline::direction);
         cr.register_check(checks::outline::jaggy_segments);
         cr.register_check(checks::outline::semi_vertical);
@@ -150,7 +151,7 @@ include_profiles = ["universal"]
 ]
 "Outline Checks" = [
     "outline_alignment_miss",
-    # "outline_colinear_vectors", # This isn't run for VFs and most of our fonts are VFs, ignore it.
+    "outline_colinear_vectors",
     "outline_direction",
     "outline_jaggy_segments",
     "outline_semi_vertical",

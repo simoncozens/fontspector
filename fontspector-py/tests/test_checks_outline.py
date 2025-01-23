@@ -82,16 +82,15 @@ def test_check_outline_colinear_vectors(check):
     results = check(filename)
     assert_results_contain(results, WARN, "found-colinear-vectors")
     messages = "".join([m.message.message for m in results])
-    assert "A (U+0041)" not in messages
-    assert "B (U+0042)" not in messages
-    assert "C (U+0043)" in messages
-    assert "E (U+0045)" in messages
+    assert " (U+0041)" not in messages
+    assert " (U+0042)" not in messages
+    assert " (U+0043)" in messages
+    assert " (U+0045)" in messages
 
     # TODO: PASS
 
     font = TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Roman.otf")
-    msg = assert_results_contain(check(font), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: not is_variable_font" in msg
+    msg = assert_results_contain(check(font), SKIP, "variable-font")
 
 
 @check_id("outline_jaggy_segments")
