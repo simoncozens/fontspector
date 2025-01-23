@@ -1,5 +1,9 @@
+use std::collections::HashSet;
+
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
-use skrifa::MetadataProvider;
+use kurbo::ParamCurve;
+
+use crate::checks::outline::name_and_bezglyph;
 
 #[check(
     id = "overlapping_path_segments",
@@ -16,32 +20,36 @@ use skrifa::MetadataProvider;
     proposal = "https://github.com/google/fonts/issues/7594#issuecomment-2401909084",
     title = "Check there are no overlapping path segments"
 )]
-fn overlapping_path_segments(t: &Testable, _context: &Context) -> CheckFnResult {
+fn overlapping_path_segments(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
-    let mut problems = vec![];
-    // def check_overlapping_path_segments(ttFont, outlines_dict, config):
-    //     """Check there are no overlapping path segments"""
-    //     failed = []
-    //     for glyph, outlines in outlines_dict.items():
-    //         seen = set()
-    //         for p in outlines:
-    //             for seg in p.asSegments():
-    //                 normal = ((seg.start.x, seg.start.y), (seg.end.x, seg.end.y))
-    //                 flipped = ((seg.end.x, seg.end.y), (seg.start.x, seg.start.y))
-    //                 if normal in seen or flipped in seen:
-    //                     failed.append(
-    //                         f"{glyph[1]}: {seg} has the same coordinates as a previous segment."
-    //                     )
-    //                 seen.add(normal)
-    //     if failed:
-    //         yield WARN, Message(
-    //             "overlapping-path-segments",
-    //             f"The following glyphs have overlapping path segments:\n\n"
-    //             f"{bullet_list(config, failed, bullet='*')}",
-    //         )
-    //     else:
-    //         yield PASS, "No overlapping path segments found."
-    //
-    unimplemented!();
-    return_result(problems)
+    let mut all_warnings = vec![];
+    for (name, result) in name_and_bezglyph(&f) {
+        let mut seen = HashSet::new();
+        let pen = result?;
+        for contour in pen.iter() {
+            for seg in contour.segments() {
+                // Urgh, we can't compare Points, so we have to approximate by stringifying
+                let normal = format!("{}/{}", seg.eval(0.0), seg.eval(1.0));
+                let flipped = format!("{}/{}", seg.eval(1.0), seg.eval(0.0));
+                if seen.contains(&normal) || seen.contains(&flipped) {
+                    all_warnings.push(format!(
+                        "{}: {:?} has the same coordinates as a previous segment.",
+                        name, seg
+                    ));
+                }
+                seen.insert(normal);
+            }
+        }
+    }
+    Ok(if !all_warnings.is_empty() {
+        Status::just_one_warn(
+            "overlapping-path-segments",
+            &format!(
+                "The following glyphs have overlapping path segments:\n\n{}",
+                bullet_list(context, all_warnings)
+            ),
+        )
+    } else {
+        Status::just_one_pass()
+    })
 }
