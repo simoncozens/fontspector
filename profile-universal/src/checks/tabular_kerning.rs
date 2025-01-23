@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use hashbrown::{HashMap, HashSet};
 
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, GetSubstitutionMap};
 use itertools::Itertools;
@@ -93,7 +93,7 @@ fn tabular_kerning(t: &Testable, _context: &Context) -> CheckFnResult {
 
     let (tabular_numerals, tabular_glyphs) = if f.has_feature(true, "tnum") {
         // tabular glyphs is anything on the RHS of a tnum
-        let mut tabular_glyphs = HashSet::new();
+        let mut tabular_glyphs: HashSet<GlyphId> = HashSet::new();
         let mut tabular_numerals = numeral_glyphs.clone();
         let lookups = f.font().gsub()?.lookup_list()?;
         for i in tnum_lookups {
@@ -101,8 +101,8 @@ fn tabular_kerning(t: &Testable, _context: &Context) -> CheckFnResult {
             let substitutions = lookup.subtables()?.substitutions()?;
             for (lhs, rhs) in substitutions.iter() {
                 for gid in rhs {
-                    if lhs.len() == 1 && numeral_glyphs.contains(&lhs[0].into()) {
-                        tabular_numerals.remove(&(lhs[0].into()));
+                    if lhs.len() == 1 && numeral_glyphs.contains::<GlyphId>(&lhs[0].into()) {
+                        tabular_numerals.remove::<GlyphId>(&(lhs[0].into()));
                         tabular_numerals.insert(GlyphId::from(*gid));
                     } else {
                         tabular_glyphs.insert(GlyphId::from(*gid));
