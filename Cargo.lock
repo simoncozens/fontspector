@@ -509,9 +509,9 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "font-types"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1185c9e351b6569630888b6abe7475190ce084b59b615861ce5352d9a9f6226a"
+checksum = "11c3a23a5a151afb1f74ea797f8c300dee41eff9ee3cb1bf94ed316d860c46b3"
 dependencies = [
  "bytemuck",
 ]
@@ -561,8 +561,9 @@ dependencies = [
  "fontspector-checkhelper",
  "glob",
  "glob-match",
- "indexmap 2.6.0",
+ "indexmap 2.7.1",
  "itertools",
+ "kurbo",
  "log",
  "pluginator",
  "read-fonts",
@@ -769,6 +770,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "google-fonts-axisregistry"
+version = "0.7.1"
+source = "git+https://github.com/googlefonts/axisregistry?branch=rust-crate#7d5d60ceb9539db7777fc2b51a0d2d8df9d167d3"
+dependencies = [
+ "bytes",
+ "glob",
+ "indexmap 2.7.1",
+ "itertools",
+ "prettyplease",
+ "proc-macro2",
+ "prost",
+ "prost-build",
+ "protobuf",
+ "protobuf-parse",
+ "protobuf-support",
+ "quote",
+ "serde",
+ "serde_json",
+ "skrifa",
+ "syn 2.0.89",
+ "write-fonts",
+]
+
+[[package]]
 name = "google-fonts-languages"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -821,7 +846,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "http",
- "indexmap 2.6.0",
+ "indexmap 2.7.1",
  "slab",
  "tokio",
  "tokio-util",
@@ -1193,9 +1218,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.6.0"
+version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "707907fe3c25f5424cce2cb7e1cbcafee6bdbe735ca90ef77c29e84591e5b9da"
+checksum = "8c9c992b02b5b4c94ea26e32fe5bccb7aa7d9f390ab5c1221ff895bc7ea8b652"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.1",
@@ -1676,7 +1701,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4c5cc86750666a3ed20bdaf5ca2a0344f9c67674cae0515bec2da16fbaa47db"
 dependencies = [
  "fixedbitset 0.4.2",
- "indexmap 2.6.0",
+ "indexmap 2.7.1",
 ]
 
 [[package]]
@@ -1761,9 +1786,14 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "fontspector-checkapi",
+ "google-fonts-axisregistry",
  "google-fonts-languages",
  "google-fonts-subsets",
+ "indexmap 2.7.1",
  "itertools",
+ "kurbo",
+ "markdown-table",
+ "num-traits",
  "protobuf",
  "protobuf-codegen",
  "read-fonts",
@@ -1908,7 +1938,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "322330e133eab455718444b4e033ebfac7c6528972c784fcde28d2cc783c6257"
 dependencies = [
  "anyhow",
- "indexmap 2.6.0",
+ "indexmap 2.7.1",
  "log",
  "protobuf",
  "protobuf-support",
@@ -2026,9 +2056,9 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.25.0"
+version = "0.25.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57ffb59d3f1cc19f87906ce8018a97af2635bb35a2e2fa98ded30e027445ea7a"
+checksum = "f6f9e8a4f503e5c8750e4cd3b32a4e090035c46374b305a15c70bad833dca05f"
 dependencies = [
  "bytemuck",
  "font-types",
@@ -2268,7 +2298,7 @@ version = "1.0.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c7fceb2473b9166b2294ef05efcb65a3db80803f0b03ef86a5fc88a2b85ee377"
 dependencies = [
- "indexmap 2.6.0",
+ "indexmap 2.7.1",
  "itoa",
  "memchr",
  "ryu",
@@ -2345,9 +2375,9 @@ dependencies = [
 
 [[package]]
 name = "skrifa"
-version = "0.26.0"
+version = "0.26.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e07d75701517557a2e6d8747741043b4649f6252503401b59a16b2e1b0b16289"
+checksum = "e92bf3f3af711d696eff796a4f28136927d40eb8108002b6f7919dc0cee27a5d"
 dependencies = [
  "bytemuck",
  "read-fonts",
@@ -2655,7 +2685,7 @@ version = "0.22.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ae48d6208a266e853d946088ed816055e556cc6028c5e8e2b84d9fa5dd7c7f5"
 dependencies = [
- "indexmap 2.6.0",
+ "indexmap 2.7.1",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -3194,12 +3224,12 @@ dependencies = [
 
 [[package]]
 name = "write-fonts"
-version = "0.32.0"
+version = "0.33.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53ddf9e1f9bd47b4405d42f815824f5422f3fe4adf1d80dd5fc44366dd93f3a6"
+checksum = "3e4569c5d3e6a8ca11632efeb1f13105663e3643a77de21d3dbc1a7c2ed80a10"
 dependencies = [
  "font-types",
- "indexmap 2.6.0",
+ "indexmap 2.7.1",
  "kurbo",
  "log",
  "read-fonts",
