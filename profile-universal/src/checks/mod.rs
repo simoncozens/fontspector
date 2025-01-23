@@ -1,3 +1,4 @@
+pub mod alt_caron;
 pub mod arabic_high_hamza;
 pub mod arabic_spacing_symbols;
 pub mod base_has_width;
