@@ -1,8 +1,6 @@
-use fontspector_checkapi::{
-    pens::BezGlyph, prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION,
-};
+use super::name_and_bezglyph;
+use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use kurbo::{Rect, Shape};
-use skrifa::MetadataProvider;
 
 // Although this check is per-glyph, the problem of contours being oriented
 // the wrong way by the compiler tends to affect all glyphs in a font.
@@ -25,18 +23,8 @@ fn direction(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
     let mut all_warnings = vec![];
-    for glyph in f.all_glyphs() {
-        let mut name = f.glyph_name_for_id_synthesise(glyph);
-        if let Some((cp, _gid)) = f
-            .font()
-            .charmap()
-            .mappings()
-            .find(|(_cp, gid)| *gid == glyph)
-        {
-            name = format!("{} (U+{:04X})", name, cp);
-        }
-        let mut pen = BezGlyph::default();
-        f.draw_glyph(glyph, &mut pen, DEFAULT_LOCATION)?;
+    for (name, result) in name_and_bezglyph(&f) {
+        let pen = result?;
         let bounds: Vec<Rect> = pen.iter().map(|path| path.bounding_box()).collect();
         let mut is_within = vec![vec![]; bounds.len()];
         for (i, my_bounds) in bounds.iter().enumerate() {

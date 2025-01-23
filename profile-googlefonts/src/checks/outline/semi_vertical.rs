@@ -1,9 +1,6 @@
-use fontspector_checkapi::{
-    pens::BezGlyph, prelude::*, skip, testfont, FileTypeConvert, DEFAULT_LOCATION,
-};
-use skrifa::MetadataProvider;
-
+use super::name_and_bezglyph;
 use crate::checks::outline::close_but_not_on;
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 
 #[check(
     id = "outline_semi_vertical",
@@ -34,18 +31,8 @@ fn semi_vertical(t: &Testable, context: &Context) -> CheckFnResult {
         "This check produces too many false positives with italic fonts."
     );
 
-    for glyph in f.all_glyphs() {
-        let mut name = f.glyph_name_for_id_synthesise(glyph);
-        if let Some((cp, _gid)) = f
-            .font()
-            .charmap()
-            .mappings()
-            .find(|(_cp, gid)| *gid == glyph)
-        {
-            name = format!("{} (U+{:04X})", name, cp);
-        }
-        let mut pen = BezGlyph::default();
-        f.draw_glyph(glyph, &mut pen, DEFAULT_LOCATION)?;
+    for (name, result) in name_and_bezglyph(&f) {
+        let pen = result?;
         for path in pen.iter() {
             for seg in path.segments() {
                 if let kurbo::PathSeg::Line(line) = seg {
