@@ -1,8 +1,6 @@
-use fontspector_checkapi::{
-    pens::BezGlyph, prelude::*, skip, testfont, FileTypeConvert, DEFAULT_LOCATION,
-};
+use crate::checks::outline::name_and_bezglyph;
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use kurbo::{ParamCurveArclen, PathSeg, Shape};
-use skrifa::MetadataProvider;
 
 const SHORT_PATH_ABSOLUTE_EPSILON: f64 = 3.0;
 const SHORT_PATH_RELATIVE_EPSILON: f64 = 0.006;
@@ -44,18 +42,8 @@ fn short_segments(t: &Testable, context: &Context) -> CheckFnResult {
         "variable-font",
         "This check produces too many false positives with variable fonts."
     );
-    for glyph in f.all_glyphs() {
-        let mut name = f.glyph_name_for_id_synthesise(glyph);
-        if let Some((cp, _gid)) = f
-            .font()
-            .charmap()
-            .mappings()
-            .find(|(_cp, gid)| *gid == glyph)
-        {
-            name = format!("{} (U+{:04X})", name, cp);
-        }
-        let mut pen = BezGlyph::default();
-        f.draw_glyph(glyph, &mut pen, DEFAULT_LOCATION)?;
+    for (name, result) in name_and_bezglyph(&f) {
+        let pen = result?;
         for path in pen.iter() {
             let outline_length = path.perimeter(0.01);
             let segments = path.segments().collect::<Vec<_>>();

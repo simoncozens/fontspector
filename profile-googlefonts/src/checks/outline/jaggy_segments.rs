@@ -1,9 +1,7 @@
-use fontspector_checkapi::{
-    pens::BezGlyph, prelude::*, skip, testfont, FileTypeConvert, DEFAULT_LOCATION,
-};
+use crate::checks::outline::name_and_bezglyph;
+use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use itertools::Itertools;
 use kurbo::{ParamCurve, ParamCurveDeriv, PathSeg, Vec2};
-use skrifa::MetadataProvider;
 
 fn tangent_at_time(p: &PathSeg, t: f64) -> Vec2 {
     match p {
@@ -39,18 +37,8 @@ fn jaggy_segments(t: &Testable, context: &Context) -> CheckFnResult {
     let mut problems = vec![];
     let mut all_warnings = vec![];
 
-    for glyph in f.all_glyphs() {
-        let mut name = f.glyph_name_for_id_synthesise(glyph);
-        if let Some((cp, _gid)) = f
-            .font()
-            .charmap()
-            .mappings()
-            .find(|(_cp, gid)| *gid == glyph)
-        {
-            name = format!("{} (U+{:04X})", name, cp);
-        }
-        let mut pen = BezGlyph::default();
-        f.draw_glyph(glyph, &mut pen, DEFAULT_LOCATION)?;
+    for (name, result) in name_and_bezglyph(&f) {
+        let pen = result?;
         for path in pen.iter() {
             let segs = path.segments().collect::<Vec<_>>();
             for (prev, cur) in segs.iter().circular_tuple_windows() {
