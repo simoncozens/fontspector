@@ -47,7 +47,7 @@ pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};
 pub use font::{TestFont, DEFAULT_LOCATION, TTF};
 pub use gsub::{GetSubstitutionMap, SubstitutionMap};
-pub use profile::{Override, Profile};
+pub use profile::{Override, Profile, ProfileBuilder};
 pub use registry::Registry;
 pub use status::{CheckError, CheckFnResult, Status, StatusCode, StatusList};
 pub use testable::{Testable, TestableCollection, TestableType};
@@ -91,8 +91,8 @@ pub mod prelude {
     pub type FixFnResult = Result<bool, String>;
     pub use crate::{
         return_result, utils::*, Check, CheckError, CheckFlags, CheckFnResult, CheckImplementation,
-        Context, FileType, Profile, Registry, Status, StatusList, Testable, TestableCollection,
-        TestableType, TTF,
+        Context, FileType, Profile, ProfileBuilder, Registry, Status, StatusList, Testable,
+        TestableCollection, TestableType, TTF,
     };
 }
 
