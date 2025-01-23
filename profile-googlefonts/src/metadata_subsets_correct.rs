@@ -120,7 +120,7 @@ fn metadata_subsets_correct(c: &TestableCollection, context: &Context) -> CheckF
         .map(|(k, v)| (k.to_string(), support_percentage(k, v, &codepoints)))
         .collect();
     for (name, percentage) in supported_percentage.into_iter() {
-        println!("{}: {}", name, percentage);
+        //println!("{}: {}", name, percentage);
         if percentage >= coverage_required(&name) && !subsets.contains(&name) {
             problems.push(Status::warn(
                     "missing-subset",
