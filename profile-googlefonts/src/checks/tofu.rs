@@ -2,17 +2,25 @@ use crate::metadata::{family_proto, FamilyProto};
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use google_fonts_languages::{LanguageProto, LANGUAGES};
 use google_fonts_subsets::SUBSETS;
-use std::collections::HashSet;
+use hashbrown::HashSet;
+use std::sync::LazyLock;
 use unicode_normalization::UnicodeNormalization;
 use unicode_properties::{GeneralCategoryGroup, UnicodeGeneralCategory};
 
 struct OurLang<'a> {
-    // id: String,
+    id: String,
     name: String,
-    // bases: Vec<char>,
+    bases: HashSet<char>,
+    sample_set: HashSet<char>,
     samples: Vec<(&'a str, String)>,
-    supported: Option<String>,
 }
+
+static OUR_LANGS: LazyLock<Vec<OurLang>> = LazyLock::new(|| {
+    LANGUAGES
+        .iter()
+        .map(|(_name, lang)| OurLang::new(lang))
+        .collect()
+});
 
 fn parse_chars(chars: &str) -> HashSet<char> {
     chars
@@ -35,7 +43,7 @@ fn parse_chars(chars: &str) -> HashSet<char> {
 }
 
 impl OurLang<'_> {
-    fn new(lang: &LanguageProto, charset: &HashSet<char>, font_proto: &FamilyProto) -> Self {
+    fn new(lang: &LanguageProto) -> Self {
         let bases: HashSet<char> = lang
             .exemplar_chars
             .as_ref()
@@ -57,37 +65,39 @@ impl OurLang<'_> {
             .collect()
         });
 
-        let supported = if font_proto.primary_language() == lang.id() {
-            Some("primary language was set".to_string())
-        } else if !bases.is_empty() && charset.is_superset(&bases) {
-            Some("the font contained all the base exemplars for the language".to_string())
-        } else {
-            let sample_set: HashSet<char> = samples
-                .iter()
-                .flat_map(|(_title, s)| parse_chars(s))
-                .filter(|c| {
-                    !(c.is_whitespace()
-                        || matches!(
-                            c.general_category_group(),
-                            GeneralCategoryGroup::Punctuation
-                        ))
-                })
-                .collect();
-            if !sample_set.is_empty() && charset.is_superset(&sample_set) {
-                Some("the font contained all the codepoints for the sample text".to_string())
-            } else {
-                None
-            }
-        };
-        // if supported.is_some() {
-        // println!("{}: {:?}", lang.name(), supported);
-        // }
+        let sample_set: HashSet<char> = samples
+            .iter()
+            .flat_map(|(_title, s)| parse_chars(s))
+            .filter(|c| {
+                !(c.is_whitespace()
+                    || matches!(
+                        c.general_category_group(),
+                        GeneralCategoryGroup::Punctuation
+                    ))
+            })
+            .collect();
         OurLang {
-            // id: lang.id().to_owned(),
             name: lang.name().to_owned(),
-            // bases: bases.into_iter().collect(),
+            id: lang.id().to_string(),
+            sample_set,
+            bases,
             samples,
-            supported,
+        }
+    }
+
+    fn determine_support(
+        &self,
+        font_proto: &FamilyProto,
+        charset: &HashSet<char>,
+    ) -> Option<String> {
+        if font_proto.primary_language() == self.id {
+            Some("primary language was set".to_string())
+        } else if !self.bases.is_empty() && charset.is_superset(&self.bases) {
+            Some("the font contained all the base exemplars for the language".to_string())
+        } else if !self.sample_set.is_empty() && charset.is_superset(&self.sample_set) {
+            Some("the font contained all the codepoints for the sample text".to_string())
+        } else {
+            None
         }
     }
 
@@ -96,6 +106,7 @@ impl OurLang<'_> {
         codepoints: &HashSet<char>,
         subsets: &[(&str, &[u32])],
         context: &Context,
+        support: Option<String>,
     ) -> Vec<Status> {
         let mut problems = vec![];
         let mut missing_codepoints = HashSet::new();
@@ -110,7 +121,7 @@ impl OurLang<'_> {
             if !unique_missing.is_empty() {
                 let mut reason = "missing-codepoints";
                 let mut supplement = "";
-                if self.supported
+                if support
                     == Some(
                         "the font contained all the base exemplars for the language".to_string(),
                     )
@@ -123,7 +134,7 @@ impl OurLang<'_> {
                     reason,
                     &format!(
                     "We detected support for the {} language because {}, but the font is missing the following codepoints needed to render the {} sample text{}:\n{}",
-                    self.name, self.supported.as_ref().unwrap(), sample_name, supplement,
+                    self.name, support.as_ref().unwrap(), sample_name, supplement,
                     bullet_list(context,unique_missing.iter().map(|c| format!("{} (U+{:04X})", c, *c as u32)).collect::<Vec<_>>())                    
                 )));
                 missing_codepoints.extend(unique_missing);
@@ -164,7 +175,7 @@ impl OurLang<'_> {
                     "missing-subsetted",
                     &format!(
                     "The font has the following codepoints needed to render the {} sample text for language {}, but although {}, tofu will still be produced because the codepoints do not appear in any of the subsets {}:\n{}",
-                    sample_name, self.name, self.supported.as_ref().unwrap(),
+                    sample_name, self.name, support.as_ref().unwrap(),
                     subsets.iter().map(|(name, _)| name.to_string()).collect::<Vec<_>>().join(", "), 
                      bullet_list(context,unique_missing.iter().map(|c| format!("{} (U+{:04X})", c, *c as u32)).collect::<Vec<_>>())
                 )));
@@ -205,20 +216,26 @@ fn googlefonts_tofu(c: &TestableCollection, context: &Context) -> CheckFnResult 
         .iter()
         .flat_map(|cp| char::from_u32(*cp))
         .collect();
-    let supported: Vec<OurLang> = LANGUAGES
+    let font_subsets = msg
+        .subsets
         .iter()
-        .map(|(_name, lang)| OurLang::new(lang, &codepoints, &msg))
-        .filter(|l| l.supported.is_some())
-        .collect();
-    let font_subsets = msg.subsets.into_iter().collect::<HashSet<String>>();
+        .map(|x| x.to_string())
+        .collect::<HashSet<String>>();
     let subsets: Vec<(&str, _)> = SUBSETS
         .into_iter()
         .filter(|(name, _subset)| font_subsets.contains(*name))
         .collect();
 
-    let problems = supported
+    let problems: Vec<Status> = OUR_LANGS
         .iter()
-        .flat_map(|ourlang| ourlang.find_problems(&codepoints, &subsets, context))
+        .flat_map(|l| {
+            if let Some(support) = l.determine_support(&msg, &codepoints) {
+                l.find_problems(&codepoints, &subsets, context, Some(support))
+            } else {
+                vec![]
+            }
+        })
         .collect();
+
     return_result(problems)
 }

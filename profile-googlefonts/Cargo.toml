@@ -23,6 +23,7 @@ skrifa = { workspace = true }
 unicode-normalization = "0"
 unicode-properties = { workspace = true }
 write-fonts = { workspace = true }
+hashbrown = "0.15.2"
 
 [build-dependencies]
 protobuf-codegen = "3.7.1"
