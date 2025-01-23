@@ -1,4 +1,3 @@
-pub mod alt_caron;
 pub mod bold_italic_unique;
 pub mod code_pages;
 pub mod fvar;
