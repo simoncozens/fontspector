@@ -1,14 +1,6 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 mod checks;
 pub mod constants;
-mod description;
-mod family;
-mod license;
-mod metadata;
-mod metadata_copyright;
-mod metadata_license;
-mod metadata_subsets_correct;
-mod use_typo_metrics;
 use fontspector_checkapi::prelude::*;
 
 mod network_conditions;
@@ -21,12 +13,20 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         let desc = FileType::new("DESCRIPTION.en_us.html");
         cr.register_filetype("MDPB", mdpb);
         cr.register_filetype("DESC", desc);
-        cr.register_check(checks::axes_match::axes_match);
-        cr.register_check(checks::color_fonts::color_fonts);
-        cr.register_check(checks::fstype::googlefonts_fstype);
-        cr.register_check(checks::fvar_instances::googlefonts_fvar_instances);
-        cr.register_check(checks::weightclass::googlefonts_weightclass);
-        cr.register_check(checks::name_description_max_length::name_description_max_length);
+        cr.register_check(checks::axes_match);
+        cr.register_check(checks::color_fonts);
+        cr.register_check(checks::description::eof_linebreak);
+        cr.register_check(checks::description::min_length);
+        cr.register_check(checks::family::equal_codepoint_coverage);
+        cr.register_check(checks::fstype);
+        cr.register_check(checks::fvar_instances);
+        cr.register_check(checks::metadata::can_render_samples);
+        cr.register_check(checks::metadata::copyright);
+        cr.register_check(checks::metadata::license);
+        cr.register_check(checks::metadata::subsets_correct);
+        cr.register_check(checks::metadata::validate);
+        cr.register_check(checks::name::description_max_length);
+        cr.register_check(checks::name::rfn);
         cr.register_check(checks::outline::alignment_miss);
         cr.register_check(checks::outline::colinear_vectors);
         cr.register_check(checks::outline::direction);
@@ -34,18 +34,10 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(checks::outline::overlapping_path_segments);
         cr.register_check(checks::outline::semi_vertical);
         cr.register_check(checks::outline::short_segments);
-        cr.register_check(checks::render_own_name::render_own_name);
-        cr.register_check(checks::tofu::googlefonts_tofu);
-        cr.register_check(description::description_min_length);
-        cr.register_check(description::description_eof_linebreak);
-        cr.register_check(family::family_equal_codepoint_coverage);
-        cr.register_check(license::name_rfn);
-        cr.register_check(metadata::validate_metadatapb);
-        cr.register_check(metadata::can_render_samples);
-        cr.register_check(metadata_subsets_correct::metadata_subsets_correct);
-        cr.register_check(metadata_copyright::metadata_copyright);
-        cr.register_check(metadata_license::metadata_license);
-        cr.register_check(use_typo_metrics::os2_fsselectionbit7);
+        cr.register_check(checks::render_own_name);
+        cr.register_check(checks::tofu);
+        cr.register_check(checks::use_typo_metrics);
+        cr.register_check(checks::weightclass);
         let profile = Profile::from_toml(
             r#"
 include_profiles = ["universal"]
@@ -177,7 +169,7 @@ include_profiles = ["universal"]
     "googlefonts/name/mandatory_entries",
     "googlefonts/name/version_format",
     "googlefonts/old_ttfautohint",
-    "googlefonts/os2/use_typo_metrics",
+    "googlefonts/use_typo_metrics",
     "googlefonts/production_glyphs_similarity",
     # "googlefonts/production_encoded_glyphs",  # DISABLED
     "googlefonts/STAT",

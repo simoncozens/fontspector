@@ -1,6 +1,6 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 
-use crate::{metadata::family_proto, network_conditions::is_listed_on_google_fonts};
+use crate::{checks::metadata::family_proto, network_conditions::is_listed_on_google_fonts};
 
 #[check(
     id = "googlefonts/axes_match",
@@ -40,7 +40,6 @@ fn axes_match(c: &TestableCollection, context: &Context) -> CheckFnResult {
             "Not listed on Google Fonts"
         );
     }
-    let mut problems = vec![];
     //     remote_axes = {
     //         a.axisTag: (a.minValue, a.maxValue) for a in remote_style["fvar"].axes
     //     }

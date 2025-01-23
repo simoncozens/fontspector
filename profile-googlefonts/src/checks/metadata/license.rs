@@ -1,4 +1,4 @@
-use crate::metadata::family_proto;
+use crate::checks::metadata::family_proto;
 use fontspector_checkapi::prelude::*;
 
 #[check(
@@ -12,7 +12,7 @@ use fontspector_checkapi::prelude::*;
     proposal="https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
     title="METADATA.pb license is \"APACHE2\", \"UFL\" or \"OFL\"?"
 )]
-fn metadata_license(c: &Testable, _context: &Context) -> CheckFnResult {
+fn license(c: &Testable, _context: &Context) -> CheckFnResult {
     let msg = family_proto(c).map_err(|e| {
         CheckError::Error(format!("METADATA.pb is not a valid FamilyProto: {:?}", e))
     })?;

@@ -28,7 +28,7 @@ static RFN_RE: LazyLock<Regex> =
     ",
     proposal = "https://github.com/fonttools/fontbakery/issues/1380"
 )]
-fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
+fn rfn(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems = vec![];
 
@@ -60,9 +60,9 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
 
         if matches.is_some() {
             #[allow(clippy::expect_used)]
-            let rfn = &matches.expect("wont happen")[1];
+            let rfn_string = &matches.expect("wont happen")[1];
 
-            if familyname.contains(rfn) {
+            if familyname.contains(rfn_string) {
                 problems.push(Status::fail(
                     "rfn",
                     &format!(
@@ -81,7 +81,7 @@ fn name_rfn(t: &Testable, _context: &Context) -> CheckFnResult {
                               family name ({}) that differs \
                               from the currently used family name ({}), \
                               which is fine.",
-                        rfn, familyname
+                        rfn_string, familyname
                     ),
                 ));
             }

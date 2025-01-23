@@ -14,7 +14,7 @@ use fontspector_checkapi::{prelude::*, FileTypeConvert};
     proposal = "https://github.com/fonttools/fontbakery/issues/4180",
     implementation = "all"
 )]
-fn family_equal_codepoint_coverage(c: &TestableCollection, context: &Context) -> CheckFnResult {
+fn equal_codepoint_coverage(c: &TestableCollection, context: &Context) -> CheckFnResult {
     let fonts = TTF.from_collection(c);
     if fonts.len() < 2 {
         return Err(CheckError::Skip {

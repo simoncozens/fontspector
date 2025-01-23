@@ -1,4 +1,4 @@
-use crate::metadata::{family_proto, FamilyProto};
+use crate::checks::metadata::{family_proto, FamilyProto};
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use google_fonts_languages::{LanguageProto, LANGUAGES};
 use google_fonts_subsets::SUBSETS;
@@ -197,7 +197,7 @@ impl OurLang<'_> {
     title = "Tofu should not be shown in sample texts.",
     implementation = "all"
 )]
-fn googlefonts_tofu(c: &TestableCollection, context: &Context) -> CheckFnResult {
+fn tofu(c: &TestableCollection, context: &Context) -> CheckFnResult {
     let mdpb = c
         .get_file("METADATA.pb")
         .ok_or_else(|| CheckError::skip("no-mdpb", "No METADATA.pb file found"))?;

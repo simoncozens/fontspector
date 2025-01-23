@@ -2,7 +2,7 @@ use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::{tables::os2::SelectionFlags, TableProvider};
 
 #[check(
-    id = "googlefonts/os2/use_typo_metrics",
+    id = "googlefonts/use_typo_metrics",
     rationale = "
         All fonts on the Google Fonts collection should have OS/2.fsSelection bit 7
         (USE_TYPO_METRICS) set. This requirement is part of the vertical metrics scheme
@@ -25,7 +25,7 @@ use read_fonts::{tables::os2::SelectionFlags, TableProvider};
     proposal = "https://github.com/fonttools/fontbakery/issues/3241",
     title = "OS/2.fsSelection bit 7 (USE_TYPO_METRICS) is set in all fonts."
 )]
-fn os2_fsselectionbit7(t: &Testable, context: &Context) -> CheckFnResult {
+fn use_typo_metrics(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     skip!(
         f.is_cjk_font(Some(context)),
