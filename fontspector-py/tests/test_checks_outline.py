@@ -60,19 +60,18 @@ def test_check_outline_alignment_os2_old(check):
 def test_check_outline_short_segments(check):
     """Check for short segments."""
 
-    filename = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.otf")
+    filename = TEST_FILE("wonky_paths/WonkySourceSansPro-Regular.ttf")
     results = check(filename)
     assert_results_contain(results, WARN, "found-short-segments")
     messages = "".join([m.message.message for m in results])
     assert (
-        "D (U+0044) contains a short segment L<<180.0,68.0>--<173.0,71.0>>" in messages
+        "D (U+0044) contains a short segment Line(Line { p0: (180.0, 68.0)" in messages
     )
 
     # TODO: PASS
 
     font = TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Roman.otf")
-    msg = assert_results_contain(check(font), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: not is_variable_font" in msg
+    msg = assert_results_contain(check(font), SKIP, "variable-font")
 
 
 @check_id("outline_colinear_vectors")

@@ -31,6 +31,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         cr.register_check(checks::outline::direction);
         cr.register_check(checks::outline::jaggy_segments);
         cr.register_check(checks::outline::semi_vertical);
+        cr.register_check(checks::outline::short_segments);
         cr.register_check(checks::render_own_name::render_own_name);
         cr.register_check(checks::tofu::googlefonts_tofu);
         cr.register_check(description::description_min_length);
