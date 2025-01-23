@@ -64,6 +64,7 @@ impl fontspector_checkapi::Plugin for Universal {
             .add_and_register_check(
                 checks::name_no_copyright_on_description::name_no_copyright_on_description,
             )
+            .add_and_register_check(checks::name_italic_names::name_italic_names)
             .add_and_register_check(checks::name_trailing_spaces::name_trailing_spaces)
             .add_and_register_check(checks::nested_components::nested_components)
             .add_and_register_check(checks::no_mac_entries::no_mac_entries)
@@ -81,6 +82,7 @@ impl fontspector_checkapi::Plugin for Universal {
             .add_and_register_check(checks::transformed_components::transformed_components)
             .add_and_register_check(checks::typoascender_agrave::typoascender_exceeds_agrave)
             .add_and_register_check(checks::typographic_family_name::typographic_family_name)
+            .add_and_register_check(checks::unique_glyphnames::unique_glyphnames)
             .add_and_register_check(checks::unreachable_glyphs::unreachable_glyphs)
             .add_and_register_check(checks::unwanted_aat_tables::unwanted_aat_tables)
             .add_and_register_check(checks::unwanted_tables::unwanted_tables)
