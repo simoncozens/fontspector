@@ -8,7 +8,8 @@ mod jaggy_segments;
 pub use jaggy_segments::jaggy_segments;
 mod semi_vertical;
 pub use semi_vertical::semi_vertical;
-// mod short_segments;
+mod short_segments;
+pub use short_segments::short_segments;
 
 pub(crate) fn close_but_not_on<T>(expected: T, actual: T, epsilon: T) -> bool
 where

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::Sub};
+use std::collections::HashMap;
 
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert, DEFAULT_LOCATION};
 use read_fonts::TableProvider;
