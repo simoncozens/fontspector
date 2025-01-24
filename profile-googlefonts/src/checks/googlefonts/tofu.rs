@@ -1,4 +1,4 @@
-use crate::checks::metadata::{family_proto, FamilyProto};
+use crate::checks::googlefonts::metadata::{family_proto, FamilyProto};
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use google_fonts_languages::{LanguageProto, LANGUAGES};
 use google_fonts_subsets::SUBSETS;

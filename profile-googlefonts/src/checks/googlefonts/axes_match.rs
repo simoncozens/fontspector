@@ -1,6 +1,6 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 
-use crate::{checks::metadata::family_proto, network_conditions::is_listed_on_google_fonts};
+use crate::{checks::googlefonts::metadata::family_proto, network_conditions::is_listed_on_google_fonts};
 
 #[check(
     id = "googlefonts/axes_match",

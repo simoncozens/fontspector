@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::checks::metadata::family_proto;
+use crate::checks::googlefonts::metadata::family_proto;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use google_fonts_subsets::{LATIN, SUBSETS};
 

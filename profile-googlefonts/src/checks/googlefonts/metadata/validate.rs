@@ -1,7 +1,7 @@
 #![allow(renamed_and_removed_lints, clippy::unwrap_used)]
 
 use chrono::prelude::*;
-use crate::checks::metadata::family_proto;
+use crate::checks::googlefonts::metadata::family_proto;
 use fontspector_checkapi::prelude::*;
 
 

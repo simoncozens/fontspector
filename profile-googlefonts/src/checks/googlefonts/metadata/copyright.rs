@@ -1,5 +1,5 @@
 use fontspector_checkapi::{prelude::*, StatusCode};
-use crate::checks::metadata::family_proto;
+use crate::checks::googlefonts::metadata::family_proto;
 
 #[check(
     id="googlefonts/metadata/copyright",
