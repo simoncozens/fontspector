@@ -502,8 +502,8 @@ def test_check_name_family_name_compliance(check):
     assert_PASS(check(ttFont), "with a good font...")
 
 
-@check_id("googlefonts/metadata/parses")
-def test_check_metadata_parses(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_validate(check):
     """Check METADATA.pb parse correctly."""
 
     good = TEST_FILE("merriweather/METADATA.pb")
@@ -1830,8 +1830,8 @@ def test_check_check_metadata_canonical_weight_value(check):
 
 
 @pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/os2_weightclass")
-def test_check_metadata_os2_weightclass(check):
+@check_id("googlefonts/metadata/weightclass")
+def test_check_metadata_weightclass(check):
     """Checking OS/2 usWeightClass matches weight specified at METADATA.pb"""
 
     # === test cases for Variable Fonts ===
@@ -3403,8 +3403,8 @@ def test_check_description_family_update(check, requests_mock):
     assert_PASS(check(MockFont(file=font, description=desc + "\nSomething else...")))
 
 
-@check_id("googlefonts/os2/use_typo_metrics")
-def test_check_os2_use_typo_metrics(check):
+@check_id("googlefonts/use_typo_metrics")
+def test_check_use_typo_metrics(check):
     """All non-CJK fonts checked with the googlefonts profile
     should have OS/2.fsSelection bit 7 (USE TYPO METRICS) set."""
 
@@ -3421,8 +3421,8 @@ def test_check_os2_use_typo_metrics(check):
 
 
 @pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/os2/use_typo_metrics")
-def test_check_os2_use_typo_metrics_with_cjk(check):
+@check_id("googlefonts/use_typo_metrics")
+def test_check_use_typo_metrics_with_cjk(check):
     """All CJK fonts checked with the googlefonts profile should skip this check"""
 
     tt_pass_clear = TTFont(TEST_FILE("cjk/SourceHanSans-Regular.otf"))
@@ -3774,7 +3774,7 @@ def test_check_axes_match(check, fp, mod, result, code):
     ],
 )
 @pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/STAT")
+@check_id("googlefonts/STAT/compulsory_axis_values")
 def test_check_STAT(check, fps, new_stat, result):
     """Check STAT table Axis Values are correct"""
     # more comprehensive checks are available in the axisregistry:

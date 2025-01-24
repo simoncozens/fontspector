@@ -1,4 +1,4 @@
-use crate::checks::metadata::family_proto;
+use crate::checks::googlefonts::metadata::family_proto;
 use fontspector_checkapi::prelude::*;
 
 #[check(
