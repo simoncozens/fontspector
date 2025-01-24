@@ -33,7 +33,7 @@ use skrifa::Tag;
     proposal = "https://github.com/fonttools/fontbakery/issues/4149",
     title = "Checking STAT table entries in static fonts."
 )]
-fn stat_in_statics(t: &Testable, _context: &Context) -> CheckFnResult {
+fn STAT_in_statics(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     skip!(!f.has_table(b"STAT"), "no-stat", "No STAT table.");
     skip!(

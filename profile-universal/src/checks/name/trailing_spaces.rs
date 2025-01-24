@@ -11,7 +11,7 @@ use read_fonts::TableProvider;
     proposal = "https://github.com/googlefonts/fontbakery/issues/2417",
     hotfix = fix_trailing_spaces
 )]
-fn name_trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
+fn trailing_spaces(f: &Testable, _context: &Context) -> CheckFnResult {
     let mut problems: Vec<Status> = vec![];
 
     if let Ok(name_table) = testfont!(f).font().name() {

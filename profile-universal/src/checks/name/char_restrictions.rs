@@ -14,7 +14,7 @@ use read_fonts::types::NameId;
     proposal = "https://github.com/fonttools/fontbakery/issues/1718 and https://github.com/fonttools/fontbakery/issues/1663",
     title = "Are there disallowed characters in the NAME table?"
 )]
-fn name_char_restrictions(t: &Testable, _context: &Context) -> CheckFnResult {
+fn char_restrictions(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems: Vec<Status> = vec![];
     let bad_char = |c: char| {
