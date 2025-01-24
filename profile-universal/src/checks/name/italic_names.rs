@@ -11,7 +11,7 @@ use read_fonts::types::NameId;
     proposal = "https://github.com/fonttools/fontbakery/issues/3666",
     title = "Check name table IDs 1, 2, 16, 17 to conform to Italic style."
 )]
-fn name_italic_names(t: &Testable, _context: &Context) -> CheckFnResult {
+fn italic_names(t: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(t);
     let mut problems = vec![];
     let style = font.style();

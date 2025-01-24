@@ -12,7 +12,7 @@ use read_fonts::types::NameId;
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Description strings in the name table must not contain copyright info"
 )]
-fn name_no_copyright_on_description(t: &Testable, _context: &Context) -> CheckFnResult {
+fn no_copyright_on_description(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let mut problems: Vec<Status> = vec![];
     for record in f.get_name_entry_strings(NameId::DESCRIPTION) {

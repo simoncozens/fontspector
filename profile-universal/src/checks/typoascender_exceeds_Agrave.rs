@@ -24,7 +24,7 @@ use skrifa::{
     title = "Checking that the typoAscender exceeds the yMax of the /Agrave.",
     metadata = "{\"experimental\": \"since 2024/Jul/17\"}"
 )]
-fn typoascender_exceeds_agrave(f: &Testable, _context: &Context) -> CheckFnResult {
+fn typoascender_exceeds_Agrave(f: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(f);
     let os2 = font
         .font()

@@ -13,7 +13,7 @@ use read_fonts::{tables::stat::AxisValue, TableProvider};
     proposal = "https://github.com/fonttools/fontbakery/issues/2863",
     title = "Check correctness of STAT table strings"
 )]
-fn stat_strings(t: &Testable, _context: &Context) -> CheckFnResult {
+fn STAT_strings(t: &Testable, _context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     skip!(!f.has_table(b"STAT"), "no-stat", "No STAT table.");
     let stat = f.font().stat()?;
