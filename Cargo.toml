@@ -39,4 +39,4 @@ pyo3 = "0.22"
 
 indexmap = { version = "2", features = ["serde"] }
 markdown-table = "0.2.0"
-kurbo = "0.11"
+kurbo = "0.11" # For italic angle check

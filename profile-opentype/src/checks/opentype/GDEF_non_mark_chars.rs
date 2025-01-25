@@ -1,4 +1,4 @@
-use crate::checks::gdef::is_nonspacing_mark;
+use crate::checks::opentype::GDEF_mark_chars::is_nonspacing_mark;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 use skrifa::{GlyphId16, MetadataProvider};
@@ -8,7 +8,7 @@ fn swaption<T, U>(a: T, b: Option<U>) -> Option<(T, U)> {
 }
 
 #[check(
-    id = "opentype/gdef_non_mark_chars",
+    id = "opentype/GDEF_non_mark_chars",
     rationale = "
         Glyphs in the GDEF mark glyph class become non-spacing and may be repositioned
         if they have mark anchors.
@@ -19,7 +19,7 @@ fn swaption<T, U>(a: T, b: Option<U>) -> Option<(T, U)> {
     proposal = "https://github.com/fonttools/fontbakery/issues/2877",
     title = "Check GDEF mark glyph class doesn't have characters that are not marks."
 )]
-fn gdef_non_mark_chars(t: &Testable, context: &Context) -> CheckFnResult {
+fn GDEF_non_mark_chars(t: &Testable, context: &Context) -> CheckFnResult {
     let f = testfont!(t);
     let gdef = f
         .font()

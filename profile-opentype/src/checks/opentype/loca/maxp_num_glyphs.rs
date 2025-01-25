@@ -13,7 +13,7 @@ use read_fonts::TableProvider;
     ",
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
 )]
-fn loca_maxp_num_glyphs(t: &Testable, _context: &Context) -> CheckFnResult {
+fn maxp_num_glyphs(t: &Testable, _context: &Context) -> CheckFnResult {
     let font = testfont!(t);
 
     let loca = font

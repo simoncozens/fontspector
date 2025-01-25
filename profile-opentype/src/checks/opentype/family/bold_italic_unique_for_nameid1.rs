@@ -16,7 +16,7 @@ use read_fonts::tables::os2::SelectionFlags;
     proposal = "https://github.com/fonttools/fontbakery/issues/4829",  // legacy check
     implementation = "all"
 )]
-fn bold_italic_unique(c: &TestableCollection, _context: &Context) -> CheckFnResult {
+fn bold_italic_unique_for_nameid1(c: &TestableCollection, _context: &Context) -> CheckFnResult {
     let fonts = TTF.from_collection(c);
     let mut problems = vec![];
     let mut flags: HashSet<(bool, bool)> = HashSet::new();
