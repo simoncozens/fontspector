@@ -1,88 +1,8 @@
-use std::collections::HashSet;
-
-use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert, TestFont};
+use fontspector_checkapi::{prelude::*, FileTypeConvert, TestFont};
 use read_fonts::{
     tables::stat::{AxisValue, AxisValueTableFlags},
     ReadError, TableProvider,
 };
-use skrifa::MetadataProvider;
-
-#[check(
-    id = "opentype/varfont/stat_axis_record_for_each_axis",
-    rationale = "
-        According to the OpenType spec, there must be an Axis Record
-        for every axis defined in the fvar table.
-
-        https://docs.microsoft.com/en-us/typography/opentype/spec/stat#axis-records
-    ",
-    title = "All fvar axes have a correspondent Axis Record on STAT table?",
-    proposal = "https://github.com/fonttools/fontbakery/pull/3017"
-)]
-fn stat_axis_record(t: &Testable, context: &Context) -> CheckFnResult {
-    let f = testfont!(t);
-    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
-    let fvar_axis_tags: HashSet<_> = f
-        .font()
-        .axes()
-        .iter()
-        .map(|axis| axis.tag().to_string())
-        .collect();
-    let stat_axis_tags: HashSet<_> = f
-        .font()
-        .stat()
-        .map_err(|_| CheckError::skip("no-stat", "No STAT table"))?
-        .design_axes()?
-        .iter()
-        .map(|axis_record| axis_record.axis_tag().to_string())
-        .collect();
-    let missing_axes: Vec<&str> = fvar_axis_tags
-        .difference(&stat_axis_tags)
-        .map(|x| x.as_ref())
-        .collect();
-    Ok(if missing_axes.is_empty() {
-        Status::just_one_pass()
-    } else {
-        Status::just_one_fail(
-            "missing-axis-records",
-            &format!(
-                "STAT table is missing Axis Records for the following axes:\n\n{}",
-                bullet_list(context, &missing_axes)
-            ),
-        )
-    })
-}
-
-#[check(
-    id = "opentype/weight_class_fvar",
-    rationale = "According to Microsoft's OT Spec the OS/2 usWeightClass should match the fvar default value.",
-    proposal = "https://github.com/googlefonts/gftools/issues/477",
-    title = "Checking if OS/2 usWeightClass matches fvar."
-)]
-fn weight_class_fvar(t: &Testable, _context: &Context) -> CheckFnResult {
-    let f = testfont!(t);
-    skip!(!f.is_variable_font(), "not-variable", "Not a variable font");
-    let fvar_value = f
-        .axis_ranges()
-        .find(|(tag, _, _, _)| tag == "wght")
-        .map(|(_, _, default, _)| default)
-        .ok_or(CheckError::skip("no-wght", "No 'wght' axis"))?;
-    let os2_value = f
-        .font()
-        .os2()
-        .map_err(|_| CheckError::skip("no-os2", "No OS/2 table"))?
-        .us_weight_class();
-    if os2_value != fvar_value as u16 {
-        return Ok(Status::just_one_fail(
-            "bad-weight-class",
-            &format!(
-                "OS/2 usWeightClass is {}, but fvar default is {}",
-                os2_value, fvar_value
-            ),
-        ));
-    }
-
-    Ok(Status::just_one_pass())
-}
 
 fn segment_vf_collection(fonts: Vec<TestFont>) -> Vec<(Option<TestFont>, Option<TestFont>)> {
     let mut roman_italic = vec![];
@@ -268,7 +188,7 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
 }
 
 #[check(
-    id = "opentype/stat/ital_axis",
+    id = "opentype/STAT/ital_axis",
     rationale = "
         Check that related Upright and Italic VFs have an
         'ital' axis in the STAT table.

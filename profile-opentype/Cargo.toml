@@ -8,14 +8,14 @@ authors = [
 ]
 
 [dependencies]
-fontspector-checkapi = { path = "../fontspector-checkapi" }
+fontspector-checkapi = { path = "../fontspector-checkapi", features = ["kurbo"] }
 fontspector-checkhelper = { workspace = true }
 read-fonts = { workspace = true }
 write-fonts = { workspace = true }
 skrifa = { workspace = true }
 itertools = {workspace = true }
 unicode-properties = { workspace = true }
-kurbo = "0.11" # For italic angle check
+kurbo = { workspace = true } # For italic angle check
 
 [dev-dependencies]
 fontbakery-bridge = { path = "../fontbakery-bridge" }
