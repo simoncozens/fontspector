@@ -1,0 +1,34 @@
+# In general, we would not like to have camel-cased
+# font family names in the Google Fonts collection
+# but there are a few exceptions to that rule,
+# that we keep listed here, for now.
+
+3D # seen in "Rock 3D"
+ABeeZee
+BatangChe
+BenchNine
+BhuTuka # seen in "BhuTuka Expanded One"
+BioRhyme
+DotGothic # seen in "DotGothic16"
+DotumChe
+DynaPuff
+FakeFont
+GulimChe
+GungsuhChe
+JetBrains # seen in "JetBrains Mono"
+KoHo
+McLaren
+MedievalSharp
+MonteCarlo
+MuseoModerno
+RocknRoll # seen in "RocknRoll One"
+UDGothic # seen in "BIZ UDGothic"
+UDPGothic # seen in "BIZ UDPGothic"
+UDMincho # seen in "BIZ UDMincho"
+UDPMincho # seen in "BIZ UDPMincho"
+UnifrakturCook
+UnifrakturMaguntia
+SignWriting # seen in "Noto Sans SignWriting"
+WindSong
+ADLaM
+YouTube # seen in "YouTube Sans" 
