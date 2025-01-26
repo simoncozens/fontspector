@@ -33,7 +33,7 @@ def get_test_font():
     return test_ttf
 
 
-def add_gdef_table(font, class_defs):
+def add_GDEF_table(font, class_defs):
     font["GDEF"] = gdef = newTable("GDEF")
     class_def_table = otTables.GlyphClassDef()
     class_def_table.classDefs = class_defs
@@ -42,18 +42,18 @@ def add_gdef_table(font, class_defs):
     gdef.table.GlyphClassDef = class_def_table
 
 
-@check_id("opentype/gdef_spacing_marks")
-def test_check_gdef_spacing_marks(check):
+@check_id("opentype/GDEF_spacing_marks")
+def test_check_GDEF_spacing_marks(check):
     """Are some spacing glyphs in GDEF mark glyph class?"""
 
     ttFont = get_test_font()
     assert_SKIP(check(ttFont), "if a font lacks a GDEF table...")
 
-    add_gdef_table(ttFont, {})
+    add_GDEF_table(ttFont, {})
     assert_PASS(check(ttFont), "with an empty GDEF table...")
 
     # Add a table with 'A' defined as a mark glyph:
-    add_gdef_table(ttFont, {"A": 3})
+    add_GDEF_table(ttFont, {"A": 3})
     assert_results_contain(
         check(ttFont),
         WARN,
@@ -62,39 +62,39 @@ def test_check_gdef_spacing_marks(check):
     )
 
 
-@check_id("opentype/gdef_mark_chars")
-def test_check_gdef_mark_chars(check):
+@check_id("opentype/GDEF_mark_chars")
+def test_check_GDEF_mark_chars(check):
     """Are some mark characters not in in GDEF mark glyph class?"""
 
     ttFont = get_test_font()
     assert_SKIP(check(ttFont), "if a font lacks a GDEF table...")
 
     # Add a GDEF table not including `acutecomb` (U+0301) as a mark char:
-    add_gdef_table(ttFont, {})
+    add_GDEF_table(ttFont, {})
     message = assert_results_contain(
         check(ttFont), WARN, "mark-chars", "if a mark-char is not listed..."
     )
     assert "U+0301" in message
 
     # Include it in the table to see the check PASS:
-    add_gdef_table(ttFont, {"acutecomb": 3})
+    add_GDEF_table(ttFont, {"acutecomb": 3})
     assert_PASS(check(ttFont), "when properly declared...")
 
 
-@check_id("opentype/gdef_non_mark_chars")
-def test_check_gdef_non_mark_chars(check):
+@check_id("opentype/GDEF_non_mark_chars")
+def test_check_GDEF_non_mark_chars(check):
     """Are some non-mark characters in GDEF mark glyph class spacing?"""
 
     ttFont = get_test_font()
     assert_SKIP(check(ttFont), "if a font lacks a GDEF table...")
 
-    add_gdef_table(ttFont, {})
+    add_GDEF_table(ttFont, {})
     assert_PASS(check(ttFont), "with an empty GDEF table.")
 
-    add_gdef_table(ttFont, {"acutecomb": 3})
+    add_GDEF_table(ttFont, {"acutecomb": 3})
     assert_PASS(check(ttFont), "with an GDEF with only properly declared mark chars.")
 
-    add_gdef_table(ttFont, {"acute": 3, "acutecomb": 3})
+    add_GDEF_table(ttFont, {"acute": 3, "acutecomb": 3})
     message = assert_results_contain(
         check(ttFont),
         WARN,
