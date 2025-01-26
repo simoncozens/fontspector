@@ -5,6 +5,7 @@ mod fvar_instances;
 mod render_own_name;
 mod tofu;
 mod use_typo_metrics;
+mod vendor_id;
 mod weightclass;
 
 pub mod axisregistry;
@@ -22,4 +23,5 @@ pub use gasp::gasp;
 pub use render_own_name::render_own_name;
 pub use tofu::tofu;
 pub use use_typo_metrics::use_typo_metrics;
+pub use vendor_id::vendor_id;
 pub use weightclass::weightclass;

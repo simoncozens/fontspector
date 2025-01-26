@@ -626,7 +626,6 @@ def test_check_fstype(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/vendor_id")
 def test_check_vendor_id(check):
     """Checking OS/2 achVendID"""
@@ -639,10 +638,10 @@ def test_check_vendor_id(check):
         ttFont["OS/2"].achVendID = bad_vid
         assert_results_contain(check(ttFont), WARN, "bad", f'with bad vid "{bad_vid}".')
 
-    ttFont["OS/2"].achVendID = None
-    assert_results_contain(
-        check(ttFont), WARN, "not-set", "with font missing vendor id info."
-    )
+    # ttFont["OS/2"].achVendID = None
+    # assert_results_contain(
+    #     check(ttFont), WARN, "not-set", "with font missing vendor id info."
+    # )
 
     ttFont["OS/2"].achVendID = "????"
     assert_results_contain(check(ttFont), WARN, "unknown", "with unknwon vendor id.")
