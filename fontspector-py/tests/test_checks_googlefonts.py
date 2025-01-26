@@ -3196,7 +3196,6 @@ def test_check_gf_axisregistry_valid_tags(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/axisregistry/fvar_axis_defaults")
 def test_check_gf_axisregistry_fvar_axis_defaults(check):
     """Validate METADATA.pb axes tags are defined in gf_axisregistry."""

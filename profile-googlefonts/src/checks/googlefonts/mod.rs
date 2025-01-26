@@ -7,6 +7,7 @@ mod tofu;
 mod use_typo_metrics;
 mod weightclass;
 
+pub mod axisregistry;
 pub mod description;
 pub mod family;
 pub mod gasp;

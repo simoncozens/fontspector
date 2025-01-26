@@ -124,7 +124,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::outline::short_segments)
             .add_section("Font File Checks")
             .add_and_register_check(checks::googlefonts::axes_match)
-            //            .add_and_register_check(checks::googlefonts::axisregistry::fvar_axis_defaults)
+            .add_and_register_check(checks::googlefonts::axisregistry::fvar_axis_defaults)
             //            .add_and_register_check(checks::googlefonts::canonical_filename)
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics)
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics_regressions)
