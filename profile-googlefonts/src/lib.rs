@@ -132,7 +132,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::font_names)
             .add_and_register_check(checks::googlefonts::fstype)
             .add_and_register_check(checks::googlefonts::fvar_instances)
-            //            .add_and_register_check(checks::googlefonts::gasp)
+            .add_and_register_check(checks::googlefonts::gasp)
             //            .add_and_register_check(checks::googlefonts::glyph_coverage)
             //            .add_and_register_check(checks::googlefonts::has_ttfautohint_params)
             //            .add_and_register_check(checks::googlefonts::meta::script_lang_tags)
