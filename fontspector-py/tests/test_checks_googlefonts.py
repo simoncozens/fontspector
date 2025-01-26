@@ -420,7 +420,6 @@ def test_check_name_rfn(check):
     assert "(FooBar)" in msg
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/name/family_name_compliance")
 def test_check_name_family_name_compliance(check):
     """Check family name for GF Guide compliance."""
@@ -454,20 +453,13 @@ def test_check_name_family_name_compliance(check):
 
     # PASS with a known CamelCased exception:
     set_name(ttFont, 1, "KoHo")
-    assert_results_contain(
-        check(ttFont),
-        PASS,
-        "known-camelcase-exception",
-        "with a bad font name (CamelCased)...",
-    )
+    assert_PASS(check(ttFont))
 
     # ABBREVIATIONS
     set_name(ttFont, 1, "DTL Prokyon")
     assert_results_contain(check(ttFont), FAIL, "abbreviation", "with a bad font name")
     set_name(ttFont, 1, "PT Sans")
-    assert_results_contain(
-        check(ttFont), PASS, "known-abbreviation-exception", "with a bad font name"
-    )
+    assert_PASS(check(ttFont))
     # Allow SC ending
     set_name(ttFont, 1, "Amatic SC")
     assert_PASS(check(ttFont), "with a good font...")
