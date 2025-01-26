@@ -2235,7 +2235,6 @@ def test_check_font_names(check, fp, mod, result):
         )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/name/mandatory_entries")
 def test_check_name_mandatory_entries(check):
     """Font has all mandatory 'name' table entries ?"""
