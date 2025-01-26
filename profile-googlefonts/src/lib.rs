@@ -89,7 +89,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::family::tnum_horizontal_metrics)
             .add_section("Name table checks")
             //            .add_and_register_check(checks::googlefonts::name::family_name_compliance)
-            //            .add_and_register_check(checks::googlefonts::name::line_breaks)
+            .add_and_register_check(checks::googlefonts::name::line_breaks)
             .add_section("Licensing Checks")
             //            .add_and_register_check(checks::googlefonts::family::has_license)
             //            .add_and_register_check(checks::googlefonts::font_copyright)

@@ -336,7 +336,6 @@ def test_check_description_eof_linebreak(check, tmp_path):
     assert_PASS(check(str(p)), "when we add one...")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/name/line_breaks")
 def test_check_name_line_breaks(check):
     """Name table entries should not contain line-breaks."""
