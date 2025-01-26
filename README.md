@@ -31,6 +31,7 @@ do this:
 pip3 install -U maturin
 cd fontspector-py
 python3 -m venv venv ; . venv/bin/activate
+pip install maturin
 maturin develop
 pytest
 ```
