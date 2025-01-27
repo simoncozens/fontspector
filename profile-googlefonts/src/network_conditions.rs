@@ -45,8 +45,7 @@ pub(crate) fn is_listed_on_google_fonts(family: &str, context: &Context) -> Resu
                 .ok_or("familyMetadataList is not an object".to_string())?;
             Ok(family_metadata_list.iter().any(|f| {
                 // println!("Looking at family {:?}", f.get("family"));
-                f.get("family")
-                    .and_then(Value::as_str) == Some(family)
+                f.get("family").and_then(Value::as_str) == Some(family)
             }))
         },
         Value::Bool,
