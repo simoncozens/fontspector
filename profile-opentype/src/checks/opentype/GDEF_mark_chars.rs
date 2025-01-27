@@ -29,7 +29,7 @@ fn GDEF_mark_chars(f: &Testable, context: &Context) -> CheckFnResult {
             .charmap()
             .mappings()
             .filter(|(u, gid)| {
-                char::from_u32(*u).map_or(false, is_nonspacing_mark)
+                char::from_u32(*u).is_some_and(is_nonspacing_mark)
                     && font.gdef_class(*gid) != GlyphClassDef::Mark
             })
             .map(|(u, gid)| {

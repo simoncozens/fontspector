@@ -46,8 +46,7 @@ pub(crate) fn is_listed_on_google_fonts(family: &str, context: &Context) -> Resu
             Ok(family_metadata_list.iter().any(|f| {
                 // println!("Looking at family {:?}", f.get("family"));
                 f.get("family")
-                    .and_then(Value::as_str)
-                    .map_or(false, |f_str| f_str == family)
+                    .and_then(Value::as_str) == Some(family)
             }))
         },
         Value::Bool,

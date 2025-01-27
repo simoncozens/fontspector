@@ -90,7 +90,7 @@ impl<'a> Check<'a> {
             (CheckImplementation::CheckOne(_), TestableType::Single(f)) => registry
                 .filetypes
                 .get(self.applies_to)
-                .map_or(false, |ft| ft.applies(f)),
+                .is_some_and(|ft| ft.applies(f)),
             _ => false,
         }
     }

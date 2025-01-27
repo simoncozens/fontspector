@@ -43,7 +43,7 @@ fn base_has_width(f: &Testable, context: &Context) -> CheckFnResult {
             }
             if codepoint
                 .and_then(|c| char::from_u32(*c))
-                .map_or(false, is_space)
+                .is_some_and(is_space)
             {
                 continue;
             }
