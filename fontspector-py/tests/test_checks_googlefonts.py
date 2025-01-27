@@ -977,7 +977,6 @@ def test_check_has_ttfautohint_params(
     assert_results_contain(check(font), expected_status, expected_keyword, reason)
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/name/familyname_first_char")
 def test_check_name_familyname_first_char(check):
     """Make sure family name does not begin with a digit."""
