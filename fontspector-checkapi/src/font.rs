@@ -111,7 +111,7 @@ impl TestFont<'_> {
                 }
             }
         }
-        if let Some(style_part) = self.filename.file_stem()?.to_str()?.split('-').last() {
+        if let Some(style_part) = self.filename.file_stem()?.to_str()?.split('-').next_back() {
             for styles in STATIC_STYLE_NAMES.iter() {
                 if style_part == styles.replace(" ", "") {
                     return Some(style_part);
@@ -127,7 +127,7 @@ impl TestFont<'_> {
     /// the style using the [style](TestFont::style) method.
     pub fn is_ribbi(&self) -> bool {
         self.style()
-            .map_or(false, |s| RIBBI_STYLE_NAMES.iter().any(|r| r == &s))
+            .is_some_and(|s| RIBBI_STYLE_NAMES.iter().any(|r| r == &s))
     }
 
     /// Is this font italic?

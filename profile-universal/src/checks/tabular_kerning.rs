@@ -25,7 +25,7 @@ const _EXCLUDED: [u32; 12] = [
 ];
 
 fn is_symbol(cp: &u32) -> bool {
-    char::from_u32(*cp).map_or(false, |c| {
+    char::from_u32(*cp).is_some_and(|c| {
         matches!(
             c.general_category(),
             GeneralCategory::DecimalNumber
@@ -130,7 +130,7 @@ fn tabular_kerning(t: &Testable, _context: &Context) -> CheckFnResult {
                 })
                 .map(|(gid, _)| gid);
             let tabular_glyphs: HashSet<_> = others_with_same_width
-                .filter(|gid| unicode_per_glyph.get(gid).map_or(false, is_symbol))
+                .filter(|gid| unicode_per_glyph.get(gid).is_some_and(is_symbol))
                 .collect();
             (numeral_glyphs, tabular_glyphs)
         } else {

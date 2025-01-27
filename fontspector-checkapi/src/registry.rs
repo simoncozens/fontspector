@@ -80,7 +80,7 @@ impl<'a> Registry<'a> {
     pub fn is_experimental(&self, check_id: &str) -> bool {
         self.checks
             .get(check_id)
-            .map_or(false, |c| c.flags.experimental)
+            .is_some_and(|c| c.flags.experimental)
     }
 
     /// Returns true if a Testable is recognised by any filetype

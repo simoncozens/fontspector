@@ -13,16 +13,16 @@ fn is_claiming_to_be_cjk_font(f: &TestFont) -> bool {
             }
         }
         // Urgh this is messy
-        if (os2.ul_unicode_range_1() & 1 << 28) != 0 || // Jamo
-           (os2.ul_unicode_range_2() & 1 << (49-32)) != 0 || // Katakana
-           (os2.ul_unicode_range_2() & 1 << (50-32)) != 0 || // Hiragana
-            (os2.ul_unicode_range_2() & 1 << (51-32)) != 0 || // Bopomofo
-            (os2.ul_unicode_range_2() & 1 << (52-32)) != 0 || // Hangul Compatibility Jamo
-            (os2.ul_unicode_range_2() & 1 << (54-32)) != 0 || // Enclosed CJK Letters And Months
-            (os2.ul_unicode_range_2() & 1 << (55-32)) != 0 || // CJK Compatibility
-            (os2.ul_unicode_range_2() & 1 << (56-32)) != 0 || // Hangul Syllables
-            (os2.ul_unicode_range_2() & 1 << (59-32)) != 0 || // CJK Unified Ideographs
-            (os2.ul_unicode_range_2() & 1 << (61-32)) != 0
+        if (os2.ul_unicode_range_1() & (1 << 28)) != 0 || // Jamo
+           (os2.ul_unicode_range_2() & (1 << (49-32))) != 0 || // Katakana
+           (os2.ul_unicode_range_2() & (1 << (50-32))) != 0 || // Hiragana
+            (os2.ul_unicode_range_2() & (1 << (51-32))) != 0 || // Bopomofo
+            (os2.ul_unicode_range_2() & (1 << (52-32))) != 0 || // Hangul Compatibility Jamo
+            (os2.ul_unicode_range_2() & (1 << (54-32))) != 0 || // Enclosed CJK Letters And Months
+            (os2.ul_unicode_range_2() & (1 << (55-32))) != 0 || // CJK Compatibility
+            (os2.ul_unicode_range_2() & (1 << (56-32))) != 0 || // Hangul Syllables
+            (os2.ul_unicode_range_2() & (1 << (59-32))) != 0 || // CJK Unified Ideographs
+            (os2.ul_unicode_range_2() & (1 << (61-32))) != 0
         // CJK Strokes
         {
             return true;

@@ -314,7 +314,7 @@ impl<'a> ProfileBuilder<'a> {
     }
 }
 
-impl<'a> Default for ProfileBuilder<'a> {
+impl Default for ProfileBuilder<'_> {
     fn default() -> Self {
         Self::new()
     }
