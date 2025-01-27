@@ -1,5 +1,5 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
-use read_fonts::{tables::gdef::GlyphClassDef};
+use read_fonts::tables::gdef::GlyphClassDef;
 use skrifa::MetadataProvider;
 use unicode_properties::{GeneralCategory, UnicodeGeneralCategory};
 

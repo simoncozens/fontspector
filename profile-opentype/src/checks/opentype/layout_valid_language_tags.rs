@@ -1,11 +1,6 @@
 use std::collections::HashSet;
 
-use fontspector_checkapi::{
-    constants::VALID_LANG_TAGS,
-    FileTypeConvert,
-    prelude::*,
-    testfont,
-};
+use fontspector_checkapi::{constants::VALID_LANG_TAGS, prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
 #[check(

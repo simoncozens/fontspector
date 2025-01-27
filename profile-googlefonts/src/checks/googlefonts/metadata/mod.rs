@@ -11,7 +11,7 @@ pub use validate::validate;
 
 include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 pub(crate) use fonts_public::FamilyProto;
-use fontspector_checkapi::{Testable, CheckError};
+use fontspector_checkapi::{CheckError, Testable};
 
 pub(crate) fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {
     let mdpb = std::str::from_utf8(&t.contents)

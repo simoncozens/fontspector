@@ -1,4 +1,5 @@
-pub const OFL_BODY_TEXT: &str = "\nThis Font Software is licensed under the SIL Open Font License, Version 1.1.\n\
+pub const OFL_BODY_TEXT: &str =
+    "\nThis Font Software is licensed under the SIL Open Font License, Version 1.1.\n\
 This license is copied below, and is also available with a FAQ at:\n\
 https://openfontlicense.org\n\
 \n\

@@ -1,7 +1,6 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
-
 #[check(
     id = "opentype/caret_slope",
     title = "Check hhea.caretSlopeRise and hhea.caretSlopeRun",

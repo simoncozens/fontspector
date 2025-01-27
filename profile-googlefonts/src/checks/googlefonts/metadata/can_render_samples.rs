@@ -4,7 +4,6 @@ include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 use crate::checks::googlefonts::metadata::family_proto;
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 
-
 #[check(
     id = "googlefonts/metadata/can_render_samples",
     title = "Check samples can be rendered",

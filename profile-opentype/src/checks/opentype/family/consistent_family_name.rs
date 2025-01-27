@@ -4,7 +4,6 @@ use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use read_fonts::types::NameId;
 use skrifa::MetadataProvider;
 
-
 #[check(
     id = "opentype/family/consistent_family_name",
     rationale = r#"

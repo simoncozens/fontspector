@@ -2,11 +2,8 @@ use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
 use write_fonts::FontBuilder;
 
 const UNWANTED_TABLES: [&[u8; 4]; 23] = [
-    b"acnt", b"ankr", b"bdat", b"bhed",
-    b"bloc", b"bmap", b"bsln", b"EBSC",
-    b"fdsc", b"feat", b"fond", b"gcid",
-    b"just", b"kerx", b"lcar", b"ltag",
-    b"mort", b"morx", b"opbd", b"prop",
+    b"acnt", b"ankr", b"bdat", b"bhed", b"bloc", b"bmap", b"bsln", b"EBSC", b"fdsc", b"feat",
+    b"fond", b"gcid", b"just", b"kerx", b"lcar", b"ltag", b"mort", b"morx", b"opbd", b"prop",
     b"trak", b"xref", b"Zaph",
 ];
 
@@ -40,9 +37,12 @@ fn unwanted_aat_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     Ok(if !found.is_empty() {
         Status::just_one_fail(
             "has-unwanted-tables",
-            &format!("Unwanted AAT tables were found in the font and should be removed,
+            &format!(
+                "Unwanted AAT tables were found in the font and should be removed,
                        either by fonttools/ttx or by editing them using the tool
-                       they're built with:\n\n{}", found.join("\n")),
+                       they're built with:\n\n{}",
+                found.join("\n")
+            ),
         )
     } else {
         Status::just_one_pass()

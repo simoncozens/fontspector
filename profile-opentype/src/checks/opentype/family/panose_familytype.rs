@@ -1,7 +1,6 @@
 use fontspector_checkapi::{prelude::*, FileTypeConvert, StatusCode, TestFont};
 use read_fonts::TableProvider;
 
-
 #[check(
     id = "opentype/family/panose_familytype",
     title = "Fonts have consistent PANOSE family type?",

@@ -20,4 +20,3 @@ pub use render_own_name::render_own_name;
 pub use tofu::tofu;
 pub use use_typo_metrics::use_typo_metrics;
 pub use weightclass::weightclass;
-
