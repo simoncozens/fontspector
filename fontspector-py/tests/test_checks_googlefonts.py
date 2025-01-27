@@ -2184,7 +2184,6 @@ def test_check_metadata_category(check):
         ),
     ],
 )
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/font_names")
 def test_check_font_names(check, fp, mod, result):
     """Check font names are correct"""
@@ -2215,19 +2214,19 @@ def test_check_font_names(check, fp, mod, result):
 
     if result == PASS:
         assert_PASS(
-            check(MockFont(file=fp, ttFont=ttFont, expected_font_names=expected)),
+            check(ttFont),
             "with a good font...",
         )
     elif result == WARN:
         assert_results_contain(
-            check(MockFont(file=fp, ttFont=ttFont, expected_font_names=expected)),
+            check(ttFont),
             WARN,
             "lacks-regular",
             "with bad names",
         )
     else:
         assert_results_contain(
-            check(MockFont(file=fp, ttFont=ttFont, expected_font_names=expected)),
+            check(ttFont),
             FAIL,
             "bad-names",
             "with bad names",

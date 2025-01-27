@@ -1,5 +1,6 @@
 mod axes_match;
 mod color_fonts;
+mod font_names;
 mod fstype;
 mod fvar_instances;
 mod render_own_name;
@@ -17,6 +18,7 @@ pub mod name;
 
 pub use axes_match::axes_match;
 pub use color_fonts::color_fonts;
+pub use font_names::font_names;
 pub use fstype::fstype;
 pub use fvar_instances::fvar_instances;
 pub use gasp::gasp;

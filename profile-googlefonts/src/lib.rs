@@ -129,7 +129,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics)
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics_regressions)
             .add_and_register_check(checks::googlefonts::color_fonts)
-            //            .add_and_register_check(checks::googlefonts::font_names)
+            .add_and_register_check(checks::googlefonts::font_names)
             .add_and_register_check(checks::googlefonts::fstype)
             .add_and_register_check(checks::googlefonts::fvar_instances)
             .add_and_register_check(checks::googlefonts::gasp)
