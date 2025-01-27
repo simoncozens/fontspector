@@ -1,3 +1,7 @@
+// This is kind of dead for now since we have implemented all the fontbakery checks
+// that it used to cover. In the future, we'll bring it back as a way to run
+// arbitrary fontbakery checks inside of Rust.
+#![allow(dead_code)]
 #![allow(non_upper_case_globals)]
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 
@@ -196,61 +200,61 @@ impl fontspector_checkapi::Plugin for FontbakeryBridge {
         });
         ok.map_err(|e| format!("Error loading FB modules: {}", e))?;
 
-        register_python_checks(
-            "fontbakery.checks.opentype.kern",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/kern.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.opentype.cff",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/cff.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.opentype.gdef",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/gdef.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.opentype.gpos",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/gpos.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.opentype.head",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/head.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.opentype.hhea",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/hhea.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.opentype.os2",
-            include_str!("../fontbakery/Lib/fontbakery/checks/opentype/os2.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.some_other_checks",
-            include_str!("../fontbakery/Lib/fontbakery/checks/some_other_checks.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.glyphset",
-            include_str!("../fontbakery/Lib/fontbakery/checks/glyphset.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.metrics",
-            include_str!("../fontbakery/Lib/fontbakery/checks/metrics.py"),
-            cr,
-        )?;
-        register_python_checks(
-            "fontbakery.checks.hinting",
-            include_str!("../fontbakery/Lib/fontbakery/checks/hinting.py"),
-            cr,
-        )?;
+        // register_python_checks(
+        //     "fontbakery.checks.opentype.kern",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/opentype/kern.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.opentype.cff",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/opentype/cff.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.opentype.gdef",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/opentype/gdef.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.opentype.gpos",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/opentype/gpos.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.opentype.head",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/opentype/head.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.opentype.hhea",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/opentype/hhea.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.opentype.os2",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/opentype/os2.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.some_other_checks",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/some_other_checks.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.glyphset",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/glyphset.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.metrics",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/metrics.py"),
+        //     cr,
+        // )?;
+        // register_python_checks(
+        //     "fontbakery.checks.hinting",
+        //     include_str!("../fontbakery/Lib/fontbakery/checks/hinting.py"),
+        //     cr,
+        // )?;
         cr.register_profile(
             "fontbakery",
             Profile::from_toml(
