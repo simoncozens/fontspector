@@ -27,7 +27,7 @@ fn axes_match(c: &TestableCollection, context: &Context) -> CheckFnResult {
         .collect::<Vec<&Testable>>();
     let name = msg.name().to_string();
     let family = msg.display_name.as_ref().unwrap_or(&name);
-    let mut problems: Vec<Status> = vec![];
+    let problems: Vec<Status> = vec![];
     for t in fonts.iter() {
         let f = testfont!(t);
         skip!(
