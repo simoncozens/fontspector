@@ -2,28 +2,31 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    - name: Install protoc
-      run: sudo apt-get install protobuf-compiler
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: |
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install protoc
+        run: sudo apt-get install protobuf-compiler
+      - name: Build
+        run: cargo build --verbose
+      - name: Lint for formatting
+        run: cargo fmt --all -- --check
+      - name: Lint for warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Run tests
+        run: |
           cargo test --verbose
           pip install maturin pytest
           cd fontspector-py
