@@ -47,4 +47,3 @@ fn distinct_instance_records(t: &Testable, _context: &Context) -> CheckFnResult 
     }
     return_result(problems)
 }
-

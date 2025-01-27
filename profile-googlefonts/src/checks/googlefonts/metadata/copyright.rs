@@ -1,5 +1,5 @@
-use fontspector_checkapi::{prelude::*, StatusCode};
 use crate::checks::googlefonts::metadata::family_proto;
+use fontspector_checkapi::{prelude::*, StatusCode};
 
 #[check(
     id="googlefonts/metadata/copyright",
@@ -16,9 +16,9 @@ fn copyright(c: &Testable, context: &Context) -> CheckFnResult {
     let msg = family_proto(c).map_err(|e| {
         CheckError::Error(format!("METADATA.pb is not a valid FamilyProto: {:?}", e))
     })?;
-    assert_all_the_same( 
+    assert_all_the_same(
         context,
-        &(msg.fonts.iter().map(|f| 
+        &(msg.fonts.iter().map(|f|
             (f.copyright(),
             f.copyright(),
             f.filename())

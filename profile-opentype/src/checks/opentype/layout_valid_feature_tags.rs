@@ -1,11 +1,6 @@
 use std::collections::HashSet;
 
-use fontspector_checkapi::{
-    constants::VALID_FEATURE_TAGS,
-    FileTypeConvert,
-    prelude::*,
-    testfont,
-};
+use fontspector_checkapi::{constants::VALID_FEATURE_TAGS, prelude::*, testfont, FileTypeConvert};
 
 #[check(
     id = "opentype/layout_valid_feature_tags",

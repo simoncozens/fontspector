@@ -1,6 +1,4 @@
-use fontspector_checkapi::{
-    pens::XDeltaPen, prelude::*, skip, testfont, FileTypeConvert,
-};
+use fontspector_checkapi::{pens::XDeltaPen, prelude::*, skip, testfont, FileTypeConvert};
 use skrifa::MetadataProvider;
 
 #[check(

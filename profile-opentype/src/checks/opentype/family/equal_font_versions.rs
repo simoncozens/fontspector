@@ -1,7 +1,6 @@
 use fontspector_checkapi::{prelude::*, FileTypeConvert, StatusCode};
 use read_fonts::{ReadError, TableProvider};
 
-
 #[check(
     id = "opentype/family/equal_font_versions",
     title = "Make sure all font files have the same version value.",

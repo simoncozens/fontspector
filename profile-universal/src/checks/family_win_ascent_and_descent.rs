@@ -34,7 +34,6 @@ fn all_simple_glyphs<'a>(
 fn family_metrics(fonts: &[TestFont]) -> Result<Metrics, CheckError> {
     let mut metrics = Metrics::default();
     for font in fonts {
-        let (font_ymin, font_ymax) = 
         // The original fontbakery code checked whether the font was
         // OpenType or TrueType, and if TrueType went with max/min values
         // of all the glyphs in the glyf table. But the "OpenType or TrueType"
@@ -42,6 +41,7 @@ fn family_metrics(fonts: &[TestFont]) -> Result<Metrics, CheckError> {
         // for "OpenType" fonts anyway. So we'll just use the head table values.
         // If you want the other code later, here it is:
         /*
+        let (font_ymin, font_ymax) =
         if font.has_table(b"glyf") {
             (
                 all_simple_glyphs(font)?
@@ -55,7 +55,7 @@ fn family_metrics(fonts: &[TestFont]) -> Result<Metrics, CheckError> {
             )
         } else
          */
-        {
+        let (font_ymin, font_ymax) = {
             let head = font.font().head()?;
             (head.y_min(), head.y_max())
         };

@@ -1,7 +1,6 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
 use read_fonts::TableProvider;
 
-
 #[check(
     id = "opentype/weight_class_fvar",
     rationale = "According to Microsoft's OT Spec the OS/2 usWeightClass should match the fvar default value.",

@@ -19,10 +19,7 @@ use std::collections::HashSet;
     proposal = "https://github.com/fonttools/fontbakery/pull/2709",
     title = "Check glyphs do not have duplicate components which have the same x,y coordinates."
 )]
-fn glyf_non_transformed_duplicate_components(
-    t: &Testable,
-    context: &Context,
-) -> CheckFnResult {
+fn glyf_non_transformed_duplicate_components(t: &Testable, context: &Context) -> CheckFnResult {
     let ttf = testfont!(t);
     let font = ttf.font();
     skip!(!ttf.has_table(b"glyf"), "no-glyf", "No glyf table");

@@ -1,7 +1,6 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use read_fonts::types::NameId;
 
-
 #[check(
     id = "opentype/name/match_familyname_fullfont",
     rationale = r#"

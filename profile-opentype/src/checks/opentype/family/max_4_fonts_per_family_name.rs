@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use read_fonts::types::NameId;
 
-
 #[check(
     id = "opentype/family/max_4_fonts_per_family_name",
     rationale = "
