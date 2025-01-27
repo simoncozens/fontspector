@@ -784,7 +784,7 @@ dependencies = [
 [[package]]
 name = "google-fonts-axisregistry"
 version = "0.7.1"
-source = "git+https://github.com/googlefonts/axisregistry?branch=rust-crate#7d5d60ceb9539db7777fc2b51a0d2d8df9d167d3"
+source = "git+https://github.com/googlefonts/axisregistry#2f13fa13078f11edd3a57b02de036e181b8275da"
 dependencies = [
  "bytes",
  "glob",
