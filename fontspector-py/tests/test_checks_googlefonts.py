@@ -907,7 +907,6 @@ def test_check_name_description_max_length(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/name/version_format")
 def test_check_name_version_format(check):
     """Version format is correct in 'name' table ?"""
