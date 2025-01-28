@@ -103,7 +103,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::metadata::copyright)
             .add_and_register_check(checks::googlefonts::metadata::license)
             //            .add_and_register_check(checks::googlefonts::metadata::reserved_font_name)
-            //            .add_and_register_check(checks::googlefonts::name::license)
+            .add_and_register_check(checks::googlefonts::name::license)
             //            .add_and_register_check(checks::googlefonts::name::license_url)
             .add_and_register_check(checks::googlefonts::name::rfn)
             .add_section("Repository Checks")

@@ -869,7 +869,6 @@ def test_check_license_ofl_body_text(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/name/license")
 def test_check_name_license(check, mada_ttFonts):
     """Check copyright namerecords match license file."""
