@@ -139,7 +139,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::name::description_max_length)
             .add_and_register_check(checks::googlefonts::name::familyname_first_char)
             .add_and_register_check(checks::googlefonts::name::mandatory_entries)
-            //            .add_and_register_check(checks::googlefonts::name::version_format)
+            .add_and_register_check(checks::googlefonts::name::version_format)
             //            .add_and_register_check(checks::googlefonts::old_ttfautohint)
             //            .add_and_register_check(checks::googlefonts::production_encoded_glyphs)  // DISABLED
             //            .add_and_register_check(checks::googlefonts::production_glyphs_similarity)
