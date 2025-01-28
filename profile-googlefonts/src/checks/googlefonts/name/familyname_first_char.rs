@@ -1,6 +1,5 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
-use read_fonts::TableProvider;
-use skrifa::string::StringId;
+use read_fonts::types::NameId;
 
 #[check(
     id = "googlefonts/name/familyname_first_char",
@@ -14,19 +13,13 @@ use skrifa::string::StringId;
     title = "Make sure family name does not begin with a digit."
 )]
 fn familyname_first_char(t: &Testable, _context: &Context) -> CheckFnResult {
-    let f = testfont!(t);
+    let font = testfont!(t);
     let mut problems = vec![];
-    let name = f.font().name()?;
-    for record in name.name_record().iter() {
-        let string = record.string(name.string_data())?;
-        if record.name_id() == StringId::FAMILY_NAME
-            && "0123456789"
-                .chars()
-                .any(|c| string.to_string().starts_with(c))
-        {
+    for family_name in font.get_name_entry_strings(NameId::FAMILY_NAME) {
+        if "0123456789".chars().any(|c| family_name.starts_with(c)) {
             problems.push(Status::fail(
                 "begins-with-digit",
-                &format!("Font family name '{}' begins with a digit!", string,),
+                &format!("Font family name '{}' begins with a digit!", family_name),
             ));
         }
     }
