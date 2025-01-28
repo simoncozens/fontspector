@@ -32,14 +32,10 @@ except KeyError:
     exit(1)
 
 
-functionname = check.id.replace("/", "_")
+checkid_parts = check.id.split("/")
+functionname = checkid_parts.pop(-1)
+filename = '/'.join(checkid_parts) + '/' + functionname + ".rs"
 
-# While we still keep vendor-specific checks in their separate crates,
-# drop the redundant prefix in funciton/file names:
-if functionname.startswith(args.profile+"_"):
-	functionname = functionname[(len(args.profile)+1):]
-
-filename = functionname + ".rs"
 source = inspect.getsource(check)
 source = re.sub("(?s).*?def ", "def ", source, count=1)
 source = re.sub("(?m)^", "    // ", source)
@@ -68,7 +64,7 @@ fn {{ functionname }} (t: &Testable, _context: &Context) -> CheckFnResult {
 )
 
 
-with open("profile-" + args.profile + "/src/checks/" + filename, "w") as f:
+with open("profile-" + args.profile + "/src/checks/" + filename, "w+") as f:
     f.write(
         template.render(
             check=check,
@@ -89,22 +85,32 @@ subprocess.run(
     check=True,
 )
 
-# Add it to the mod.rs
-modfile = "profile-" + args.profile + "/src/checks/mod.rs"
-modline = f"pub mod {functionname};\n"
-if os.path.exists(modfile) and modline not in open(modfile, "r").read():
-    with open(modfile, "a") as f:
-        f.write(modline)
-    # Sort it with rustfmt
-    subprocess.run(
-        [
-            "rustfmt",
-            modfile,
-            "--unstable-features",
-            "--skip-children",
-        ],
-        check=True,
-    )
+# Add it to the mod.rs files
+for i in range(len(checkid_parts)+1):
+    subdirs = '/'.join(checkid_parts[:i])
+    if subdirs: subdirs += '/'
+
+    modfile = "profile-" + args.profile + "/src/checks/" + subdirs + "mod.rs"
+
+    if i < len(checkid_parts):
+        modline = f"pub mod {checkid_parts[i]};\n"
+    else:
+        modline = f"mod {functionname};\n"
+        modline += f"pub use {functionname}::{functionname};\n"
+
+    if os.path.exists(modfile) and modline not in open(modfile, "r").read():
+        with open(modfile, "a") as f:
+            f.write(modline)
+        # Sort it with rustfmt
+        subprocess.run(
+            [
+                "rustfmt",
+                modfile,
+                "--unstable-features",
+                "--skip-children",
+            ],
+            check=True,
+        )
 
 # See if we can find a test
 test_base_file = "test_checks_" + check.id.replace("/", "_") + ".py"
