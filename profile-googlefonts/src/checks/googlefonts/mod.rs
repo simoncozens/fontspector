@@ -15,6 +15,7 @@ pub mod family;
 pub mod gasp;
 pub mod metadata;
 pub mod name;
+pub mod stat;
 
 pub use axes_match::axes_match;
 pub use color_fonts::color_fonts;
