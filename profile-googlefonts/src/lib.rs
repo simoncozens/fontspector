@@ -78,7 +78,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::description::eof_linebreak)
             //            .add_and_register_check(checks::googlefonts::description::family_update)
             .add_and_register_check(checks::googlefonts::description::git_url)
-            //            .add_and_register_check(checks::googlefonts::description::has_article)
+            .add_and_register_check(checks::googlefonts::description::has_article)
             .add_and_register_check(checks::googlefonts::description::has_unsupported_elements)
             .add_and_register_check(checks::googlefonts::description::min_length)
             //            .add_and_register_check(checks::googlefonts::description::urls)
