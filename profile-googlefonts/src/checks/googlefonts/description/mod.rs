@@ -4,3 +4,5 @@ pub use eof_linebreak::eof_linebreak;
 pub use min_length::min_length;
 mod broken_links;
 pub use broken_links::broken_links;
+mod git_url;
+pub use git_url::git_url;
