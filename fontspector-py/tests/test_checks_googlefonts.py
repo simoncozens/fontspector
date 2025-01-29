@@ -297,7 +297,7 @@ def test_check_description_valid_html(check, tmp_path):
     )
     p = tmp_path / "DESCRIPTION.en_us.html"
     p.write_text(good_desc, encoding="utf-8")
-    
+
     # See discussion at https://github.com/fonttools/fontbakery/issues/3840
     assert_PASS(
         check(str(p)),
@@ -974,7 +974,7 @@ def test_check_name_version_format(check):
             TEST_FILE("mada/Mada-Regular.ttf"),
         ),
         (
-            PASS,
+            INFO,
             "ok",
             "with a font that has ttfautohint params"
             ' (-l 6 -r 36 -G 0 -x 10 -H 350 -D latn -f cyrl -w "" -X "")',
@@ -982,7 +982,6 @@ def test_check_name_version_format(check):
         ),
     ],
 )
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/has_ttfautohint_params")
 def test_check_has_ttfautohint_params(
     check, expected_status, expected_keyword, reason, font
