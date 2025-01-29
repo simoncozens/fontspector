@@ -3533,24 +3533,25 @@ def test_check_metadata_can_render_samples(check, tmp_path):
     #       text provided explicitely on the sample_text field of METADATA.pb
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/description/urls")
-def test_check_description_urls(check):
+def test_check_description_urls(check, tmp_path):
     """URLs on DESCRIPTION file must not display http(s) prefix."""
 
-    font = TEST_FILE("librecaslontext/LibreCaslonText[wght].ttf")
-    assert_PASS(check(font))
+    desc = TEST_FILE("librecaslontext/DESCRIPTION.en_us.html")
+    assert_PASS(check(desc))
 
-    font = TEST_FILE("cabinvfbeta/CabinVFBeta.ttf")
-    assert_results_contain(check(font), FAIL, "prefix-found")
+    desc = TEST_FILE("cabinvfbeta/DESCRIPTION.en_us.html")
+    assert_results_contain(check(desc), FAIL, "prefix-found")
 
-    good_desc = Font(font).description.replace(">https://", ">")
-    assert_PASS(check(MockFont(file=font, description=good_desc)))
+    p = tmp_path / "DESCRIPTION.en_us.html"
+    good_desc = open(desc).read()
+    bad_desc = good_desc.replace(">https://", ">")
+    p.write_text(bad_desc, encoding="utf-8")
+    assert_PASS(check(str(p)))
 
-    bad_desc = good_desc.replace(">github.com/impallari/Cabin<", "><")
-    assert_results_contain(
-        check(MockFont(file=font, description=bad_desc)), FAIL, "empty-link-text"
-    )
+    bad_desc = bad_desc.replace(">github.com/impallari/Cabin<", "><")
+    p.write_text(bad_desc, encoding="utf-8")
+    assert_results_contain(check(str(p)), FAIL, "empty-link-text")
 
 
 @pytest.mark.skip("Check not ported yet.")
