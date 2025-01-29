@@ -219,14 +219,13 @@ def test_check_description_broken_links(check, tmp_path):
     # )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/description/git_url")
-def test_check_description_git_url(check):
+def test_check_description_git_url(check, tmp_path):
     """Does DESCRIPTION file contain an upstream Git repo URL?"""
 
     # TODO: test INFO 'url-found'
 
-    font = TEST_FILE("cabin/Cabin-Regular.ttf")
+    font = TEST_FILE("cabin/DESCRIPTION.en_us.html")
     assert_results_contain(
         check(font),
         FAIL,
@@ -234,22 +233,26 @@ def test_check_description_git_url(check):
         "with description file that has no git repo URLs...",
     )
 
-    good_desc = (
+    p = tmp_path / "DESCRIPTION.en_us.html"
+
+    good_desc = open(font).read()
+    good_desc += (
         "<a href='https://github.com/uswds/public-sans'>Good URL</a>"
         "<a href='https://gitlab.com/smc/fonts/uroob'>Another Good One</a>"
     )
+
+    p.write_text(good_desc, encoding="utf-8")
+
     assert_PASS(
-        check(
-            MockFont(file=TEST_FILE("cabin/Cabin-Regular.ttf"), description=good_desc)
-        ),
+        check(str(p)),
         "with description file that has good links...",
     )
 
     bad_desc = "<a href='https://v2.designsystem.digital.gov'>Bad URL</a>"
+    p.write_text(bad_desc, encoding="utf-8")
+
     assert_results_contain(
-        check(
-            MockFont(file=TEST_FILE("cabin/Cabin-Regular.ttf"), description=bad_desc)
-        ),
+        check(str(p)),
         FAIL,
         "lacks-git-url",
         "with description file that has false git in URL...",
