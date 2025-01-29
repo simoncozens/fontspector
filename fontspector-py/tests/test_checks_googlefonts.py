@@ -3767,7 +3767,6 @@ def test_check_axes_match(check, fp, mod, result, code):
         ),
     ],
 )
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/STAT/compulsory_axis_values")
 def test_check_STAT(check, fps, new_stat, result):
     """Check STAT table Axis Values are correct"""
@@ -3778,18 +3777,17 @@ def test_check_STAT(check, fps, new_stat, result):
 
     ttFonts = [TTFont(f) for f in fps]
     ttFont = ttFonts[0]
-    expected = expected_font_names(ttFont, ttFonts)
     if new_stat:
         buildStatTable(ttFont, new_stat)
 
     if result == PASS:
         assert_PASS(
-            check(MockFont(file=fps[0], ttFont=ttFont, expected_font_names=expected)),
+            check(ttFont),
             "with a good font",
         )
     elif result == FAIL:
         assert_results_contain(
-            check(MockFont(file=fps[0], ttFont=ttFont, expected_font_names=expected)),
+            check(ttFont),
             FAIL,
             "bad-axis-values",
             "with a bad font",
