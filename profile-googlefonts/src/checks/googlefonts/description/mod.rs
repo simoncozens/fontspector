@@ -10,3 +10,5 @@ mod has_unsupported_elements;
 pub use has_unsupported_elements::has_unsupported_elements;
 mod has_article;
 pub use has_article::has_article;
+mod urls;
+pub use urls::urls;
