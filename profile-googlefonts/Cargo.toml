@@ -30,5 +30,7 @@ unicode-properties = { workspace = true }
 write-fonts = { workspace = true }
 hashbrown = "0.15.2"
 
+scraper = "0.22.0"
+
 [build-dependencies]
 protobuf-codegen = "3.7.1"

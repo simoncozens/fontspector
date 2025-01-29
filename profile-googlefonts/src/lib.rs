@@ -74,7 +74,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::glyphsets::shape_languages)
             .add_and_register_check(checks::googlefonts::tofu)
             .add_section("Description Checks")
-            //            .add_and_register_check(checks::googlefonts::description::broken_links)
+            .add_and_register_check(checks::googlefonts::description::broken_links)
             .add_and_register_check(checks::googlefonts::description::eof_linebreak)
             //            .add_and_register_check(checks::googlefonts::description::family_update)
             //            .add_and_register_check(checks::googlefonts::description::git_url)

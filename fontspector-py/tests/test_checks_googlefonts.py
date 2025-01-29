@@ -157,35 +157,34 @@ def test_check_canonical_filename(check, fp, result):
         )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/description/broken_links")
-def test_check_description_broken_links(check, requests_mock):
+def test_check_description_broken_links(check, tmp_path):
     """Does DESCRIPTION file contain broken links ?"""
 
-    requests_mock.head("http://example.com/", text="good")
-    requests_mock.head("http://fonts.google.com/", text="good")
-    requests_mock.head("http://thisisanexampleofabrokenurl.com/", status_code=404)
-    requests_mock.head("http://timeout.example.invalid/", exc=requests.Timeout())
-
-    font = TEST_FILE("cabin/Cabin-Regular.ttf")
+    font = TEST_FILE("cabin/DESCRIPTION.en_us.html")
     assert_PASS(check(font), "with description file that has no links...")
 
-    good_desc = Font(font).description
+    p = tmp_path / "DESCRIPTION.en_us.html"
+
+    good_desc = open(font).read()
     good_desc += (
         "<a href='http://example.com'>Good Link</a>"
         "<a href='http://fonts.google.com'>Another Good One</a>"
     )
+    p.write_text(good_desc, encoding="utf-8")
 
     assert_PASS(
-        check(MockFont(file=font, description=good_desc)),
+        check(str(p)),
         "with description file that has good links...",
     )
 
     bad_desc = (
         good_desc + "<a href='mailto:juca@members.fsf.org'>An example mailto link</a>"
     )
+    p.write_text(bad_desc, encoding="utf-8")
+
     assert_results_contain(
-        check(MockFont(file=font, description=bad_desc)),
+        check(str(p)),
         FAIL,
         "email",
         'with a description file containing "mailto" links...',
@@ -195,23 +194,29 @@ def test_check_description_broken_links(check, requests_mock):
         good_desc
         + "<a href='http://thisisanexampleofabrokenurl.com/'>This is a Bad Link</a>"
     )
+    p.write_text(bad_desc, encoding="utf-8")
+
     assert_results_contain(
-        check(MockFont(file=font, description=bad_desc)),
+        check(str(p)),
         FAIL,
         "broken-links",
         "with a description file containing a known-bad URL...",
     )
 
-    bad_desc = (
-        good_desc
-        + "<a href='http://timeout.example.invalid/'>This is a link that times out</a>"
-    )
-    assert_results_contain(
-        check(MockFont(file=font, description=bad_desc)),
-        WARN,
-        "timeout",
-        "with a description file containing a URL that times out...",
-    )
+    # Sadly we can't currently mock a timeout
+
+    # bad_desc = (
+    #     good_desc
+    #     + "<a href='http://timeout.example.invalid/'>This is a link that times out</a>"
+    # )
+    # p.write_text(bad_desc, encoding="utf-8")
+
+    # assert_results_contain(
+    #     check(str(p)),
+    #     WARN,
+    #     "timeout",
+    #     "with a description file containing a URL that times out...",
+    # )
 
 
 @pytest.mark.skip("Check not ported yet.")
