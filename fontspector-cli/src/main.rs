@@ -33,6 +33,10 @@ use indicatif::ProgressIterator;
 #[cfg(not(debug_assertions))]
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
+// As a special case for Google fonts, all files in an article/
+// directory are associated with the parent's group.
+const COLLAPSED_SUBDIRECTORIES: [&str; 1] = ["article"];
+
 fn main() {
     let start_time = Instant::now();
 
@@ -274,7 +278,14 @@ fn group_inputs(args: &Args) -> Vec<TestableCollection> {
     inputs
         .map(|file| {
             #[allow(clippy::unwrap_used)] // We tested for parent
-            (file.parent().unwrap().to_owned(), file)
+            if COLLAPSED_SUBDIRECTORIES
+                .iter()
+                .any(|subdir| file.parent().unwrap().ends_with(subdir))
+            {
+                (file.parent().unwrap().parent().unwrap().to_owned(), file)
+            } else {
+                (file.parent().unwrap().to_owned(), file)
+            }
         })
         .fold(
             HashMap::new(),
