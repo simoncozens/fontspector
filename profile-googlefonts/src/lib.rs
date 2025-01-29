@@ -13,7 +13,7 @@ pub struct GoogleFonts;
 impl fontspector_checkapi::Plugin for GoogleFonts {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
         let mdpb = FileType::new("METADATA.pb");
-        let desc = FileType::new("DESCRIPTION.en_us.html");
+        let desc = FileType::new("*.en_us.html");
         cr.register_filetype("MDPB", mdpb);
         cr.register_filetype("DESC", desc);
 
