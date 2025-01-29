@@ -100,5 +100,5 @@ pub const LATEST_TTFAUTOHINT_VERSION: &str = "1.8.4";
 // example string:
 // 'Version 1.000; ttfautohint (v0.93) -l 8 -r 50 -G 200 -x 14 -w "G"
 #[allow(clippy::unwrap_used)]
-pub(crate) static TTF_RE: LazyLock<Regex> =
+pub(crate) static TTFAUTOHINT_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"ttfautohint \(v(.*)\) ([^;]*)").unwrap());
