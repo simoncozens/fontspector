@@ -82,7 +82,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::description::has_unsupported_elements)
             .add_and_register_check(checks::googlefonts::description::min_length)
             .add_and_register_check(checks::googlefonts::description::urls)
-            //            .add_and_register_check(checks::googlefonts::description::valid_html)
+            .add_and_register_check(checks::googlefonts::description::valid_html)
             .add_section("Family Checks")
             .add_and_register_check(checks::googlefonts::family::equal_codepoint_coverage)
             //            .add_and_register_check(checks::googlefonts::family::italics_have_roman_counterparts)
