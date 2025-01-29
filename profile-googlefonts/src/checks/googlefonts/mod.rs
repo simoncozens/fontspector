@@ -16,6 +16,7 @@ pub mod axisregistry;
 pub mod description;
 pub mod family;
 pub mod gasp;
+pub mod meta;
 pub mod metadata;
 pub mod name;
 
