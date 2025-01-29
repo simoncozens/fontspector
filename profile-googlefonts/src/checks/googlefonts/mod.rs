@@ -34,3 +34,5 @@ pub use vendor_id::vendor_id;
 pub use weightclass::weightclass;
 mod old_ttfautohint;
 pub use old_ttfautohint::old_ttfautohint;
+mod unitsperem;
+pub use unitsperem::unitsperem;

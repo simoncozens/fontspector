@@ -152,7 +152,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::STAT::axis_order)
             .add_and_register_check(checks::googlefonts::STAT::axisregistry)
             .add_and_register_check(checks::googlefonts::STAT::compulsory_axis_values)
-            //            .add_and_register_check(checks::googlefonts::unitsperem)
+            .add_and_register_check(checks::googlefonts::unitsperem)
             .add_and_register_check(checks::googlefonts::use_typo_metrics)
             //            .add_and_register_check(checks::googlefonts::varfont::generate_static)
             //            .add_and_register_check(checks::googlefonts::varfont::has_HVAR)
