@@ -1960,7 +1960,6 @@ def test_check_metadata_primary_script(check):
     assert_PASS(check(ttFont))
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/unitsperem")
 def test_check_unitsperem(check):
     """Stricter unitsPerEm criteria for Google Fonts."""
