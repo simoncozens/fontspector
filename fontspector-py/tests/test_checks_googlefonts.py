@@ -260,27 +260,30 @@ def test_check_description_git_url(check, tmp_path):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/description/valid_html")
-def test_check_description_valid_html(check):
+def test_check_description_valid_html(check, tmp_path):
     """DESCRIPTION file is a propper HTML snippet ?"""
 
-    font = TEST_FILE("nunito/Nunito-Regular.ttf")
+    font = TEST_FILE("nunito/DESCRIPTION.en_us.html")
     assert_PASS(
         check(font), "with description file that contains a good HTML snippet..."
     )
 
-    bad_desc = open(TEST_FILE("cabin/FONTLOG.txt"), "r", encoding="utf-8").read()
+    p = tmp_path / "DESCRIPTION.en_us.html"
+    contents = open(TEST_FILE("cabin/FONTLOG.txt")).read()
+    p.write_text(contents, encoding="utf-8")
     assert_results_contain(
-        check(MockFont(file=font, description=bad_desc)),
+        check(str(p)),
         FAIL,
         "lacks-paragraph",
         "with a known-bad file (without HTML paragraph tags)...",
     )
 
     bad_desc = "<html>foo</html>"
+    p = tmp_path / "DESCRIPTION.en_us.html"
+    p.write_text(bad_desc, encoding="utf-8")
     assert_results_contain(
-        check(MockFont(file=font, description=bad_desc)),
+        check(str(p)),
         FAIL,
         "html-tag",
         "with description file that contains the <html> tag...",
@@ -292,9 +295,12 @@ def test_check_description_valid_html(check):
         " It could use &amp; instead, but that's not strictly necessary."
         "</p>"
     )
+    p = tmp_path / "DESCRIPTION.en_us.html"
+    p.write_text(good_desc, encoding="utf-8")
+    
     # See discussion at https://github.com/fonttools/fontbakery/issues/3840
     assert_PASS(
-        check(MockFont(file=font, description=good_desc)),
+        check(str(p)),
         "with a file containing ampersand char without HTML entity syntax...",
     )
 

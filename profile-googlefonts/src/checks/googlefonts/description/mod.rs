@@ -12,3 +12,5 @@ mod has_article;
 pub use has_article::has_article;
 mod urls;
 pub use urls::urls;
+mod valid_html;
+pub use valid_html::valid_html;
