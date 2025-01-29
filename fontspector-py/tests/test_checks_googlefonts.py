@@ -873,14 +873,17 @@ def test_check_license_ofl_body_text(check):
 def test_check_name_license(check, mada_ttFonts):
     """Check copyright namerecords match license file."""
 
+    ofl_license = TEST_FILE("mada/OFL.txt")
+    apache_license = TEST_FILE("source-sans-pro/LICENSE.txt")
+
     # Our reference Mada family has its copyright name records properly set
     # identifying it as being licensed under the Open Font License.
     for font in mada_fonts:
-        assert_PASS(check(font), "with good fonts ...")
+        assert_PASS(check([font, ofl_license]), "with good fonts ...")
 
     for font in mada_fonts:
         assert_results_contain(
-            check(MockFont(file=font, license_filename="LICENSE.txt")),  # Apache
+            check([font, apache_license]),
             FAIL,
             "wrong",
             "with wrong entry values ...",
@@ -889,7 +892,7 @@ def test_check_name_license(check, mada_ttFonts):
     for ttFont in mada_ttFonts:
         delete_name_table_id(ttFont, NameID.LICENSE_DESCRIPTION)
         assert_results_contain(
-            check(ttFont), FAIL, "missing", "with missing copyright namerecords ..."
+            check([ttFont, TEST_FILE("mada/OFL.txt")]), FAIL, "missing", "with missing copyright namerecords ..."
         )
 
     # TODO:
