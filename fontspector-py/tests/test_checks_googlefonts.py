@@ -1,3 +1,4 @@
+import glob
 import math
 import os
 import shutil
@@ -3795,21 +3796,25 @@ def test_check_STAT(check, fps, new_stat, result):
         )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/description/has_article")
 def test_check_description_has_article(check):
     """Noto fonts must have an ARTICLE.en_us.html file, others with an
     article should have an empty DESCRIPTION"""
 
-    font = TEST_FILE("notosanskhudawadi/NotoSansKhudawadi-Regular.ttf")
-    assert_PASS(check(font), "with a good font")
+    files = TEST_FILE("notosanskhudawadi/**/*.*")
+    assert_PASS(check(list(glob.glob(files, recursive=True))), "with a good font")
 
-    font = TEST_FILE("noto_sans_tamil_supplement/NotoSansTamilSupplement-Regular.ttf")
-    assert_results_contain(check(font), FAIL, "missing-article", "with a bad font")
-
-    font = TEST_FILE("tirodevanagarihindi/TiroDevanagariHindi-Regular.ttf")
+    files = TEST_FILE("noto_sans_tamil_supplement/**/*.*")
     assert_results_contain(
-        check(font),
+        check(list(glob.glob(files, recursive=True))),
+        FAIL,
+        "missing-article",
+        "with a bad font",
+    )
+
+    files = TEST_FILE("tirodevanagarihindi/**/*.*")
+    assert_results_contain(
+        check(list(glob.glob(files, recursive=True))),
         FAIL,
         "description-and-article",
         "with a font with description and article",

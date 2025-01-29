@@ -8,3 +8,5 @@ mod git_url;
 pub use git_url::git_url;
 mod has_unsupported_elements;
 pub use has_unsupported_elements::has_unsupported_elements;
+mod has_article;
+pub use has_article::has_article;
