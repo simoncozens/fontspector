@@ -3437,7 +3437,6 @@ def test_check_use_typo_metrics_with_cjk(check):
     assert_SKIP(check(tt_pass_set))
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/meta/script_lang_tags")
 def test_check_meta_script_lang_tags(check):
     """Ensure font has ScriptLangTags in the 'meta' table."""
