@@ -3816,18 +3816,19 @@ def test_check_description_has_article(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/description/has_unsupported_elements")
 def test_check_description_has_unsupported_elements(check):
     """Check the description doesn't contain unsupported html elements"""
 
-    font = TEST_FILE("librecaslontext/LibreCaslonText[wght].ttf")
+    font = TEST_FILE("librecaslontext/DESCRIPTION.en_us.html")
     assert_PASS(check(font))
 
-    font = TEST_FILE("unsupported_html_elements/ABeeZee-Regular.ttf")
+    font = TEST_FILE("unsupported_html_elements/DESCRIPTION.en_us.html")
     results = check(font)
-    assert_results_contain(results, FATAL, "unsupported-elements", "with a bad font")
-    assert_results_contain(results, FATAL, "video-tag-needs-src", "with a bad font")
+    assert_results_contain(results, ERROR, "unsupported-elements", "with a bad font")
+    font = TEST_FILE("unsupported_html_elements/article/ARTICLE.en_us.html")
+    results = check(font)
+    assert_results_contain(results, ERROR, "video-tag-needs-src", "with a bad font")
 
 
 @pytest.mark.skip("Check not ported yet.")

@@ -6,3 +6,5 @@ mod broken_links;
 pub use broken_links::broken_links;
 mod git_url;
 pub use git_url::git_url;
+mod has_unsupported_elements;
+pub use has_unsupported_elements::has_unsupported_elements;
