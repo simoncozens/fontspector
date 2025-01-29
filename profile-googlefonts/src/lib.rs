@@ -73,8 +73,13 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_section("Glyphset Checks")
             //            .add_and_register_check(checks::googlefonts::glyphsets::shape_languages)
             .add_and_register_check(checks::googlefonts::tofu)
-            .add_section("Description Checks")
-            .add_and_register_check(checks::googlefonts::description::broken_links)
+            .add_section("Description Checks");
+
+        #[cfg(not(target_family = "wasm"))]
+        let builder =
+            builder.add_and_register_check(checks::googlefonts::description::broken_links);
+
+        let builder = builder
             .add_and_register_check(checks::googlefonts::description::eof_linebreak)
             //            .add_and_register_check(checks::googlefonts::description::family_update)
             .add_and_register_check(checks::googlefonts::description::git_url)
