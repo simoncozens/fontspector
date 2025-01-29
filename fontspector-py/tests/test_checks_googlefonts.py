@@ -3220,7 +3220,6 @@ def test_check_gf_axisregistry_fvar_axis_defaults(check):
     assert_results_contain(check(ttFont), FAIL, "not-registered")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/STAT/axisregistry")
 def test_check_STAT_gf_axisregistry(check):
     """Validate STAT particle names and values
