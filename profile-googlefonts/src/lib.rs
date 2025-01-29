@@ -150,7 +150,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::unitsperem)
             .add_and_register_check(checks::googlefonts::use_typo_metrics)
             //            .add_and_register_check(checks::googlefonts::varfont::generate_static)
-            //            .add_and_register_check(checks::googlefonts::varfont::has_HVAR)
+            .add_and_register_check(checks::googlefonts::varfont::has_HVAR)
             .add_and_register_check(checks::googlefonts::vendor_id)
             //            .add_and_register_check(checks::googlefonts::version_bump)
             //            .add_and_register_check(checks::googlefonts::vertical_metrics)

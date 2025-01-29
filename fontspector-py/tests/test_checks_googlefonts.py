@@ -2339,7 +2339,6 @@ def test_check_varfont_generate_static(check):
     assert "Unfulfilled Conditions: is_variable_font" in msg
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/varfont/has_HVAR")
 def test_check_varfont_has_HVAR(check):
     """Check that variable fonts have an HVAR table."""

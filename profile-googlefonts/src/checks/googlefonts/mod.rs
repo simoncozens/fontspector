@@ -19,6 +19,7 @@ pub mod gasp;
 pub mod meta;
 pub mod metadata;
 pub mod name;
+pub mod varfont;
 
 pub use axes_match::axes_match;
 pub use color_fonts::color_fonts;
