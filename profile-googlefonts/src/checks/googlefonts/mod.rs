@@ -32,3 +32,5 @@ pub use tofu::tofu;
 pub use use_typo_metrics::use_typo_metrics;
 pub use vendor_id::vendor_id;
 pub use weightclass::weightclass;
+mod old_ttfautohint;
+pub use old_ttfautohint::old_ttfautohint;
