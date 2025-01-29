@@ -166,10 +166,10 @@ impl Status {
         }
     }
     /// Create a status with an error severity
-    pub fn error(message: &str) -> Self {
+    pub fn error(code: Option<&str>, message: &str) -> Self {
         Self {
             message: Some(message.to_string()),
-            code: None,
+            code: code.map(|x| x.to_string()),
             severity: StatusCode::Error,
         }
     }

@@ -119,7 +119,7 @@ impl<'a> Check<'a> {
     ) -> CheckResult {
         let subresults = match fn_result {
             Ok(results) => results.collect::<Vec<_>>(),
-            Err(CheckError::Error(e)) => vec![Status::error(&format!("Error: {}", e))],
+            Err(CheckError::Error(e)) => vec![Status::error(None, &format!("Error: {}", e))],
             Err(CheckError::Skip { code, message }) => vec![Status::skip(&code, &message)],
         };
         let res = if subresults.is_empty() {

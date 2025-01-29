@@ -21,10 +21,13 @@ fn panose_familytype(c: &TestableCollection, _context: &Context) -> CheckFnResul
     let (ok, missing): (Vec<&TestFont>, Vec<&TestFont>) =
         fonts.iter().partition(|f| f.font().os2().is_ok());
     for font in missing {
-        problems.push(Status::error(&format!(
-            "Font {} is missing an OS/2 table",
-            font.filename.to_string_lossy()
-        )));
+        problems.push(Status::error(
+            None,
+            &format!(
+                "Font {} is missing an OS/2 table",
+                font.filename.to_string_lossy()
+            ),
+        ));
     }
     if !problems.is_empty() {
         return return_result(problems);
