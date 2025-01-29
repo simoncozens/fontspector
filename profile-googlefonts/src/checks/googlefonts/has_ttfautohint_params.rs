@@ -1,14 +1,6 @@
-use std::sync::LazyLock;
-
+use crate::constants::TTF_RE;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
-use regex::Regex;
 use skrifa::string::StringId;
-
-// example string:
-// 'Version 1.000; ttfautohint (v0.93) -l 8 -r 50 -G 200 -x 14 -w "G"
-#[allow(clippy::unwrap_used)]
-static TTF_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"ttfautohint \(v(.*)\) ([^;]*)").unwrap());
 
 #[check(
     id = "googlefonts/has_ttfautohint_params",

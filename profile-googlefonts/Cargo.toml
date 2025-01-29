@@ -31,6 +31,7 @@ write-fonts = { workspace = true }
 hashbrown = "0.15.2"
 
 scraper = "0.22.0"
+semver = "1.0.25"
 
 [build-dependencies]
 protobuf-codegen = "3.7.1"
