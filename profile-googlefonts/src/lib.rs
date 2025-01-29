@@ -144,9 +144,9 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::production_encoded_glyphs)  // DISABLED
             //            .add_and_register_check(checks::googlefonts::production_glyphs_similarity)
             .add_and_register_check(checks::googlefonts::render_own_name)
-            .add_and_register_check(checks::googlefonts::stat::axis_order)
-            .add_and_register_check(checks::googlefonts::stat::axisregistry)
-            .add_and_register_check(checks::googlefonts::stat::compulsory_axis_values)
+            .add_and_register_check(checks::googlefonts::STAT::axis_order)
+            .add_and_register_check(checks::googlefonts::STAT::axisregistry)
+            .add_and_register_check(checks::googlefonts::STAT::compulsory_axis_values)
             //            .add_and_register_check(checks::googlefonts::unitsperem)
             .add_and_register_check(checks::googlefonts::use_typo_metrics)
             //            .add_and_register_check(checks::googlefonts::varfont::generate_static)

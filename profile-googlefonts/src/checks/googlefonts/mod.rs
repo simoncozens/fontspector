@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 mod axes_match;
 mod color_fonts;
 mod font_names;
@@ -9,13 +10,13 @@ mod use_typo_metrics;
 mod vendor_id;
 mod weightclass;
 
+pub mod STAT;
 pub mod axisregistry;
 pub mod description;
 pub mod family;
 pub mod gasp;
 pub mod metadata;
 pub mod name;
-pub mod stat;
 
 pub use axes_match::axes_match;
 pub use color_fonts::color_fonts;
