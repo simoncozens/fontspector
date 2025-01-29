@@ -1,4 +1,4 @@
-use crate::constants::TTF_RE;
+use crate::constants::TTFAUTOHINT_RE;
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use skrifa::string::StringId;
 
@@ -20,7 +20,7 @@ fn has_ttfautohint_params(t: &Testable, _context: &Context) -> CheckFnResult {
     let mut problems = vec![];
     let mut passed = false;
     for vstring in f.get_name_entry_strings(StringId::VERSION_STRING) {
-        if let Some(caps) = TTF_RE.captures(&vstring) {
+        if let Some(caps) = TTFAUTOHINT_RE.captures(&vstring) {
             #[allow(clippy::unwrap_used)] // If there's some captures, there's two of them.
             let params = caps.get(2).unwrap().as_str();
             if !params.is_empty() {

@@ -1,7 +1,7 @@
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use skrifa::string::StringId;
 
-use crate::constants::{LATEST_TTFAUTOHINT_VERSION, TTF_RE};
+use crate::constants::{LATEST_TTFAUTOHINT_VERSION, TTFAUTOHINT_RE};
 
 #[check(
     id = "googlefonts/old_ttfautohint",
@@ -17,7 +17,7 @@ fn old_ttfautohint(t: &Testable, _context: &Context) -> CheckFnResult {
     let ttfa_version = f
         .get_name_entry_strings(StringId::VERSION_STRING)
         .filter_map(|vstring| {
-            TTF_RE.captures(&vstring).map(|caps| {
+            TTFAUTOHINT_RE.captures(&vstring).map(|caps| {
                 #[allow(clippy::unwrap_used)] // If there's some captures, there's two of them.
                 caps.get(1).unwrap().as_str().to_string()
             })
