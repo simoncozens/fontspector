@@ -1,3 +1,4 @@
+#[cfg(not(target_family = "wasm"))]
 mod broken_links;
 mod eof_linebreak;
 mod git_url;
@@ -7,6 +8,7 @@ mod min_length;
 mod urls;
 mod valid_html;
 
+#[cfg(not(target_family = "wasm"))]
 pub use broken_links::broken_links;
 pub use eof_linebreak::eof_linebreak;
 pub use git_url::git_url;
