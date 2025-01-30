@@ -5,6 +5,10 @@ edition = "2021"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 reqwest = { version = "0.12", features = ["blocking"] }
+glob = "0.3.2"
+serde = {workspace = true } # For reading shaping check JSON files
+rustybuzz = "0.20.1"
+similar = "2.7.0" # For shaping check reports
 
 [dependencies]
 chrono = "0.4.38" # For metadata date checks
