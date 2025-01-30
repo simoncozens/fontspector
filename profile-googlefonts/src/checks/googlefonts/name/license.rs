@@ -1,9 +1,6 @@
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use read_fonts::TableProvider;
 use skrifa::string::StringId;
-use std::ops::Deref;
-
-use std::collections::HashMap;
 
 #[check(
     id = "googlefonts/name/license",
@@ -38,36 +35,25 @@ use std::collections::HashMap;
     implementation = "all"
 )]
 fn license(c: &TestableCollection, _context: &Context) -> CheckFnResult {
-    let placeholder_licensing_text: HashMap<&str, &str> = HashMap::from([
-        (
-            "UFL.txt",
-            "Licensed under the Ubuntu Font Licence 1.0."
-        ),
-        (
-            "OFL.txt",
-            "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://openfontlicense.org",
-        ),
-        (
-            "LICENSE.txt",
-            "Licensed under the Apache License, Version 2.0",
-        ),
-    ]);
-
     let mut problems = vec![];
     let mut http_warn = false;
     let mut entry_found: bool = false;
 
-    #[allow(clippy::unwrap_used)]
     let license_filename = c
         .get_file("OFL.txt")
+        .or_else(|| c.get_file("UFL.txt"))
         .or_else(|| c.get_file("LICENSE.txt"))
         .ok_or_else(|| CheckError::skip("license-file-missing", "A license file was not found."))?
-        .filename
-        .file_name()
-        .unwrap()
-        .to_string_lossy();
+        .basename()
+        .ok_or(CheckError::Error("This should never happen!".to_string()))?;
 
-    let placeholder = placeholder_licensing_text[&license_filename.deref()];
+    let placeholder = match license_filename.as_str() {
+        "UFL.txt" => "Licensed under the Ubuntu Font Licence 1.0.",
+        "OFL.txt" => "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://openfontlicense.org",
+        "LICENSE.txt" => "Licensed under the Apache License, Version 2.0",
+        _ => "", // Impossible to happen.
+    };
+
     let fonts = TTF.from_collection(c);
     for f in fonts {
         let name = f.font().name()?;
