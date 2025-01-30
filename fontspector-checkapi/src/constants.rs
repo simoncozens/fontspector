@@ -34,22 +34,110 @@ pub const STATIC_STYLE_NAMES: [&str; 18] = [
 ];
 
 /// Valid OpenType script names as of OpenType 1.9.1
-pub const VALID_SCRIPT_TAGS: [&str; 170] = [
+pub const VALID_SCRIPT_TAGS: [&str; 177] = [
     "DFLT", "adlm", "ahom", "hluw", "arab", "armn", "avst", "bali", "bamu", "bass", "batk", "beng",
     "bng2", "bhks", "bopo", "brah", "brai", "bugi", "buhd", "byzm", "cans", "cari", "aghb", "cakm",
-    "cham", "cher", "chrs", "hani", "copt", "cprt", "cyrl", "DFLT", "dsrt", "deva", "dev2", "diak",
-    "dogr", "dupl", "egyp", "elba", "elym", "ethi", "geor", "glag", "goth", "gran", "grek", "gujr",
-    "gjr2", "gong", "guru", "gur2", "hang", "jamo", "rohg", "hano", "hatr", "hebr", "kana", "armi",
-    "phli", "prti", "java", "kthi", "knda", "knd2", "kana", "kali", "khar", "kits", "khmr", "khoj",
-    "sind", "lao ", "latn", "lepc", "limb", "lina", "linb", "lisu", "lyci", "lydi", "mahj", "maka",
-    "mlym", "mlm2", "mand", "mani", "marc", "gonm", "math", "medf", "mtei", "mend", "merc", "mero",
-    "plrd", "modi", "mong", "mroo", "mult", "musc", "mymr", "mym2", "nbat", "nand", "newa", "talu",
-    "nko ", "nshu", "hmnp", "orya", "ory2", "ogam", "olck", "ital", "hung", "narb", "perm", "xpeo",
-    "sogo", "sarb", "orkh", "osge", "osma", "hmng", "palm", "pauc", "phag", "phnx", "phlp", "rjng",
-    "runr", "samr", "saur", "shrd", "shaw", "sidd", "sgnw", "sinh", "sogd", "sora", "soyo", "xsux",
-    "sund", "sylo", "syrc", "tglg", "tagb", "tale", "lana", "tavt", "takr", "taml", "tml2", "tang",
-    "telu", "tel2", "thaa", "thai", "tibt", "tfng", "tirh", "ugar", "vai ", "wcho", "wara", "yezi",
-    "yi  ", "zanb",
+    "cham", "cher", "chrs", "hani", "copt", "cprt", "cpmn", "cyrl", "DFLT", "dsrt", "deva", "dev2",
+    "diak", "dogr", "dupl", "egyp", "elba", "elym", "ethi", "geor", "glag", "goth", "gran", "grek",
+    "gujr", "gjr2", "gong", "guru", "gur2", "hang", "jamo", "rohg", "hano", "hatr", "hebr", "kana",
+    "armi", "phli", "prti", "java", "kthi", "knda", "knd2", "kana", "kali", "kawi", "khar", "kits",
+    "khmr", "khoj", "sind", "lao ", "latn", "lepc", "limb", "lina", "linb", "lisu", "lyci", "lydi",
+    "mahj", "maka", "mlym", "mlm2", "mand", "mani", "marc", "gonm", "math", "medf", "mtei", "mend",
+    "merc", "mero", "plrd", "modi", "mong", "mroo", "mult", "musc", "mymr", "mym2", "nbat", "nand",
+    "nagm", "newa", "talu", "nko ", "nshu", "hmnp", "orya", "ory2", "ogam", "olck", "ital", "hung",
+    "narb", "perm", "xpeo", "sogo", "sarb", "orkh", "osge", "osma", "ougr", "hmng", "palm", "pauc",
+    "phag", "phnx", "phlp", "rjng", "runr", "samr", "saur", "shrd", "shaw", "sidd", "sgnw", "sinh",
+    "sogd", "sora", "soyo", "xsux", "sund", "sylo", "syrc", "tglg", "tagb", "tale", "lana", "tavt",
+    "takr", "taml", "tml2", "tang", "telu", "tel2", "thaa", "thai", "tibt", "tfng", "tirh", "tnsa",
+    "toto", "ugar", "vai ", "vith", "wcho", "wara", "yezi", "yi  ", "zanb",
+];
+
+/// Scripts which go through the Indic shaper
+pub const INDIC_SCRIPT_TAGS: [&str; 19] = [
+    "beng", "bng2", "deva", "dev2", "gujr", "gjr2", "guru", "gur2", "knda", "knd2", "mlym", "mlm2",
+    "orya", "ory2", "sinh", "taml", "tml2", "telu", "tel2",
+];
+
+/// Scripts which use the Universal Shaping Engine
+///
+/// Correct as at Unicode 15.0
+pub const USE_SCRIPT_TAGS: [&str; 76] = [
+    "adlm", // Adlam
+    "ahom", // Ahom
+    "bali", // Balinese
+    "batk", // Batak
+    "bhks", // Bhaiksuki
+    "brah", // Brahmi
+    "bugi", // Buginese
+    "buhd", // Buhid
+    "cakm", // Chakma
+    "cham", // Cham
+    "chrs", // Chorasmian
+    "cpmn", // Cypro Minoan
+    "diak", // Dives Akuru
+    "dogr", // Dogra
+    "dupl", // Duployan
+    "egyp", // Egyptian Hieroglyphs
+    "elym", // Elymaic
+    "gong", // Gunjala Gondi
+    "gonm", // Masaram Gondi
+    "gran", // Grantha
+    "hano", // Hanunoo
+    "hmng", // Pahawh Hmong
+    "hmnp", // Nyiakeng Puachue Hmong
+    "java", // Javanese
+    "kali", // Kayah Li
+    "kawi", // Kawi
+    "khar", // Kharosthi
+    "khoj", // Khojki
+    "kits", // Khitan Small Script
+    "kthi", // Kaithi
+    "lana", // Tai Tham
+    "lepc", // Lepcha
+    "limb", // Limbu
+    "mahj", // Mahajani
+    "maka", // Makasar
+    "mand", // Mandaic
+    "mani", // Manichaean
+    "marc", // Marchen
+    "medf", // Medefaidrin
+    "modi", // Modi
+    "mong", // Mongolian
+    "mtei", // Meetei Mayek
+    "mult", // Multani
+    "nagm", // Nag Mundari
+    "nand", // Nandinagari
+    "newa", // Newa
+    "nko ", // Nko
+    "ougr", // Old Uyghur
+    "phag", // Phags Pa
+    "phlp", // Psalter Pahlavi
+    "plrd", // Miao
+    "rjng", // Rejang
+    "rohg", // Hanifi Rohingya
+    "saur", // Saurashtra
+    "shrd", // Sharada
+    "sidd", // Siddham
+    "sind", // Khudawadi
+    "sogd", // Sogdian
+    "sogo", // Old Sogdian
+    "soyo", // Soyombo
+    "sund", // Sundanese
+    "sylo", // Syloti Nagri
+    "tagb", // Tagbanwa
+    "takr", // Takri
+    "tale", // Tai Le
+    "tavt", // Tai Viet
+    "tfng", // Tifinagh
+    "tglg", // Tagalog
+    "tibt", // Tibetan
+    "tirh", // Tirhuta
+    "tnsa", // Tangsa
+    "toto", // Toto
+    "vith", // Vithkuqi
+    "wcho", // Wancho
+    "yezi", // Yezidi
+    "zanb", // Zanabazar Square
 ];
 
 /// Valid OpenType language tags as of OpenType 1.9.1
@@ -347,3 +435,19 @@ pub const MODERN_HANGUL_SYLLABLES_CODEPOINTS: [u32; 2350] = [
     0xD757, 0xD758, 0xD759, 0xD760, 0xD761, 0xD763, 0xD765, 0xD769, 0xD76C, 0xD770, 0xD774, 0xD77C,
     0xD77D, 0xD781, 0xD788, 0xD789, 0xD78C, 0xD790, 0xD798, 0xD799, 0xD79B, 0xD79D,
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_use_scripts() {
+        for script in USE_SCRIPT_TAGS {
+            assert!(
+                VALID_SCRIPT_TAGS.contains(&script),
+                "Invalid script tag: {}",
+                script
+            );
+        }
+    }
+}
