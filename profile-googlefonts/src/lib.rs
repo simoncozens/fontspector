@@ -114,7 +114,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::repo::vf_has_static_fonts)
             //            .add_and_register_check(checks::googlefonts::repo::zip_files",
             .add_section("Shaping Checks")
-            //            .add_and_register_check(checks::dotted_circle)
+            .add_and_register_check(checks::dotted_circle)
             //            .add_and_register_check(checks::shaping::collides)
             //            .add_and_register_check(checks::shaping::forbidden)
             //            .add_and_register_check(checks::shaping::regression)
