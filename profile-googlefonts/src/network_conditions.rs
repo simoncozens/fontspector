@@ -1,5 +1,7 @@
-use fontspector_checkapi::Context;
-use serde_json::{Map, Value};
+use std::time::Duration;
+
+use fontspector_checkapi::{Context, Testable};
+use serde_json::{json, Map, Value};
 
 #[cfg(not(target_family = "wasm"))]
 pub(crate) static PRODUCTION_METADATA: std::sync::LazyLock<Result<Map<String, Value>, String>> =
@@ -50,5 +52,100 @@ pub(crate) fn is_listed_on_google_fonts(family: &str, context: &Context) -> Resu
         },
         Value::Bool,
         |v| v.as_bool().ok_or("Expected a boolean".to_string()),
+    )
+}
+
+pub(crate) fn remote_styles(family: &str, context: &Context) -> Result<Vec<Testable>, String> {
+    // Once we are happy this works, make it into a cached_question
+    // println!("Looking for family {}", family);
+    let key = format!("remote_styles:{}", family);
+    context.cached_question(
+        &key,
+        || {
+            let mut request = reqwest::blocking::Client::new().get(format!(
+                "https://fonts.google.com/download/list?family={}",
+                family.replace(" ", "%20")
+            ));
+            if let Some(timeout) = context.network_timeout {
+                request = request.timeout(Duration::new(timeout, 0));
+            }
+            let manifest: serde_json::Value = request
+                .send()
+                .and_then(|response| response.text())
+                .map_or_else(
+                |e| Err(format!("Failed to fetch metadata: {}", e)),
+                |s| {
+                    serde_json::from_str(&s[5..])
+                        .map_err(|e| format!("Failed to parse metadata: {}", e))
+                },
+            )?;
+            let mut fonts = vec![];
+            for file in manifest
+                .as_object()
+                .and_then(|x| x.get("manifest"))
+                .and_then(|x| x.as_object())
+                .and_then(|x| x.get("fileRefs"))
+                .and_then(|x| x.as_array())
+                .ok_or("Failed to find fileRefs in manifest".to_string())?
+            {
+                let url = file
+                    .as_object()
+                    .and_then(|x| x.get("url"))
+                    .and_then(|x| x.as_str())
+                    .ok_or("Failed to find url in file".to_string())?;
+                let filename = file
+                    .as_object()
+                    .and_then(|x| x.get("filename"))
+                    .and_then(|x| x.as_str())
+                    .ok_or("Failed to filename url in file".to_string())?;
+                if filename.contains("static")
+                    || !filename.ends_with("otf") && !filename.ends_with("ttf")
+                {
+                    continue;
+                }
+                let contents = reqwest::blocking::get(url)
+                    .map_err(|e| format!("Failed to fetch font: {}", e))?
+                    .bytes()
+                    .map_err(|e| format!("Failed to fetch font: {}", e))?;
+                let testable = Testable::new_with_contents(filename, contents.to_vec());
+                fonts.push(testable);
+            }
+            Ok(fonts)
+        },
+        |testables| {
+            Value::Array(
+                testables
+                    .iter()
+                    .map(|t| {
+                        json!({
+                                "filename": t.filename.to_str().unwrap_or_default().to_string(),
+                                "contents": t.contents,
+                        })
+                    })
+                    .collect(),
+            )
+        },
+        |v| {
+            v.as_array()
+                .ok_or("Expected an array".to_string())
+                .and_then(|a| {
+                    a.iter()
+                        .map(|v| {
+                            let filename = v
+                                .get("filename")
+                                .and_then(Value::as_str)
+                                .ok_or("Expected a string".to_string())?;
+                            let contents = v
+                                .get("contents")
+                                .and_then(Value::as_str)
+                                .ok_or("Expected a string".to_string())?;
+                            Ok(Testable::new_with_contents(
+                                filename,
+                                contents.as_bytes().to_vec(),
+                            ))
+                        })
+                        .collect()
+                })
+        },
     )
 }

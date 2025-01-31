@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 /// At this stage we do not care about the file type; this is sorted out later.
 /// Testables should be provided to fontspector wrapped in a TestableCollection object,
 /// for which see below.
-#[derive(Hash, PartialEq, Eq)]
+#[derive(Hash, PartialEq, Eq, Clone)]
 pub struct Testable {
     /// The filename of the binary.
     pub filename: PathBuf,
