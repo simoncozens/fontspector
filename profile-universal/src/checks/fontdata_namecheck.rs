@@ -3,7 +3,8 @@ use read_fonts::tables::name::NameId;
 use reqwest::blocking::Client;
 use skrifa::MetadataProvider;
 
-const NAMECHECK_URL: &str = "http://namecheck.fontdata.com";
+const NAMECHECK_URL: &str = "http://namecheck.fontdata.com/";
+const NAMECHECK_API_URL: &str = "http://namecheck.fontdata.com/api/";
 
 #[check(
     id = "fontdata_namecheck",
@@ -32,14 +33,27 @@ fn fontdata_namecheck(t: &Testable, context: &Context) -> CheckFnResult {
         .timeout(context.network_timeout.map(std::time::Duration::from_secs))
         .build()?;
     let response = client
-        .post(NAMECHECK_URL)
+        .post(NAMECHECK_API_URL)
         .query(&[("q", name.clone())])
         .send()
         .map_err(|e| CheckError::Error(format!("Failed to access: {}. {}", NAMECHECK_URL, e)))?;
-    let data = response
-        .text()
-        .map_err(|e| CheckError::Error(format!("Failed to decode response: {}", e)))?;
-    Ok(if data.contains("fonts by that exact name") {
+    let data: serde_json::Value = response.text().map_or(
+        Err(CheckError::Error("Failed to parse response".to_string())),
+        |s| {
+            serde_json::from_str(&s)
+                .map_err(|e| CheckError::Error(format!("Failed to parse response: {}", e)))
+        },
+    )?;
+    let confidence = data
+        .as_object()
+        .and_then(|o| o.get("data"))
+        .and_then(|x| x.as_object())
+        .and_then(|o| o.get("confidence"))
+        .and_then(|x| x.as_object())
+        .and_then(|o| o.get("1.0"))
+        .and_then(|v| v.as_f64())
+        .ok_or(CheckError::Error("Failed to find confidence".to_string()))?;
+    Ok(if confidence > 0.0 {
         Status::just_one_info(
             "name-collision",
             &format!(
