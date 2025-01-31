@@ -37,3 +37,5 @@ pub use unitsperem::unitsperem;
 pub use use_typo_metrics::use_typo_metrics;
 pub use vendor_id::vendor_id;
 pub use weightclass::weightclass;
+mod canonical_filename;
+pub use canonical_filename::canonical_filename;
