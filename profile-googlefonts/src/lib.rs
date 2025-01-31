@@ -4,6 +4,7 @@ mod checks;
 pub mod constants;
 use fontspector_checkapi::{prelude::*, ProfileBuilder, Registry};
 
+#[cfg(not(target_family = "wasm"))]
 mod network_conditions;
 mod utils;
 use serde_json::json;
@@ -132,8 +133,12 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::outline::overlapping_path_segments)
             .add_and_register_check(checks::outline::semi_vertical)
             .add_and_register_check(checks::outline::short_segments)
-            .add_section("Font File Checks")
-            .add_and_register_check(checks::googlefonts::axes_match)
+            .add_section("Font File Checks");
+
+        #[cfg(not(target_family = "wasm"))]
+        let builder = builder.add_and_register_check(checks::googlefonts::axes_match);
+
+        let builder = builder
             .add_and_register_check(checks::googlefonts::axisregistry::fvar_axis_defaults)
             .add_and_register_check(checks::googlefonts::canonical_filename)
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics)
