@@ -116,7 +116,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_section("Shaping Checks")
             .add_and_register_check(checks::dotted_circle)
             //            .add_and_register_check(checks::shaping::collides)
-            //            .add_and_register_check(checks::shaping::forbidden)
+            .add_and_register_check(checks::shaping::forbidden)
             .add_and_register_check(checks::shaping::regression)
             //            .add_and_register_check(checks::soft_dotted)
             .add_section("Outline Checks")

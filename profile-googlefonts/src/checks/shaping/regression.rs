@@ -1,4 +1,7 @@
-use super::{schema::ShapingTest, ShapingCheck};
+use super::{
+    schema::{ShapingConfig, ShapingTest},
+    ShapingCheck,
+};
 use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
 use itertools::Itertools;
 use rustybuzz::{Face, GlyphBuffer};
@@ -43,7 +46,6 @@ fn regression(t: &Testable, context: &Context) -> CheckFnResult {
                 filename, report
             ),
         ))
-        // Add a diff table
         // draw as svg
     }
     return_result(problems)
@@ -63,7 +65,13 @@ fn serialize_appropriately(buffer: &GlyphBuffer, face: &Face, test: &ShapingTest
 struct RegressionTest;
 
 impl ShapingCheck for RegressionTest {
-    fn pass_fail(&self, test: &ShapingTest, buffer: &GlyphBuffer, face: &Face) -> Option<String> {
+    fn pass_fail(
+        &self,
+        test: &ShapingTest,
+        _configuration: &ShapingConfig,
+        buffer: &GlyphBuffer,
+        face: &Face,
+    ) -> Option<String> {
         let serialized = serialize_appropriately(buffer, face, test);
         #[allow(clippy::unwrap_used)] // the .applies filter ensures there's an expectation
         let expected = test.expectation.as_ref().unwrap();
@@ -85,7 +93,7 @@ impl ShapingCheck for RegressionTest {
         Some(report)
     }
 
-    fn applies(&self, test: &ShapingTest) -> bool {
+    fn applies(&self, _configuration: &ShapingConfig, test: &ShapingTest) -> bool {
         test.expectation.is_some()
     }
 }
