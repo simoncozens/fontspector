@@ -1,5 +1,7 @@
 #![allow(non_snake_case)]
+#[cfg(not(target_family = "wasm"))]
 mod axes_match;
+
 mod color_fonts;
 mod font_names;
 mod fstype;
@@ -23,7 +25,9 @@ pub mod metadata;
 pub mod name;
 pub mod varfont;
 
+#[cfg(not(target_family = "wasm"))]
 pub use axes_match::axes_match;
+
 pub use color_fonts::color_fonts;
 pub use font_names::font_names;
 pub use fstype::fstype;

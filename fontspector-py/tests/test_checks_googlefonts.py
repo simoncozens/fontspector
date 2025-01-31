@@ -3689,12 +3689,12 @@ def test_check_fvar_instances(check, fp, mod, result):
         ),
     ],
 )
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/axes_match")
 def test_check_axes_match(check, fp, mod, result, code):
     """Check if the axes match between the font and the Google Fonts version."""
 
     ttFont = TTFont(fp)
+    mdpb = TEST_FILE("cabinvf/METADATA.pb")
     if mod:
         name, min_val, max_val = mod
         if not min_val and not max_val:
@@ -3705,10 +3705,10 @@ def test_check_axes_match(check, fp, mod, result, code):
             axis.maxValue = max_val or axis.maxValue
 
     if result == PASS:
-        assert_PASS(check(ttFont), "with a good font")
+        assert_PASS(check([ttFont, mdpb]), "with a good font")
     elif result == FAIL:
         assert_results_contain(
-            check(ttFont),
+            check([ttFont, mdpb]),
             FAIL,
             code,
             "with a bad font",

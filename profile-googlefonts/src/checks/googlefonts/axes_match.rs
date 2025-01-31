@@ -1,7 +1,10 @@
 use fontspector_checkapi::{prelude::*, skip, testfont, FileTypeConvert};
+use hashbrown::{HashMap, HashSet};
+use skrifa::MetadataProvider;
 
 use crate::{
-    checks::googlefonts::metadata::family_proto, network_conditions::is_listed_on_google_fonts,
+    checks::googlefonts::metadata::family_proto,
+    network_conditions::{is_listed_on_google_fonts, remote_styles},
 };
 
 #[check(
@@ -27,7 +30,10 @@ fn axes_match(c: &TestableCollection, context: &Context) -> CheckFnResult {
         .collect::<Vec<&Testable>>();
     let name = msg.name().to_string();
     let family = msg.display_name.as_ref().unwrap_or(&name);
-    let problems: Vec<Status> = vec![];
+    let mut problems: Vec<Status> = vec![];
+    let remote_styles = remote_styles(family, context).map_err(CheckError::Error)?;
+    let mut missing_axes = HashSet::new();
+
     for t in fonts.iter() {
         let f = testfont!(t);
         skip!(
@@ -41,41 +47,66 @@ fn axes_match(c: &TestableCollection, context: &Context) -> CheckFnResult {
             "not-listed",
             "Not listed on Google Fonts"
         );
+        let our_subfamily_name = f.best_subfamilyname();
+        let remote_style = remote_styles
+            .iter()
+            .flat_map(|s| TTF.from_testable(s))
+            .find(|remote_f| remote_f.best_subfamilyname() == our_subfamily_name)
+            .ok_or(CheckError::Error(format!(
+                "No matching remote style for {}",
+                t.basename().unwrap_or("Regular".to_string())
+            )))?;
+        let remote_axes = remote_style
+            .font()
+            .axes()
+            .iter()
+            .map(|a| (a.tag(), (a.min_value(), a.max_value())));
+        let font_axes: HashMap<_, _> = f
+            .font()
+            .axes()
+            .iter()
+            .map(|a| (a.tag(), (a.min_value(), a.max_value())))
+            .collect();
+        for (axis, range) in remote_axes {
+            if let Some(remote_range) = font_axes.get(&axis) {
+                let (axis_min, axis_max) = remote_range;
+                let (remote_axis_min, remote_axis_max) = range;
+                if *axis_min > remote_axis_min {
+                    problems.push(Status::fail(
+                        "axis-min-out-of-range",
+                        &format!(
+                            "Axis '{}' min value is out of range. Expected '{}', got '{}'.",
+                            axis, remote_axis_min, axis_min
+                        ),
+                    ));
+                }
+                if *axis_max < remote_axis_max {
+                    problems.push(Status::fail(
+                        "axis-max-out-of-range",
+                        &format!(
+                            "Axis '{}' max value is out of range. Expected '{}', got '{}'.",
+                            axis, remote_axis_max, axis_max
+                        ),
+                    ));
+                }
+            } else {
+                missing_axes.insert(axis);
+                continue;
+            }
+        }
     }
-    //     remote_axes = {
-    //         a.axisTag: (a.minValue, a.maxValue) for a in remote_style["fvar"].axes
-    //     }
-    //     font_axes = {a.axisTag: (a.minValue, a.maxValue) for a in ttFont["fvar"].axes}
-    //
-    //     missing_axes = []
-    //     for axis, remote_axis_range in remote_axes.items():
-    //         if axis not in font_axes:
-    //             missing_axes.append(axis)
-    //             continue
-    //         axis_range = font_axes[axis]
-    //         axis_min, axis_max = axis_range
-    //         remote_axis_min, remote_axis_max = remote_axis_range
-    //         if axis_min > remote_axis_min:
-    //             yield FAIL, Message(
-    //                 "axis-min-out-of-range",
-    //                 f"Axis '{axis}' min value is out of range."
-    //                 f" Expected '{remote_axis_min}', got '{axis_min}'.",
-    //             )
-    //         if axis_max < remote_axis_max:
-    //             yield FAIL, Message(
-    //                 "axis-max-out-of-range",
-    //                 f"Axis {axis} max value is out of range."
-    //                 f" Expected {remote_axis_max}, got {axis_max}.",
-    //             )
-    //
-    //     if missing_axes:
-    //         yield FAIL, Message(
-    //             "missing-axes",
-    //             f"Missing axes: {', '.join(missing_axes)}",
-    //         )
-    //     else:
-    //         yield PASS, "Axes match Google Fonts version."
-    //
-    // unimplemented!();
+    if !missing_axes.is_empty() {
+        problems.push(Status::fail(
+            "missing-axes",
+            &format!(
+                "Missing axes: {}",
+                missing_axes
+                    .iter()
+                    .map(|a| a.to_string())
+                    .collect::<Vec<String>>()
+                    .join(", ")
+            ),
+        ));
+    }
     return_result(problems)
 }
