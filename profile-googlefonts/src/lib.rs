@@ -135,7 +135,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_section("Font File Checks")
             .add_and_register_check(checks::googlefonts::axes_match)
             .add_and_register_check(checks::googlefonts::axisregistry::fvar_axis_defaults)
-            //            .add_and_register_check(checks::googlefonts::canonical_filename)
+            .add_and_register_check(checks::googlefonts::canonical_filename)
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics)
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics_regressions)
             .add_and_register_check(checks::googlefonts::color_fonts)
@@ -159,7 +159,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::STAT::compulsory_axis_values)
             .add_and_register_check(checks::googlefonts::unitsperem)
             .add_and_register_check(checks::googlefonts::use_typo_metrics)
-            //            .add_and_register_check(checks::googlefonts::varfont::generate_static)
+            // Not porting generate_static, see fontbakery#1727
             .add_and_register_check(checks::googlefonts::varfont::has_HVAR)
             .add_and_register_check(checks::googlefonts::vendor_id)
             //            .add_and_register_check(checks::googlefonts::version_bump)

@@ -153,7 +153,6 @@ def fake_mdpb(tmp_path, md):
         (TEST_FILE("cabinvfbeta/CabinVFBeta[wght,wdth].ttf"), FAIL),
     ],
 )
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/canonical_filename")
 def test_check_canonical_filename(check, fp, result):
     """Files are named canonically."""
@@ -901,7 +900,10 @@ def test_check_name_license(check, mada_ttFonts):
     for ttFont in mada_ttFonts:
         delete_name_table_id(ttFont, NameID.LICENSE_DESCRIPTION)
         assert_results_contain(
-            check([ttFont, TEST_FILE("mada/OFL.txt")]), FAIL, "missing", "with missing copyright namerecords ..."
+            check([ttFont, TEST_FILE("mada/OFL.txt")]),
+            FAIL,
+            "missing",
+            "with missing copyright namerecords ...",
         )
 
     # TODO:
