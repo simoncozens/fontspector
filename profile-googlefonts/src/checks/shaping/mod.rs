@@ -1,12 +1,14 @@
+mod forbidden;
 mod regression;
 pub(crate) mod schema;
 use std::str::FromStr;
 
 use fontspector_checkapi::{CheckError, Context, Testable};
+pub use forbidden::forbidden;
 pub use regression::regression;
 
 use rustybuzz::{ttf_parser, Face, GlyphBuffer, UnicodeBuffer};
-use schema::{ShapingInput, ShapingOptions, ShapingTest};
+use schema::{ShapingConfig, ShapingInput, ShapingOptions, ShapingTest};
 
 pub(crate) struct FailedCheck {
     test: ShapingTest,
@@ -96,13 +98,13 @@ pub(crate) trait ShapingCheck {
             let config = input.configuration;
             let mut failed_checks = vec![];
             for test in input.tests {
-                if !self.applies(&test) || test.excluded(&basename) {
+                if !self.applies(&config, &test) || test.excluded(&basename) {
                     continue;
                 }
                 let options = test.options.fill_from_defaults(&config);
                 // Run the test
                 let glyph_buffer = create_buffer_and_run(&mut face, &test.input, &options)?;
-                if let Some(res) = self.pass_fail(&test, &glyph_buffer, &face) {
+                if let Some(res) = self.pass_fail(&test, &config, &glyph_buffer, &face) {
                     failed_checks.push(FailedCheck {
                         test: test.clone(),
                         detail: res,
@@ -114,7 +116,13 @@ pub(crate) trait ShapingCheck {
         Ok(results)
     }
 
-    fn applies(&self, test: &ShapingTest) -> bool;
+    fn applies(&self, configuration: &ShapingConfig, test: &ShapingTest) -> bool;
 
-    fn pass_fail(&self, test: &ShapingTest, buffer: &GlyphBuffer, face: &Face) -> Option<String>;
+    fn pass_fail(
+        &self,
+        test: &ShapingTest,
+        configuration: &ShapingConfig,
+        buffer: &GlyphBuffer,
+        face: &Face,
+    ) -> Option<String>;
 }
