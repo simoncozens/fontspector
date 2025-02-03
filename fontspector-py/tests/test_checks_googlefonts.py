@@ -110,6 +110,15 @@ def cabin_regular_path():
     return portable_path("data/test/cabin/Cabin-Regular.ttf")
 
 
+def fake_mdpb(tmp_path, md):
+    _fake_mdpb = tmp_path / "METADATA.pb"
+    from google.protobuf import text_format
+
+    textproto = text_format.MessageToString(md, as_utf8=True)
+    _fake_mdpb.write_text(textproto, encoding="utf-8")
+    return str(_fake_mdpb)
+
+
 @pytest.mark.parametrize(
     """fp,result""",
     [
@@ -2025,7 +2034,7 @@ def test_check_production_encoded_glyphs(check, cabin_ttFonts):
 
 @pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/category")
-def test_check_metadata_category(check):
+def test_check_metadata_category(check, tmp_path):
     """Category field for this font on METADATA.pb is valid?"""
 
     # Our reference Cabin family...
@@ -2033,13 +2042,13 @@ def test_check_metadata_category(check):
     check(font)
     md = Font(font).family_metadata
     assert md.category == ["SANS_SERIF"]  # ...is known to be good ;-)
-    assert_PASS(check(font), "with a good METADATA.pb...")
+    assert_PASS(check([font, fake_mdpb(tmp_path, md)]), "with a good METADATA.pb...")
 
     # We then report a problem with this sample of bad values:
     for bad_value in ["SAN_SERIF", "MONO_SPACE", "sans_serif", "monospace"]:
         md.category[:] = [bad_value]
         assert_results_contain(
-            check(MockFont(file=font, family_metadata=md)),
+            check([font, fake_mdpb(tmp_path, md)]),
             FAIL,
             "bad-value",
             f'with a bad category "{bad_value}"...',
@@ -2049,7 +2058,7 @@ def test_check_metadata_category(check):
     for good_value in ["MONOSPACE", "SANS_SERIF", "SERIF", "DISPLAY", "HANDWRITING"]:
         md.category[:] = [good_value]
         assert_PASS(
-            check(MockFont(file=font, family_metadata=md)), f'with "{good_value}"...'
+            check([font, fake_mdpb(tmp_path, md)]), f'with "{good_value}"...'
         )
 
 
@@ -3513,18 +3522,13 @@ def test_check_metadata_can_render_samples(check, tmp_path):
     """Check README.md has a sample image."""
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
     mdpb = TEST_FILE("cabin/METADATA.pb")
-    assert_results_contain(check([mdpb, font]), SKIP, "no-languages")
+    assert_results_contain(check([font, mdpb]), SKIP, "no-languages")
 
     # This will try to render using strings provided by the gflanguages package
     # Available at https://pypi.org/project/gflanguages/
     md = Font(font).family_metadata
     md.languages.append("non_Runr")  # Cabin does not support Old Nordic Runic
-    fake_mdpb = tmp_path / "METADATA.pb"
-    from google.protobuf import text_format
-
-    textproto = text_format.MessageToString(md, as_utf8=True)
-    fake_mdpb.write_text(textproto, encoding="utf-8")
-    assert_results_contain(check([font, str(fake_mdpb)]), FAIL, "sample-text")
+    assert_results_contain(check([font, fake_mdpb(tmp_path, md)]), FAIL, "sample-text")
 
     # TODO: expand the check to also validate rendering of
     #       text provided explicitely on the sample_text field of METADATA.pb
