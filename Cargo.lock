@@ -2100,6 +2100,7 @@ dependencies = [
  "humansize",
  "interpolatable",
  "itertools",
+ "kurbo",
  "log",
  "markdown-table",
  "read-fonts",
