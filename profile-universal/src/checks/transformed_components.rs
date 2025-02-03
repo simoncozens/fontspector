@@ -1,8 +1,17 @@
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
+use kurbo::Affine;
 use read_fonts::{
-    tables::glyf::{Glyph, Transform},
+    tables::glyf::{Anchor, CurvePoint, Glyph, Transform},
     types::F2Dot14,
-    TableProvider,
+    FontData, TableProvider,
+};
+use skrifa::GlyphId16;
+use write_fonts::{
+    from_obj::ToOwnedObj,
+    tables::glyf::{
+        Component, CompositeGlyph, Contour, GlyfLocaBuilder, Glyph as WriteGlyph, SimpleGlyph,
+    },
+    FontBuilder,
 };
 
 fn transform_is_linear(t: Transform) -> bool {
@@ -40,7 +49,8 @@ fn transform_is_semi_flipped(t: Transform) -> bool {
         --filter DecomposeTransformedComponentsFilter
     ",
     proposal = "https://github.com/fonttools/fontbakery/issues/2011",
-    title = "Ensure component transforms do not perform scaling or rotation."
+    title = "Ensure component transforms do not perform scaling or rotation.",
+    hotfix = decompose_transformed_components
 )]
 fn transformed_components(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
@@ -86,4 +96,136 @@ fn transformed_components(f: &Testable, context: &Context) -> CheckFnResult {
             bullet_list(context, failures))
         ))
     }
+}
+
+fn bad_composite(c: &CompositeGlyph) -> bool {
+    c.components().iter().any(|component| {
+        !transform_is_linear(component.transform) || transform_is_semi_flipped(component.transform)
+    })
+}
+
+fn decompose_transformed_components(t: &Testable) -> FixFnResult {
+    let f = fixfont!(t);
+    let mut new_font = FontBuilder::new();
+    let mut builder = GlyfLocaBuilder::new();
+    let loca = f
+        .font()
+        .loca(None)
+        .map_err(|_| "loca table not found".to_string())?;
+    let glyf = f
+        .font()
+        .glyf()
+        .map_err(|_| "glyf table not found".to_string())?;
+    let all_glyphs: Vec<WriteGlyph> = f
+        .all_glyphs()
+        .map(|gid| {
+            loca.get_glyf(gid, &glyf).map(|option_glyph| {
+                option_glyph
+                    .map(|glyph| {
+                        let g: WriteGlyph = glyph.to_owned_obj(FontData::new(&[]));
+                        g
+                    })
+                    .unwrap_or(WriteGlyph::Empty)
+            })
+        })
+        .collect::<Result<Vec<WriteGlyph>, _>>()
+        .map_err(|x| x.to_string())?;
+    for glyph in all_glyphs.iter() {
+        match glyph {
+            WriteGlyph::Composite(composite) if bad_composite(composite) => {
+                let new_glyph = decompose_glyph(composite, &all_glyphs)?;
+                builder.add_glyph(&new_glyph).map_err(|x| x.to_string())?;
+            }
+            WriteGlyph::Composite(_) | WriteGlyph::Empty | WriteGlyph::Simple(_) => {
+                builder.add_glyph(glyph).map_err(|x| x.to_string())?;
+            }
+        }
+    }
+    let (new_glyph, new_loca, _head_format) = builder.build();
+    new_font.add_table(&new_glyph).map_err(|x| x.to_string())?;
+    new_font.add_table(&new_loca).map_err(|x| x.to_string())?;
+    new_font.copy_missing_tables(f.font());
+    let new_bytes = new_font.build();
+    std::fs::write(&t.filename, new_bytes).map_err(|_| "Couldn't write file".to_string())?;
+
+    Ok(true)
+}
+
+fn decompose_glyph(
+    composite: &CompositeGlyph,
+    glyphs: &[WriteGlyph],
+) -> Result<WriteGlyph, String> {
+    let mut new_glyph = SimpleGlyph::default();
+    for component in composite.components() {
+        for (gid, affine) in flatten_component(glyphs, component)? {
+            let component_glyph = glyphs.get(gid.to_u16() as usize).ok_or("glyph not found")?;
+            match component_glyph {
+                WriteGlyph::Simple(simple) => {
+                    new_glyph
+                        .contours
+                        .extend(simple.contours.iter().map(|c| transform_contour(c, affine)));
+                }
+                _ => {
+                    panic!("unexpected glyph type")
+                }
+            }
+        }
+    }
+    Ok(WriteGlyph::Simple(new_glyph))
+}
+
+fn transform_contour(c: &Contour, affine: Affine) -> Contour {
+    c.iter()
+        .map(|point| {
+            let kurbo_pt = kurbo::Point::new(point.x as f64, point.y as f64);
+            let new_pt = affine * kurbo_pt;
+            CurvePoint::new(new_pt.x as i16, new_pt.y as i16, point.on_curve)
+        })
+        .collect::<Vec<_>>()
+        .into()
+}
+
+fn flatten_component(
+    glyphs: &[WriteGlyph],
+    component: &Component,
+) -> Result<Vec<(GlyphId16, kurbo::Affine)>, String> {
+    let glyph = glyphs
+        .get(component.glyph.to_u16() as usize)
+        .ok_or("glyph not found")?;
+    Ok(match glyph {
+        WriteGlyph::Empty => vec![],
+        WriteGlyph::Simple(_) => vec![(
+            component.glyph,
+            to_kurbo_transform(&component.transform, &component.anchor),
+        )],
+        WriteGlyph::Composite(composite_glyph) => {
+            let mut all_flattened_components = vec![];
+            for component in composite_glyph.components() {
+                all_flattened_components.extend(flatten_component(glyphs, component)?.iter().map(
+                    |(gid, transform)| {
+                        let new_transform =
+                            to_kurbo_transform(&component.transform, &component.anchor)
+                                * *transform;
+                        (*gid, new_transform)
+                    },
+                ));
+            }
+            all_flattened_components
+        }
+    })
+}
+
+fn to_kurbo_transform(transform: &Transform, anchor: &Anchor) -> kurbo::Affine {
+    let (dx, dy) = match anchor {
+        Anchor::Offset { x, y } => (*x, *y),
+        Anchor::Point { .. } => (0, 0),
+    };
+    kurbo::Affine::new([
+        transform.xx.to_f32() as f64,
+        transform.xy.to_f32() as f64, // check
+        transform.yx.to_f32() as f64, // check
+        transform.yy.to_f32() as f64,
+        dx as f64,
+        dy as f64,
+    ])
 }
