@@ -115,10 +115,11 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::repo::zip_files",
             .add_section("Shaping Checks")
             .add_and_register_check(checks::dotted_circle)
+            //            Realistically Simon is the only person who uses this check, and it can wait until he needs it again.
             //            .add_and_register_check(checks::shaping::collides)
             .add_and_register_check(checks::shaping::forbidden)
             .add_and_register_check(checks::shaping::regression)
-            //            .add_and_register_check(checks::soft_dotted)
+            .add_and_register_check(checks::soft_dotted)
             .add_section("Outline Checks")
             .add_and_register_check(checks::outline::alignment_miss)
             .add_and_register_check(checks::outline::colinear_vectors)
