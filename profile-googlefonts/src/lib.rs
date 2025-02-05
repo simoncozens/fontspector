@@ -35,7 +35,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::metadata::canonical_style_names)
             //            .add_and_register_check(checks::googlefonts::metadata::canonical_weight_value)
             .add_and_register_check(checks::googlefonts::metadata::can_render_samples)
-            //            .add_and_register_check(checks::googlefonts::metadata::category)
+            .add_and_register_check(checks::googlefonts::metadata::category)
             //            .add_and_register_check(checks::googlefonts::metadata::category_hints)
             //            .add_and_register_check(checks::googlefonts::metadata::consistent_axis_enumeration)
             //            .add_and_register_check(checks::googlefonts::metadata::consistent_repo_urls)

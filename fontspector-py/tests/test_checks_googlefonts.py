@@ -2032,7 +2032,6 @@ def test_check_production_encoded_glyphs(check, cabin_ttFonts):
         assert_results_contain(check(ttFont), FAIL, "lost-glyphs")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/category")
 def test_check_metadata_category(check, tmp_path):
     """Category field for this font on METADATA.pb is valid?"""
