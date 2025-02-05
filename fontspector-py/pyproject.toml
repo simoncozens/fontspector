@@ -19,3 +19,7 @@ dependencies = [
 ]
 [tool.maturin]
 features = ["pyo3/extension-module"]
+
+[tool.pytest.ini_options]
+filterwarnings = "ignore::DeprecationWarning"
+
