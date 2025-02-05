@@ -3322,15 +3322,20 @@ def test_check_STAT_axis_order(check):
     assert_results_contain(check(fonts), SKIP, "missing-STAT")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/escaped_strings")
 def test_check_metadata_escaped_strings(check):
     """Ensure METADATA.pb does not use escaped strings."""
 
-    good = TEST_FILE("issue_2932/good/SomeFont-Regular.ttf")
+    good = [
+        TEST_FILE("issue_2932/good/SomeFont-Regular.ttf"),
+        TEST_FILE("issue_2932/good/METADATA.pb")
+    ]
     assert_PASS(check(good))
 
-    bad = TEST_FILE("issue_2932/bad/SomeFont-Regular.ttf")
+    bad = [
+        TEST_FILE("issue_2932/bad/SomeFont-Regular.ttf"),
+        TEST_FILE("issue_2932/bad/METADATA.pb")
+    ]
     assert_results_contain(check(bad), FAIL, "escaped-strings")
 
 
