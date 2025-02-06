@@ -34,7 +34,7 @@ fn category(c: &TestableCollection, _context: &Context) -> CheckFnResult {
     for category_value in family_metadata.category {
         if vec!["MONOSPACE", "SANS_SERIF", "SERIF", "DISPLAY", "HANDWRITING"]
             .iter()
-            .all(|s| category_value != s.to_string())
+            .all(|s| category_value != *s.to_string())
         {
             problems.push(Status::fail(
                 "bad-value",
