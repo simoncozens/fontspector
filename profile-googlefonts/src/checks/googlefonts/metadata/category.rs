@@ -32,7 +32,7 @@ fn category(c: &TestableCollection, _context: &Context) -> CheckFnResult {
     let family_metadata = family_proto(mdpb)?;
     let mut problems = vec![];
     for category_value in family_metadata.category {
-        if vec!["MONOSPACE", "SANS_SERIF", "SERIF", "DISPLAY", "HANDWRITING"]
+        if ["MONOSPACE", "SANS_SERIF", "SERIF", "DISPLAY", "HANDWRITING"]
             .iter()
             .all(|s| category_value != *s.to_string())
         {
