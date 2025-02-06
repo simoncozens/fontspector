@@ -14,6 +14,7 @@ use pyo3::{
     prelude::*,
     types::{PyDict, PyDictMethods, PyList, PyString, PyTuple},
 };
+use pythonize::depythonize;
 
 #[pyclass]
 struct CheckTester {
@@ -109,14 +110,7 @@ impl CheckTester {
 
         if let Some(kwargs) = kwargs {
             if let Some(config) = kwargs.get_item("config")? {
-                // Ideally we should convert the whole PyDict into a serde_json::Value
-                // but YAGNI.
-                let config = config.downcast::<PyDict>()?;
-                for (k, v) in config {
-                    let k = k.downcast::<PyString>()?.to_string();
-                    let v = v.downcast::<PyString>()?.to_string();
-                    fontspector_config.insert(k, serde_json::Value::String(v));
-                }
+                fontspector_config = depythonize(&config)?;
             }
         }
 

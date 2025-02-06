@@ -16,5 +16,6 @@ profile-universal = { path = "../profile-universal" }
 profile-opentype = { path = "../profile-opentype" }
 profile-googlefonts = { path = "../profile-googlefonts" }
 
-serde_json = { workspace = true }  # For configuration
-pyo3 = { workspace = true}
+serde_json = { workspace = true } # For configuration
+pyo3 = { workspace = true }
+pythonize = "0.22.0"
