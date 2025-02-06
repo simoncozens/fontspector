@@ -114,12 +114,16 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::repo::vf_has_static_fonts)
             //            .add_and_register_check(checks::googlefonts::repo::zip_files",
             .add_section("Shaping Checks")
-            .add_and_register_check(checks::dotted_circle)
+            .add_and_register_check(checks::dotted_circle);
+        #[cfg(not(target_family = "wasm"))]
+        let builder = builder
             //            Realistically Simon is the only person who uses this check, and it can wait until he needs it again.
             //            .add_and_register_check(checks::shaping::collides)
             .add_and_register_check(checks::shaping::forbidden)
             .add_and_register_check(checks::shaping::regression)
-            .add_and_register_check(checks::soft_dotted)
+            .add_and_register_check(checks::soft_dotted);
+
+        let builder = builder
             .add_section("Outline Checks")
             .add_and_register_check(checks::outline::alignment_miss)
             .add_and_register_check(checks::outline::colinear_vectors)

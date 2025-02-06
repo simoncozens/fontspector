@@ -17,7 +17,7 @@ pub(crate) static PRODUCTION_METADATA: std::sync::LazyLock<Result<Map<String, Va
             })
     });
 
-pub(crate) fn production_metadata(context: &Context) -> Result<Map<String, Value>, String> {
+pub(crate) fn production_metadata(_context: &Context) -> Result<Map<String, Value>, String> {
     #[cfg(not(target_family = "wasm"))]
     {
         if context.skip_network {
