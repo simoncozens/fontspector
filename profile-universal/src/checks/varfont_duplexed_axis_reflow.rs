@@ -52,7 +52,7 @@ fn varfont_duplexed_axis_reflow(t: &Testable, context: &Context) -> CheckFnResul
     let gvar = f.font().gvar()?;
     let mut bad_glyphs: HashMap<String, HashSet<(GlyphId, String)>> = HashMap::new();
     for glyph in f.all_glyphs() {
-        if let Ok(variation) = gvar.glyph_variation_data(glyph) {
+        if let Ok(Some(variation)) = gvar.glyph_variation_data(glyph) {
             let tuples = variation.tuples();
             for tuple in tuples {
                 let duplex_axis_is_affected = axis_indices

@@ -44,14 +44,18 @@ impl DenormalizeLocation for FontRef<'_> {
 }
 
 fn glyph_variations(font: &FontRef, gid: GlyphId) -> Result<Vec<Vec<VariationSetting>>, ReadError> {
-    font.gvar()?.glyph_variation_data(gid).map(|data| {
-        data.tuples()
-            .flat_map(|t| {
-                let tuple: Vec<f32> = t.peak().values.iter().map(|v| v.get().to_f32()).collect();
-                font.denormalize_location(&tuple)
-            })
-            .collect()
-    })
+    Ok(font
+        .gvar()?
+        .glyph_variation_data(gid)?
+        .map_or_else(Vec::new, |data| {
+            data.tuples()
+                .flat_map(|t| {
+                    let tuple: Vec<f32> =
+                        t.peak().values.iter().map(|v| v.get().to_f32()).collect();
+                    font.denormalize_location(&tuple)
+                })
+                .collect()
+        }))
 }
 
 fn problem_report(p: &Problem) -> String {
