@@ -24,7 +24,7 @@ fn escaped_strings(c: &TestableCollection, _context: &Context) -> CheckFnResult 
         .ok_or_else(|| CheckError::skip("no-mdpb", "No METADATA.pb file found"))?;
     let mut problems = vec![];
 
-    for line in read_to_string(mdpb.filename.clone()).unwrap().lines() {
+    for line in read_to_string(mdpb.filename.clone())?.lines() {
         // Escaped quotes are fine!
         // What we're really interested in detecting are things like
         // "Juli\303\241n" instead of "Julián"
