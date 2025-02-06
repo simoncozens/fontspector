@@ -30,13 +30,12 @@ fn reserved_font_name(c: &TestableCollection, _context: &Context) -> CheckFnResu
     let mut problems = vec![];
     let family_metadata = family_proto(mdpb)?;
     for font_metadata in family_metadata.fonts {
-        let copyright = font_metadata.copyright.as_ref();
-        if copyright.is_some_and(|c| c.contains("Reserved Font Name")) {
-            #[allow(clippy::unwrap_used)]
+        let copyright = font_metadata.copyright();
+        if copyright.contains("Reserved Font Name") {
             problems.push(Status::warn(
                 "rfn",
                 &format!("METADATA.pb: copyright field (\"{}\") contains \"Reserved Font Name\". This is an error except in a few specific rare cases.",
-                copyright.unwrap()),
+                copyright),
             ));
         }
     }
