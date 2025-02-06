@@ -1,6 +1,5 @@
 use crate::checks::googlefonts::metadata::family_proto;
-use fontspector_checkapi::prelude::*;
-use std::collections::HashMap;
+use fontspector_checkapi::{prelude::*, StatusCode};
 
 #[check(
     id = "googlefonts/metadata/familyname",
@@ -15,29 +14,20 @@ use std::collections::HashMap;
     title = "Check that METADATA.pb family values are all the same.",
     implementation = "all"
 )]
-fn familyname(c: &TestableCollection, _context: &Context) -> CheckFnResult {
+fn familyname(c: &TestableCollection, context: &Context) -> CheckFnResult {
     let mdpb = c
         .get_file("METADATA.pb")
         .ok_or_else(|| CheckError::skip("no-mdpb", "No METADATA.pb file found"))?;
-    let family_metadata = family_proto(mdpb)?;
-
-    let mut names: HashMap<String, String> = HashMap::new();
-    for f in family_metadata.fonts {
-        #[allow(clippy::unwrap_used)]
-        if f.name.is_some() && f.filename.is_some() {
-            names.insert(f.name.unwrap(), f.filename.unwrap());
-        }
-    }
-    //let mut names: HashMap<String, String> = family_metadata.fonts
-    //    .iter()
-    //    .map(|f| (f.name.to_string(), f.filename.to_string()))
-    //    .collect();
-    if names.len() > 1 {
-        return Ok(Status::just_one_fail(
-            "inconsistency",
-            "METADATA.pb: family name value is inconsistent across the family.\n", // TODO: "The following name values were found:\n\n"
-                                                                                   // TODO: + show_inconsistencies(names, config),
-        ));
-    }
-    Ok(Status::just_one_pass())
+    let msg = family_proto(mdpb)?;
+    assert_all_the_same(
+        context,
+        &(msg.fonts.iter().map(|f|
+            (f.name(),
+            f.name(),
+            f.filename())
+        ).collect::<Vec<_>>()),
+        "inconsistency",
+        "METADATA.pb: family name value is inconsistent across the family.\nThe following name values were found:",
+        StatusCode::Fail,
+    )
 }
