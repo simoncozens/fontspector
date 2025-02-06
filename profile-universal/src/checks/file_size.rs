@@ -13,14 +13,9 @@ use humansize::{format_size, DECIMAL};
 fn file_size(t: &Testable, context: &Context) -> CheckFnResult {
     let _ = testfont!(t); // Using this for the skip return
     let size = t.contents.len();
-    let fail_size = context
-        .configuration
-        .get("FAIL_SIZE")
-        .and_then(|v| v.as_u64());
-    let warn_size = context
-        .configuration
-        .get("WARN_SIZE")
-        .and_then(|v| v.as_u64());
+    let config = context.local_config("file_size");
+    let fail_size = config.get("FAIL_SIZE").and_then(|v| v.as_u64());
+    let warn_size = config.get("WARN_SIZE").and_then(|v| v.as_u64());
     skip!(
         fail_size.is_none() && warn_size.is_none(),
         "no-size-limits",

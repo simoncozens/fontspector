@@ -1,4 +1,7 @@
-use std::sync::{Arc, RwLock};
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
 
 use serde_json::{Map, Value};
 
@@ -43,30 +46,44 @@ impl Context {
         }
     }
 
+    /// Get the configuration for a particular check
+    pub fn local_config(&self, check_id: &str) -> Map<String, Value> {
+        self.configuration
+            .get(check_id)
+            .and_then(|v| v.as_object())
+            .cloned()
+            .unwrap_or_default()
+    }
+
     /// Extract a specialized context for a specific check using a configuration map
     ///
-    /// For example, if the check is `googlefonts/has_metadata`, the configuration map
-    /// will be searched for a key `googlefonts/has_metadata` and the value will be used
-    /// as the configuration for this check.
+    /// This will fill in any default configuration values for the check using
+    /// values from the profile.
     pub fn specialize(
         &self,
         check: &Check,
         configuration: &Map<String, serde_json::Value>,
         profile: &Profile,
     ) -> Self {
-        let mut check_config: Map<String, Value> = profile.defaults(check.id).into_iter().collect();
-        // Overlay user-provided configuration on top of that.
-        if let Some(user_config) = configuration.get(check.id) {
-            if let Some(user_config) = user_config.as_object() {
-                for (k, v) in user_config {
-                    check_config.insert(k.clone(), v.clone());
+        // Start with the user's configuration.
+        let mut our_copy = configuration.clone();
+        // Now fill in any default configuration values for this check
+        let check_config_defaults: HashMap<String, Value> = profile.defaults(check.id);
+        if !check_config_defaults.is_empty() {
+            if let Some(local_config) = our_copy
+                .entry(check.id.to_string())
+                .or_insert_with(|| Value::Object(Map::new()))
+                .as_object_mut()
+            {
+                for (key, value) in check_config_defaults {
+                    local_config.entry(key).or_insert(value);
                 }
             }
         }
         Context {
             skip_network: self.skip_network,
             network_timeout: self.network_timeout,
-            configuration: check_config,
+            configuration: our_copy,
             check_metadata: check.metadata(),
             full_lists: self.full_lists,
             cache: self.cache.clone(),
