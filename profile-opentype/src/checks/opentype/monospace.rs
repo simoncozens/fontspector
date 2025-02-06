@@ -80,7 +80,7 @@ fn monospace(t: &Testable, context: &Context) -> CheckFnResult {
     let panose = font.font().os2()?.panose_10();
 
     if statistics.seems_monospaced {
-        let number_of_h_metrics = font.font().hhea()?.number_of_long_metrics();
+        let number_of_h_metrics = font.font().hhea()?.number_of_h_metrics();
         if number_of_h_metrics != 3 {
             problems.push(Status::fail(
                 "bad-numberOfHMetrics",
