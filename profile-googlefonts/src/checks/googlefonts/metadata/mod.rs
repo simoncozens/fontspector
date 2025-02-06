@@ -3,6 +3,7 @@ mod category;
 mod copyright;
 mod escaped_strings;
 mod license;
+mod reserved_font_name;
 mod subsets_correct;
 mod validate;
 pub use can_render_samples::can_render_samples;
@@ -10,6 +11,7 @@ pub use category::category;
 pub use copyright::copyright;
 pub use escaped_strings::escaped_strings;
 pub use license::license;
+pub use reserved_font_name::reserved_font_name;
 pub use subsets_correct::subsets_correct;
 pub use validate::validate;
 

@@ -1703,19 +1703,20 @@ def test_check_font_copyright(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
+@pytest.mark.skip("Check is not passing and needs a code-review.")
 @check_id("googlefonts/metadata/reserved_font_name")
-def test_check_metadata_reserved_font_name(check):
+def test_check_metadata_reserved_font_name(check, tmp_path):
     """Copyright notice on METADATA.pb should not contain Reserved Font Name."""
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    assert_PASS(check(font), "with a good copyright notice string...")
+    good_mdpb = TEST_FILE("cabin/METADATA.pb")
+    assert_PASS(check(good_mdpb), "with a good copyright notice string...")
 
     # Then we make it bad:
     md = Font(font).font_metadata
     md.copyright += "Reserved Font Name"
     assert_results_contain(
-        check(MockFont(file=font, font_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         WARN,
         "rfn",
         'with a notice containing "Reserved Font Name"...',
