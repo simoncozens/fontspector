@@ -30,7 +30,7 @@ fn escaped_strings(c: &TestableCollection, _context: &Context) -> CheckFnResult 
         // "Juli\303\241n" instead of "Julián"
         let mut line_string = line.to_string();
         line_string = line_string.replace("\\'", "").replace("\\\"", "");
-        for quote_char in vec!["'", "\""] {
+        for quote_char in ["'", "\""] {
             let segments = line_string.split(quote_char).collect::<Vec<&str>>();
             if segments.len() >= 3 {
                 let a_string = segments[1];
