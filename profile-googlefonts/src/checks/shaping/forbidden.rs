@@ -36,13 +36,15 @@ fn forbidden(t: &Testable, context: &Context) -> CheckFnResult {
                 fail.test.input, fail.detail
             ));
         }
-        problems.push(Status::fail(
-            "shaping-regression",
-            &format!(
-                "{}: Forbidden glyphs found while shaping:\n\n{}",
-                filename, report
-            ),
-        ))
+        if !report.is_empty() {
+            problems.push(Status::fail(
+                "shaping-forbidden",
+                &format!(
+                    "{}: Forbidden glyphs found while shaping:\n\n{}",
+                    filename, report
+                ),
+            ))
+        }
         // Add a diff table
         // draw as svg
     }
