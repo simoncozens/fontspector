@@ -17,12 +17,12 @@ pub(crate) static PRODUCTION_METADATA: std::sync::LazyLock<Result<Map<String, Va
             })
     });
 
-pub(crate) fn production_metadata(_context: &Context) -> Result<Map<String, Value>, String> {
+pub(crate) fn production_metadata(context: &Context) -> Result<Map<String, Value>, String> {
+    if context.skip_network {
+        return Err("Network access disabled".to_string());
+    }
     #[cfg(not(target_family = "wasm"))]
     {
-        if context.skip_network {
-            return Err("Network access disabled".to_string());
-        }
         PRODUCTION_METADATA.clone()
     }
     #[cfg(target_family = "wasm")]
