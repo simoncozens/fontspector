@@ -1251,16 +1251,16 @@ def test_check_metadata_copyright(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/familyname")
-def test_check_metadata_familyname(check):
+def test_check_metadata_familyname(check, tmp_path):
     """Check that METADATA.pb family values are all the same."""
 
     # Let's start with our reference FamilySans family:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
+    good_mdpb = TEST_FILE("familysans/METADATA.pb")
 
     # We know its family name entries on METADATA.pb are consistent:
-    assert_PASS(check(font), "with consistent family name...")
+    assert_PASS(check(good_mdpb), "with consistent family name...")
 
     # Now we make them diverge:
     md = Font(font).family_metadata
@@ -1268,7 +1268,7 @@ def test_check_metadata_familyname(check):
 
     # To ensure the problem is detected:
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         FAIL,
         "inconsistency",
         "With diverging Family name metadata entries...",
