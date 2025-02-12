@@ -43,3 +43,5 @@ pub use vendor_id::vendor_id;
 pub use weightclass::weightclass;
 mod canonical_filename;
 pub use canonical_filename::canonical_filename;
+mod version_bump;
+pub use version_bump::version_bump;
