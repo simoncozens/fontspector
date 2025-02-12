@@ -28,9 +28,20 @@ fn overlapping_path_segments(t: &Testable, context: &Context) -> CheckFnResult {
         let pen = result?;
         for contour in pen.iter() {
             for seg in contour.segments() {
-                // Urgh, we can't compare Points, so we have to approximate by stringifying
-                let normal = format!("{}/{}", seg.eval(0.0), seg.eval(1.0));
-                let flipped = format!("{}/{}", seg.eval(1.0), seg.eval(0.0));
+                let start = seg.eval(0.0).round();
+                let end = seg.eval(1.0).round();
+                let normal = vec![
+                    start.x.to_bits(),
+                    start.y.to_bits(),
+                    end.x.to_bits(),
+                    end.y.to_bits(),
+                ];
+                let flipped = vec![
+                    end.x.to_bits(),
+                    end.y.to_bits(),
+                    start.x.to_bits(),
+                    start.y.to_bits(),
+                ];
                 if seen.contains(&normal) || seen.contains(&flipped) {
                     all_warnings.push(format!(
                         "{}: {:?} has the same coordinates as a previous segment.",
