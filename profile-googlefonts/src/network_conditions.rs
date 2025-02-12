@@ -56,8 +56,6 @@ pub(crate) fn is_listed_on_google_fonts(family: &str, context: &Context) -> Resu
 }
 
 pub(crate) fn remote_styles(family: &str, context: &Context) -> Result<Vec<Testable>, String> {
-    // Once we are happy this works, make it into a cached_question
-    // println!("Looking for family {}", family);
     let key = format!("remote_styles:{}", family);
     context.cached_question(
         &key,

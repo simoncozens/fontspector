@@ -156,8 +156,8 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::name::mandatory_entries)
             .add_and_register_check(checks::googlefonts::name::version_format)
             .add_and_register_check(checks::googlefonts::old_ttfautohint)
-            //            .add_and_register_check(checks::googlefonts::production_encoded_glyphs)  // DISABLED
-            //            .add_and_register_check(checks::googlefonts::production_glyphs_similarity)
+            // checks::googlefonts::production_encoded_glyphs // DISABLED
+            // checks::googlefonts::production_glyphs_similarity // Unlikely to be useful in the short term
             .add_and_register_check(checks::googlefonts::render_own_name)
             .add_and_register_check(checks::googlefonts::STAT::axis_order)
             .add_and_register_check(checks::googlefonts::STAT::axisregistry)
@@ -167,7 +167,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             // Not porting generate_static, see fontbakery#1727
             .add_and_register_check(checks::googlefonts::varfont::has_HVAR)
             .add_and_register_check(checks::googlefonts::vendor_id)
-            //            .add_and_register_check(checks::googlefonts::version_bump)
+            .add_and_register_check(checks::googlefonts::version_bump)
             //            .add_and_register_check(checks::googlefonts::vertical_metrics)
             //            .add_and_register_check(checks::googlefonts::vertical_metrics_regressions)
             .add_and_register_check(checks::googlefonts::weightclass)
