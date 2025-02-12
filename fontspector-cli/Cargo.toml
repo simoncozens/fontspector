@@ -14,8 +14,7 @@ fontbakery-bridge = { path = "../fontbakery-bridge" }
 profile-universal = { path = "../profile-universal" }
 profile-opentype = { path = "../profile-opentype" }
 profile-googlefonts = { path = "../profile-googlefonts" }
-pluginator = { workspace = true }
-clap = { version = "3.2.5", features = ["derive"] }
+clap = { version = "4", features = ["derive"] }
 itertools = { workspace = true }
 log = { workspace = true }
 env_logger = "0.8"
@@ -23,7 +22,7 @@ rayon = "1.0.1"
 indicatif = { version = "0.17", features = ["rayon"] }
 
 # Terminal reporter
-termimad = "0.14"
+termimad = "0"
 colored = "2.1.0"
 
 # JSON reporter

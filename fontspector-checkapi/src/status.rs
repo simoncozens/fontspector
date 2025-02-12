@@ -1,6 +1,8 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 #[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Copy, Clone, Serialize, Deserialize, Hash)]
-#[cfg_attr(feature = "clap", derive(clap::ArgEnum))]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 #[serde(rename_all = "UPPERCASE")]
 /// A severity level for a single check subresult
 pub enum StatusCode {
@@ -22,6 +24,22 @@ pub enum StatusCode {
     /// other words, it's something so bad there's no point continuing
     /// with the check; it's equivalent to a Fontbakery FATAL.
     Error,
+}
+
+impl FromStr for StatusCode {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "SKIP" => Ok(StatusCode::Skip),
+            "INFO" => Ok(StatusCode::Info),
+            "PASS" => Ok(StatusCode::Pass),
+            "WARN" => Ok(StatusCode::Warn),
+            "FAIL" => Ok(StatusCode::Fail),
+            "ERROR" => Ok(StatusCode::Error),
+            _ => Err(()),
+        }
+    }
 }
 
 impl StatusCode {
@@ -46,15 +64,7 @@ impl StatusCode {
     /// This is used when the status code comes from an external source,
     /// such as FontBakery.
     pub fn from_string(s: &str) -> Option<StatusCode> {
-        match s {
-            "SKIP" => Some(StatusCode::Skip),
-            "INFO" => Some(StatusCode::Info),
-            "PASS" => Some(StatusCode::Pass),
-            "WARN" => Some(StatusCode::Warn),
-            "FAIL" => Some(StatusCode::Fail),
-            "ERROR" => Some(StatusCode::Error),
-            _ => None,
-        }
+        FromStr::from_str(s).ok()
     }
 }
 impl std::fmt::Display for StatusCode {

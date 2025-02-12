@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{ArgAction, Parser};
 use fontspector_checkapi::StatusCode;
 
 /// Quality control for OpenType fonts
@@ -42,15 +42,15 @@ pub struct Args {
     pub full_lists: bool,
 
     /// Threshold for emitting process error code 1
-    #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Fail)]
+    #[clap(short, long, value_enum, default_value_t=StatusCode::Fail)]
     pub error_code_on: StatusCode,
 
     /// Increase logging
-    #[clap(short, long, parse(from_occurrences), help_heading = "Logging")]
-    pub verbose: usize,
+    #[clap(short, long, action = ArgAction::Count, help_heading = "Logging")]
+    pub verbose: u8,
 
     /// Log level
-    #[clap(short, long, arg_enum, value_parser, default_value_t=StatusCode::Warn, help_heading="Logging")]
+    #[clap(short, long, value_enum, default_value_t=StatusCode::Warn, help_heading="Logging")]
     pub loglevel: StatusCode,
 
     /// Be quiet, don’t report anything on the terminal.

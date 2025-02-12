@@ -36,7 +36,7 @@ yeslogic-unicode-blocks = "0.2.0"
 write-fonts = { workspace = true }
 hashbrown = "0.15.2"
 
-scraper = "0.22.0"
+scraper = { version = "0.22.0", default-features = false, features=["errors"] }
 semver = "1.0.25"
 
 [build-dependencies]
