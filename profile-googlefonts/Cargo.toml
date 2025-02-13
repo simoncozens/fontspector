@@ -18,6 +18,7 @@ fontspector-checkapi = { path = "../fontspector-checkapi", features = [
 google-fonts-axisregistry = { git = "https://github.com/googlefonts/axisregistry" }
 google-fonts-languages = "0"
 google-fonts-subsets = "0"
+google-fonts-glyphsets = { git = "https://github.com/googlefonts/glyphsets" }
 indexmap = { workspace = true }
 itertools = { workspace = true }
 markdown-table = { workspace = true }
