@@ -310,10 +310,11 @@ impl TestFont<'_> {
                 .collect::<HashSet<u32>>())
         };
         if let Some(context) = context {
+            let key = "codepoints:".to_string() + &self.filename.to_string_lossy();
             #[allow(clippy::unwrap_used)] // How can it fail?!
             context
                 .cached_question(
-                    "codepoints",
+                    &key,
                     get_codepoints,
                     |hashset| serde_json::to_value(hashset).unwrap(),
                     |value| serde_json::from_value(value.clone()).map_err(|e| e.to_string()),
