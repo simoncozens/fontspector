@@ -46,7 +46,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::metadata::family_directory_name)
             .add_and_register_check(checks::googlefonts::metadata::familyname)
             //            .add_and_register_check(checks::googlefonts::metadata::filenames)
-            //            .add_and_register_check(checks::googlefonts::metadata::has_regular)
+            .add_and_register_check(checks::googlefonts::metadata::has_regular)
             //            .add_and_register_check(checks::googlefonts::metadata::includes_production_subsets)
             //            .add_and_register_check(checks::googlefonts::metadata::match_filename_postscript)
             //            .add_and_register_check(checks::googlefonts::metadata::match_fullname_postscript)
