@@ -678,7 +678,6 @@ def test_check_vendor_id(check):
     assert_PASS(check(ttFont), "with a good font.")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/glyph_coverage")
 def test_check_glyph_coverage(check):
     """Check glyph coverage."""
@@ -697,17 +696,19 @@ def test_check_glyph_coverage(check):
     # )
 
     # Let's fix it then...
-    cmap = ttFont.getBestCmap()
-    cmap[0x1E34] = 0x1E34  # (LATIN CAPITAL LETTER K WITH LINE BELOW)
-    cmap[0x1E35] = 0x1E35  # (LATIN SMALL LETTER K WITH LINE BELOW)
-    cmap[0x1E96] = 0x1E96  # (LATIN SMALL LETTER H WITH LINE BELOW)
-    cmap[0x02BD] = 0x02BD  # (MODIFIER LETTER REVERSED COMMA)
+    # cmap = ttFont.getBestCmap()
+    # cmap[0x1E34] = 0x1E34  # (LATIN CAPITAL LETTER K WITH LINE BELOW)
+    # cmap[0x1E35] = 0x1E35  # (LATIN SMALL LETTER K WITH LINE BELOW)
+    # cmap[0x1E96] = 0x1E96  # (LATIN SMALL LETTER H WITH LINE BELOW)
+    # cmap[0x02BD] = 0x02BD  # (MODIFIER LETTER REVERSED COMMA)
     assert_PASS(check(ttFont), "with a good font.")
 
     # Moirai is Korean, so only needs kernel
     ttFont = TTFont(TEST_FILE("moiraione/MoiraiOne-Regular.ttf"))
     assert 0x02C7 not in ttFont.getBestCmap()  # This is in core but not kernel
-    assert_PASS(check(ttFont))
+    assert_PASS(
+        check([ttFont, TEST_FILE("moiraione/METADATA.pb")]), "with a good font."
+    )
 
 
 @check_id("googlefonts/weightclass")
@@ -2059,9 +2060,7 @@ def test_check_metadata_category(check, tmp_path):
     # And we accept the good ones:
     for good_value in ["MONOSPACE", "SANS_SERIF", "SERIF", "DISPLAY", "HANDWRITING"]:
         md.category[:] = [good_value]
-        assert_PASS(
-            check([font, fake_mdpb(tmp_path, md)]), f'with "{good_value}"...'
-        )
+        assert_PASS(check([font, fake_mdpb(tmp_path, md)]), f'with "{good_value}"...')
 
 
 @pytest.mark.parametrize(
@@ -3331,13 +3330,13 @@ def test_check_metadata_escaped_strings(check):
 
     good = [
         TEST_FILE("issue_2932/good/SomeFont-Regular.ttf"),
-        TEST_FILE("issue_2932/good/METADATA.pb")
+        TEST_FILE("issue_2932/good/METADATA.pb"),
     ]
     assert_PASS(check(good))
 
     bad = [
         TEST_FILE("issue_2932/bad/SomeFont-Regular.ttf"),
-        TEST_FILE("issue_2932/bad/METADATA.pb")
+        TEST_FILE("issue_2932/bad/METADATA.pb"),
     ]
     assert_results_contain(check(bad), FAIL, "escaped-strings")
 

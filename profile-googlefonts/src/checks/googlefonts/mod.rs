@@ -45,3 +45,5 @@ mod canonical_filename;
 pub use canonical_filename::canonical_filename;
 mod version_bump;
 pub use version_bump::version_bump;
+mod glyph_coverage;
+pub use glyph_coverage::glyph_coverage;
