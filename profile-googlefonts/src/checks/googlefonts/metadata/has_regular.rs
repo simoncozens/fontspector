@@ -18,9 +18,11 @@ fn has_regular(c: &TestableCollection, _context: &Context) -> CheckFnResult {
         .get_file("METADATA.pb")
         .ok_or_else(|| CheckError::skip("no-mdpb", "No METADATA.pb file found"))?;
     let msg = family_proto(mdpb)?;
-    if msg.fonts.iter().any(|f| {
-        f.weight.as_ref().is_some_and(|w| *w == 400) && f.style == Some("normal".to_string())
-    }) {
+    if msg
+        .fonts
+        .iter()
+        .any(|f| f.weight() == 400 && f.style() == "normal")
+    {
         Ok(Status::just_one_pass())
     } else {
         Ok(Status::just_one_fail(
