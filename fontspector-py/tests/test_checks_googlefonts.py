@@ -774,27 +774,17 @@ def test_family_directory_condition():
     # working directory.
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/family/has_license")
 def test_check_family_has_license(check):
     """Check font project has a license."""
 
     def licenses_for_test(path):
-        found = MockFont(file=path + "/NoSuch.ttf").licenses
-        # If the tests are running inside a git checkout of fontbakery,
-        # FontBakery's own license will also be detected:
-        # ['data/test/028/multiple/OFL.txt',
-        #  'data/test/028/multiple/LICENSE.txt',
-        #  '/home/dan/src/fontbakery/LICENSE.txt']
-        # Filter it out so it doesn't interfere with the test.
-        found = [lic for lic in found if not os.path.isabs(lic)]
-        return found
+        return glob.glob(path + "/LICENSE.txt") + glob.glob(path + "/OFL.txt")
 
-    dir_path = "ofl/foo/bar"
     detected_licenses = licenses_for_test(portable_path("data/test/028/multiple"))
     assert len(detected_licenses) > 1
     assert_results_contain(
-        check(MockFont(file=dir_path, licenses=detected_licenses)),
+        check(detected_licenses),
         FAIL,
         "multiple",
         "with multiple licenses...",
@@ -802,7 +792,7 @@ def test_check_family_has_license(check):
 
     detected_licenses = licenses_for_test(portable_path("data/test/028/none"))
     assert_results_contain(
-        check(MockFont(file=dir_path, licenses=detected_licenses)),
+        check(detected_licenses),
         FAIL,
         "no-license",
         "with no license...",
@@ -810,18 +800,15 @@ def test_check_family_has_license(check):
 
     detected_licenses = licenses_for_test(portable_path("data/test/028/pass_ofl"))
     assert_PASS(
-        check(MockFont(file=dir_path, licenses=detected_licenses)),
+        check(detected_licenses),
         "with a single OFL license...",
     )
 
     detected_licenses = licenses_for_test(portable_path("data/test/028/pass_apache"))
     assert_PASS(
-        check(MockFont(file=dir_path, licenses=detected_licenses)),
+        check(detected_licenses),
         "with a single Apache license...",
     )
-
-    msg = assert_results_contain(check([""]), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: gfonts_repo_structure" in msg
 
 
 @pytest.mark.skip("Check not ported yet.")
