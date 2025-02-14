@@ -1,6 +1,5 @@
-use std::time::Duration;
-
 use fontspector_checkapi::{Context, Testable};
+#[allow(unused_imports)]
 use serde_json::{json, Map, Value};
 
 #[cfg(not(target_family = "wasm"))]
@@ -19,6 +18,7 @@ pub(crate) static PRODUCTION_METADATA: std::sync::LazyLock<Result<Map<String, Va
             })
     });
 
+#[allow(dead_code)]
 pub(crate) fn production_metadata(context: &Context) -> Result<Map<String, Value>, String> {
     if context.skip_network {
         return Err("Network access disabled".to_string());
@@ -33,6 +33,7 @@ pub(crate) fn production_metadata(context: &Context) -> Result<Map<String, Value
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn is_listed_on_google_fonts(family: &str, context: &Context) -> Result<bool, String> {
     // println!("Looking for family {}", family);
     let key = format!("is_listed_on_google_fonts:{}", family);
@@ -55,7 +56,20 @@ pub(crate) fn is_listed_on_google_fonts(family: &str, context: &Context) -> Resu
     )
 }
 
+#[allow(unused_variables)]
 pub(crate) fn remote_styles(family: &str, context: &Context) -> Result<Vec<Testable>, String> {
+    #[cfg(target_family = "wasm")]
+    {
+        Err("Network access disabled".to_string())
+    }
+    #[cfg(not(target_family = "wasm"))]
+    {
+        remote_styles_impl(family, context)
+    }
+}
+
+#[cfg(not(target_family = "wasm"))]
+fn remote_styles_impl(family: &str, context: &Context) -> Result<Vec<Testable>, String> {
     let key = format!("remote_styles:{}", family);
     context.cached_question(
         &key,
@@ -65,7 +79,7 @@ pub(crate) fn remote_styles(family: &str, context: &Context) -> Result<Vec<Testa
                 family.replace(" ", "%20")
             ));
             if let Some(timeout) = context.network_timeout {
-                request = request.timeout(Duration::new(timeout, 0));
+                request = request.timeout(std::time::Duration::new(timeout, 0));
             }
             let manifest: serde_json::Value = request
                 .send()

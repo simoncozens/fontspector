@@ -4,7 +4,6 @@ mod checks;
 pub mod constants;
 use fontspector_checkapi::{prelude::*, ProfileBuilder, Registry};
 
-#[cfg(not(target_family = "wasm"))]
 mod network_conditions;
 mod utils;
 use serde_json::json;
