@@ -9,6 +9,10 @@ mod utils;
 use serde_json::json;
 use std::collections::HashMap;
 
+pub(crate) const LICENSE: FileType = FileType {
+    pattern: "{LICENSE,OFL}.txt",
+};
+
 pub struct GoogleFonts;
 impl fontspector_checkapi::Plugin for GoogleFonts {
     fn register(&self, cr: &mut Registry) -> Result<(), String> {
@@ -16,6 +20,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         let desc = FileType::new("*.en_us.html");
         cr.register_filetype("MDPB", mdpb);
         cr.register_filetype("DESC", desc);
+        cr.register_filetype("LICENSE", LICENSE);
 
         let builder = ProfileBuilder::new()
             .include_profile("universal")
@@ -96,7 +101,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::name::family_name_compliance)
             .add_and_register_check(checks::googlefonts::name::line_breaks)
             .add_section("Licensing Checks")
-            //            .add_and_register_check(checks::googlefonts::family::has_license)
+            .add_and_register_check(checks::googlefonts::family::has_license)
             //            .add_and_register_check(checks::googlefonts::font_copyright)
             //            .add_and_register_check(checks::googlefonts::license::OFL_body_text)
             //            .add_and_register_check(checks::googlefonts::license::OFL_copyright)
