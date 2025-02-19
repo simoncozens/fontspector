@@ -1642,9 +1642,8 @@ GOOD_COPYRIGHT_NOTICE_STRINGS = (
 )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/font_copyright")
-def test_check_font_copyright(check):
+def test_check_font_copyright(check, tmp_path):
     """Copyright notice on METADATA.pb matches canonical pattern ?"""
 
     # Our reference Cabin Regular is known to be bad
@@ -1663,30 +1662,31 @@ def test_check_font_copyright(check):
             if entry.nameID == NameID.COPYRIGHT_NOTICE:
                 ttFont["name"].names[i].string = good_string.encode(entry.getEncoding())
 
-        md = Font(font).font_metadata
-        md.copyright = good_string
+        md = Font(font).family_metadata
+        md.fonts[0].copyright = good_string
+
         assert_PASS(
-            check(MockFont(ttFont=ttFont, font_metadata=md)),
+            check([ttFont, fake_mdpb(tmp_path, md)]),
             "with a good copyright notice string...",
         )
 
         too_long = good_string + "x" * (501 - len(good_string))
-        md.copyright = too_long
+        md.fonts[0].copyright = too_long
         for i, entry in enumerate(ttFont["name"].names):
             if entry.nameID == NameID.COPYRIGHT_NOTICE:
                 ttFont["name"].names[i].string = too_long.encode(entry.getEncoding())
 
         assert_results_contain(
-            check(MockFont(ttFont=ttFont, font_metadata=md)),
+            check([ttFont, fake_mdpb(tmp_path, md)]),
             FAIL,
             "max-length",
             "with a 501-char copyright notice string...",
         )
 
     # Now let's make them different
-    md.copyright = good_string
+    md.fonts[0].copyright = good_string
     assert_results_contain(
-        check(MockFont(file=font, font_metadata=md)),
+        check([ttFont, fake_mdpb(tmp_path, md)]),
         FAIL,
         "mismatch",
         "with a bad METADATA.pb (with a copyright string not matching this font)...",
