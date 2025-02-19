@@ -15,3 +15,5 @@ pub use line_breaks::line_breaks;
 pub use mandatory_entries::mandatory_entries;
 pub use rfn::rfn;
 pub use version_format::version_format;
+mod license_url;
+pub use license_url::license_url;
