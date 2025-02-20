@@ -1766,22 +1766,21 @@ def test_check_metadata_nameid_family_and_full_names(check):
             ttFont["name"].names[i].string = backup
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/match_name_familyname")
-def test_check_metadata_match_name_familyname(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_match_name_familyname(check, tmp_path):
     """METADATA.pb: Check font name is the same as family name."""
 
-    # Our reference Cabin Regular is known to be good
-    font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    assert_PASS(check(font), "with a good font...")
+    # Our reference Cabin is known to be good
+    font = TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")
+    mdbp = TEST_FILE("cabinvf/METADATA.pb")
+    assert_PASS(check(mdbp), "with a good font...")
 
     # Then we FAIL with mismatching names:
     family_md = Font(font).family_metadata
-    font_md = Font(font).font_metadata
     family_md.name = "Some Fontname"
-    font_md.name = "Something Else"
+    family_md.fonts[0].name = "Something Else"
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=family_md, font_metadata=font_md)),
+        check(fake_mdpb(tmp_path, family_md)),
         FAIL,
         "mismatch",
         "with bad font/family name metadata...",

@@ -56,8 +56,8 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::metadata::includes_production_subsets)
             //            checks::googlefonts::metadata::match_filename_postscript // Merged into metadata/validate
             //            checks::googlefonts::metadata::match_fullname_postscript // Merged into metadata/validate
-            //            .add_and_register_check(checks::googlefonts::metadata::match_name_familyname)
-            //            .add_and_register_check(checks::googlefonts::metadata::match_weight_postscript)
+            //            checks::googlefonts::metadata::match_name_familyname // Merged into metadata/validate
+            //            checks::googlefonts::metadata::match_weight_postscript // Merged into metadata/validate
             //            .add_and_register_check(checks::googlefonts::metadata::minisite_url)
             //            .add_and_register_check(checks::googlefonts::metadata::nameid/family_and_full_names)
             //            .add_and_register_check(checks::googlefonts::metadata::nameid/font_name)
