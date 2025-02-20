@@ -1,3 +1,4 @@
+mod axes;
 mod can_render_samples;
 mod category;
 mod copyright;
@@ -9,6 +10,7 @@ mod regular_is_400;
 mod reserved_font_name;
 mod subsets_correct;
 mod validate;
+pub use axes::axes;
 pub use can_render_samples::can_render_samples;
 pub use category::category;
 pub use copyright::copyright;

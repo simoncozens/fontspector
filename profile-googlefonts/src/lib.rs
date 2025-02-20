@@ -34,19 +34,20 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_section("Article Checks")
             //            .add_and_register_check(checks::googlefonts::article::images)
             .add_section("Metadata Checks")
-            //            .add_and_register_check(checks::googlefonts::metadata::axisregistry_bounds)
-            //            .add_and_register_check(checks::googlefonts::metadata::axisregistry_valid_tags)
+            .add_and_register_check(checks::googlefonts::metadata::axes)
+            //            checks::googlefonts::metadata::axisregistry_bounds // Merged into metadata/axes
+            //            checks::googlefonts::metadata::axisregistry_valid_tags // Merged into metadata/axes
+            //            checks::googlefonts::metadata::consistent_axis_enumeration // Merged into metadata/axes
             //            .add_and_register_check(checks::googlefonts::metadata::broken_links)
             //            .add_and_register_check(checks::googlefonts::metadata::canonical_style_names)
             //            .add_and_register_check(checks::googlefonts::metadata::canonical_weight_value)
             .add_and_register_check(checks::googlefonts::metadata::can_render_samples)
             .add_and_register_check(checks::googlefonts::metadata::category)
             //            .add_and_register_check(checks::googlefonts::metadata::category_hints)
-            //            .add_and_register_check(checks::googlefonts::metadata::consistent_axis_enumeration)
             //            .add_and_register_check(checks::googlefonts::metadata::consistent_repo_urls)
             //            .add_and_register_check(checks::googlefonts::metadata::designer_profiles)
-            //            .add_and_register_check(checks::googlefonts::metadata::designer_values) // Merged into metadata/validate
-            //            .add_and_register_check(checks::googlefonts::metadata::empty_designer)
+            //            checks::googlefonts::metadata::designer_values // Merged into metadata/validate
+            //            checks::googlefonts::metadata::empty_designer // Merged into metadata/validate
             .add_and_register_check(checks::googlefonts::metadata::escaped_strings)
             //            .add_and_register_check(checks::googlefonts::metadata::family_directory_name)
             .add_and_register_check(checks::googlefonts::metadata::familyname)

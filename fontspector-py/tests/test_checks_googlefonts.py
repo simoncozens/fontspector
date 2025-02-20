@@ -3157,14 +3157,13 @@ def test_check_varfont_instance_names(check, vf_ttFont):
     assert_SKIP(check(vf_ttFont3))
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/axisregistry_bounds")
-def test_check_gfaxisregistry_bounds(check):
+@check_id("googlefonts/metadata/axes")
+def test_check_gfaxisregistry_bounds(check, tmp_path):
     """Validate METADATA.pb axes values are within gf_axisregistry bounds."""
 
     # Our reference varfont, CabinVF, has good axes bounds:
     font = TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")
-    assert_PASS(check(font))
+    assert_PASS(check([font, TEST_FILE("cabinvf/METADATA.pb")]))
 
     # The first axis declared in this family is 'wdth' (Width)
     # And the GF Axis Registry expects this axis to have a range
@@ -3173,33 +3172,30 @@ def test_check_gfaxisregistry_bounds(check):
     md = Font(font).family_metadata
     md.axes[0].min_value = 20
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)), FAIL, "bad-axis-range"
+        check([font, fake_mdpb(tmp_path, md)]), FAIL, "bad-axis-range"
     )
 
     md.axes[0].min_value = 25
     md.axes[0].max_value = 250
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)), FAIL, "bad-axis-range"
+        check([font, fake_mdpb(tmp_path, md)]), FAIL, "bad-axis-range"
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/axisregistry_valid_tags")
-def test_check_gf_axisregistry_valid_tags(check):
+@check_id("googlefonts/metadata/axes")
+def test_check_gf_axisregistry_valid_tags(check, tmp_path):
     """Validate METADATA.pb axes tags are defined in gf_axisregistry."""
 
     # The axis tags in our reference varfont, CabinVF,
     # are properly defined in the registry:
     font = TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")
-    assert_PASS(check(font))
+    assert_PASS(check([font, TEST_FILE("cabinvf/METADATA.pb")]))
 
     md = Font(font).family_metadata
     md.axes[0].tag = (
         "crap"  # I'm pretty sure this one wont ever be included in the registry
     )
-    assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)), FAIL, "bad-axis-tag"
-    )
+    assert_results_contain(check([font, fake_mdpb(tmp_path, md)]), FAIL, "bad-axis-tag")
 
 
 @check_id("googlefonts/axisregistry/fvar_axis_defaults")
@@ -3276,28 +3272,23 @@ def test_check_STAT_gf_axisregistry(check):
     assert_results_contain(check(ttFont), FAIL, "bad-coordinate")
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/consistent_axis_enumeration")
-def test_check_metadata_consistent_axis_enumeration(check):
+@check_id("googlefonts/metadata/axes")
+def test_check_metadata_consistent_axis_enumeration(check, tmp_path):
     """Validate VF axes match the ones declared on METADATA.pb."""
 
     # The axis tags of CabinVF,
     # are properly declared on its METADATA.pb:
     font = TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")
-    assert_PASS(check(font))
+    assert_PASS(check([font, TEST_FILE("cabinvf/METADATA.pb")]))
 
     md = Font(font).family_metadata
     md.axes[1].tag = (
         "wdth"  # this effectively removes the "wght" axis while not adding an extra one
     )
-    assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)), FAIL, "missing-axes"
-    )
+    assert_results_contain(check([font, fake_mdpb(tmp_path, md)]), FAIL, "missing-axes")
 
     md.axes[1].tag = "ouch"  # and this is an unwanted extra axis
-    assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)), FAIL, "extra-axes"
-    )
+    assert_results_contain(check([font, fake_mdpb(tmp_path, md)]), FAIL, "extra-axes")
 
 
 @check_id("googlefonts/STAT/axis_order")

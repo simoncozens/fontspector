@@ -20,6 +20,12 @@ fn validate(c: &Testable, _context: &Context) -> CheckFnResult {
     })?;
     let mut problems = vec![];
     if let Some(designer) = msg.designer.as_ref() {
+        if designer.is_empty() {
+            problems.push(Status::fail(
+                "empty-designer",
+                "Font designer field is empty.",
+            ))
+        }
         if designer.contains('/') {
             problems.push(Status::fail("slash",
                     &format!(
