@@ -40,7 +40,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::consistent_axis_enumeration // Merged into metadata/axes
             //            .add_and_register_check(checks::googlefonts::metadata::broken_links)
             //            .add_and_register_check(checks::googlefonts::metadata::canonical_style_names)
-            //            .add_and_register_check(checks::googlefonts::metadata::canonical_weight_value)
+            //            checks::googlefonts::metadata::canonical_weight_value // Merged into metadata/validate
             .add_and_register_check(checks::googlefonts::metadata::can_render_samples)
             .add_and_register_check(checks::googlefonts::metadata::category)
             //            .add_and_register_check(checks::googlefonts::metadata::category_hints)
@@ -54,8 +54,8 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::metadata::filenames)
             .add_and_register_check(checks::googlefonts::metadata::has_regular)
             //            .add_and_register_check(checks::googlefonts::metadata::includes_production_subsets)
-            //            .add_and_register_check(checks::googlefonts::metadata::match_filename_postscript)
-            //            .add_and_register_check(checks::googlefonts::metadata::match_fullname_postscript)
+            //            checks::googlefonts::metadata::match_filename_postscript // Merged into metadata/validate
+            //            checks::googlefonts::metadata::match_fullname_postscript // Merged into metadata/validate
             //            .add_and_register_check(checks::googlefonts::metadata::match_name_familyname)
             //            .add_and_register_check(checks::googlefonts::metadata::match_weight_postscript)
             //            .add_and_register_check(checks::googlefonts::metadata::minisite_url)

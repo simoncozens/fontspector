@@ -520,7 +520,7 @@ def test_check_name_family_name_compliance(check):
 def test_check_metadata_validate(check):
     """Check METADATA.pb parse correctly."""
 
-    good = TEST_FILE("merriweather/METADATA.pb")
+    good = TEST_FILE("stixtwomath/METADATA.pb")
     assert_PASS(check(good), "with a good METADATA.pb file...")
 
     bad = TEST_FILE("broken_metadata/METADATA.pb")
@@ -1400,33 +1400,14 @@ def test_check_metadata_nameid_font_name(check):
     # FAIL, "lacks-entry"
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/match_fullname_postscript")
-def test_check_metadata_match_fullname_postscript(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_match_fullname_postscript(check, tmp_path):
     """METADATA.pb family.full_name and family.post_script_name
     fields have equivalent values ?"""
 
     regular_font = TEST_FILE("merriweather/Merriweather-Regular.ttf")
-    lightitalic_font = TEST_FILE("merriweather/Merriweather-LightItalic.ttf")
-
-    assert_PASS(
-        check(lightitalic_font), "with good entries (Merriweather-LightItalic)..."
-    )
-    #            post_script_name: "Merriweather-LightItalic"
-    #            full_name:        "Merriweather Light Italic"
-
-    # TODO: Verify why/whether "Regular" cannot be omited on font.full_name
-    #       There's some relevant info at:
-    #       https://github.com/fonttools/fontbakery/issues/1517
-    #
-    # FIXME: googlefonts/metadata/nameid/family_and_full_names
-    #        ties the full_name values from the METADATA.pb file and the
-    #        internal name table entry (FULL_FONT_NAME)
-    #        to be strictly identical. So it seems that the test below is
-    #        actually wrong (as well as the current implementation):
-    #
     assert_results_contain(
-        check(regular_font),
+        check(TEST_FILE("merriweather/METADATA.pb")),
         FAIL,
         "mismatch",
         "with bad entries (Merriweather-Regular)...",
@@ -1435,21 +1416,21 @@ def test_check_metadata_match_fullname_postscript(check):
     #                       full_name:        "Merriweather"
 
     # fix the regular metadata:
-    md = Font(regular_font).font_metadata
-    md.full_name = "Merriweather Regular"
+    md = Font(regular_font).family_metadata
+    md.fonts[2].full_name = "Merriweather Regular"
 
     assert_PASS(
-        check(MockFont(file=regular_font, font_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         "with good entries (Merriweather-Regular after full_name fix)...",
     )
     #            post_script_name: "Merriweather-Regular"
     #            full_name:        "Merriweather Regular"
 
     # introduce an error in the metadata:
-    md.full_name = "MistakenFont Regular"
+    md.fonts[2].full_name = "MistakenFont Regular"
 
     assert_results_contain(
-        check(MockFont(file=regular_font, font_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         FAIL,
         "mismatch",
         "with a mismatch...",
@@ -1807,26 +1788,25 @@ def test_check_metadata_match_name_familyname(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/canonical_weight_value")
-def test_check_check_metadata_canonical_weight_value(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_check_metadata_canonical_weight_value(check, tmp_path):
     """METADATA.pb: Check that font weight has a canonical value."""
 
-    font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    check(font)
-    md = Font(font).font_metadata
+    font = TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")
+    check([font, TEST_FILE("cabinvf/METADATA.pb")])
+    md = Font(font).family_metadata
 
     for w in [100, 200, 300, 400, 500, 600, 700, 800, 900]:
-        md.weight = w
+        # md.fonts[0].weight = str(w)
         assert_PASS(
-            check(MockFont(file=font, font_metadata=md)),
+            check(fake_mdpb(tmp_path, md)),
             f"with a good weight value ({w})...",
         )
 
     for w in [150, 250, 350, 450, 550, 650, 750, 850]:
-        md.weight = w
+        md.fonts[0].weight = w
         assert_results_contain(
-            check(MockFont(file=font, font_metadata=md)),
+            check(fake_mdpb(tmp_path, md)),
             FAIL,
             "bad-weight",
             "with a bad weight value ({w})...",
