@@ -1332,24 +1332,21 @@ def test_check_metadata_regular_is_400(check):
     assert "Unfulfilled Conditions: has_regular_style" in msg
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/nameid/post_script_name")
-def test_check_metadata_nameid_post_script_name(check):
+@check_id("googlefonts/metadata/consistent_with_fonts")
+def test_check_metadata_nameid_post_script_name(check, tmp_path):
     """Checks METADATA.pb font.post_script_name matches
     postscript name declared on the name table."""
 
-    # Let's start with the METADATA.pb file from our reference FamilySans family:
-    font = TEST_FILE("familysans/FamilySans-Regular.ttf")
+    # Let's start with the METADATA.pb file from Moirai One, since it only has one font
+    font = TEST_FILE("moiraione/MoiraiOne-Regular.ttf")
+    md = Font(font).family_metadata
 
-    # We know that Family Sans Regular is good here:
-    assert_PASS(check(font))
+    # We know that the postscript name is good here:
+    assert_PASS(check([font, fake_mdpb(tmp_path, md)]))
 
     # Then cause it to fail:
-    md = Font(font).font_metadata
-    md.post_script_name = "Foo"
-    assert_results_contain(
-        check(MockFont(file=font, font_metadata=md)), FAIL, "mismatch"
-    )
+    md.fonts[0].post_script_name = "Foo"
+    assert_results_contain(check([font, fake_mdpb(tmp_path, md)]), FAIL, "mismatch")
 
     # TODO: the failure-mode below seems more generic than the scope
     #       of this individual check. This could become a check by itself!
@@ -1694,28 +1691,27 @@ def test_check_metadata_reserved_font_name(check, tmp_path):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/filenames")
+@check_id("googlefonts/metadata/consistent_with_fonts")
 def test_check_metadata_filenames(check):
     """METADATA.pb: Font filenames match font.filename entries?"""
 
-    assert_PASS(check(rosarivo_fonts), "with matching list of font files...")
+    rosarivo_fonts_plus_mdpb = rosarivo_fonts + [TEST_FILE("rosarivo/METADATA.pb")]
+
+    assert_PASS(check(rosarivo_fonts_plus_mdpb), "with matching list of font files...")
 
     # make sure missing files are detected by the check:
-    fonts = rosarivo_fonts
-    original_name = fonts[0]
-    # rename one font file in order to trigger the FAIL
-    os.rename(original_name, "font.tmp")
+    fonts = rosarivo_fonts_plus_mdpb
+    # drop one font file from check in order to trigger the FAIL
     assert_results_contain(
-        check(fonts), FAIL, "file-not-found", "with missing font files..."
+        check(fonts[1:]), FAIL, "file-not-found", "with missing font files..."
     )
-    os.rename("font.tmp", original_name)  # restore filename
 
     # From all TTFs in Cabin's directory, the condensed ones are not
-    # listed on METADATA.pb, so the check must FAIL, even if we do not
-    # explicitely include them in the set of files to be checked:
+    # listed on METADATA.pb, so the check must FAIL.
     assert_results_contain(
-        check(cabin_fonts),
+        check(
+            list(glob.glob("data/test/cabin/*ttf")) + [TEST_FILE("cabin/METADATA.pb")]
+        ),
         FAIL,
         "file-not-declared",
         "with some font files not declared...",

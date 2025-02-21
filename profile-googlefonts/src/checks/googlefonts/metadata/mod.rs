@@ -1,6 +1,7 @@
 mod axes;
 mod can_render_samples;
 mod category;
+mod consistent_with_fonts;
 mod copyright;
 mod escaped_strings;
 mod familyname;
@@ -13,6 +14,7 @@ mod validate;
 pub use axes::axes;
 pub use can_render_samples::can_render_samples;
 pub use category::category;
+pub use consistent_with_fonts::consistent_with_fonts;
 pub use copyright::copyright;
 pub use escaped_strings::escaped_strings;
 pub use familyname::familyname;

@@ -1,5 +1,3 @@
-#![allow(renamed_and_removed_lints, clippy::unwrap_used)]
-
 use std::path::Path;
 
 use crate::checks::googlefonts::metadata::family_proto;
