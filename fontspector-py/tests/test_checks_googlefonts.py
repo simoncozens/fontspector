@@ -1555,7 +1555,6 @@ def test_check_metadata_valid_post_script_name_values(check):
     assert_PASS(check(font), "with a good font with other languages...")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/valid_nameid25")
 def test_check_metadata_valid_nameid25(check):
     """Check name ID 25 to end with "Italic" for Italic VFs"""
@@ -1585,7 +1584,7 @@ def test_check_metadata_valid_nameid25(check):
     ttFont = TTFont(fontpath)
     set_name(ttFont, 25, "ShantellSans")
     assert_results_contain(
-        check(MockFont(file=fontpath, ttFont=ttFont)),
+        check(ttFont),
         FAIL,
         "nameid25-missing-italic",
         f"with a bad font ({ttFont})...",
@@ -1593,7 +1592,7 @@ def test_check_metadata_valid_nameid25(check):
 
     set_name(ttFont, 25, "ShantellSans Italic")
     assert_results_contain(
-        check(MockFont(file=fontpath, ttFont=ttFont)),
+        check(ttFont),
         FAIL,
         "nameid25-has-spaces",
         f"with a bad font ({ttFont})...",

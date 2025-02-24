@@ -39,3 +39,5 @@ pub(crate) fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {
     protobuf::text_format::parse_from_str::<FamilyProto>(mdpb)
         .map_err(|e| CheckError::Error(format!("Error parsing METADATA.pb: {}", e)))
 }
+mod valid_nameid25;
+pub use valid_nameid25::valid_nameid25;
