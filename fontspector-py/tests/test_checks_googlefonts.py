@@ -119,6 +119,14 @@ def fake_mdpb(tmp_path, md):
     return str(_fake_mdpb)
 
 
+def read_mdpb(md):
+    from fontbakery.checks.vendorspecific.googlefonts.utils import (
+        get_FamilyProto_Message,
+    )
+
+    return get_FamilyProto_Message(md)
+
+
 @pytest.mark.parametrize(
     """fp,result""",
     [
@@ -553,34 +561,33 @@ def test_check_metadata_designer_values(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/date_added")
-def test_check_metadata_date_added(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_date_added(check, tmp_path):
     """Validate 'date_added' field on METADATA.pb."""
 
-    font = TEST_FILE("merriweather/Merriweather-Regular.ttf")
-    assert_PASS(check(font), "with a good METADATA.pb file...")
+    md_file = TEST_FILE("cabinvf/METADATA.pb")
+    md = read_mdpb(md_file)
+    assert_PASS(check(md_file), "with a good METADATA.pb file...")
 
-    md = Font(font).family_metadata
     md.date_added = "2021-07-11"
     assert_PASS(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         "with a good date_added field...",
     )
 
     md.date_added = ""
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
-        FATAL,
-        "empty",
+        check(fake_mdpb(tmp_path, md)),
+        ERROR,
+        "date-empty",
         "with an empty string on date_added field...",
     )
 
     md.date_added = "2020, Oct 1st"  # This is not the YYYY-MM-DD format we expect.
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
-        FATAL,
-        "malformed",
+        check(fake_mdpb(tmp_path, md)),
+        ERROR,
+        "date-malformed",
         "with a bad date string on date_added field...",
     )
 
@@ -3088,7 +3095,6 @@ def test_check_varfont_instance_coordinates(check, vf_ttFont):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/fvar_instances")
 def test_check_varfont_instance_names(check, vf_ttFont):
     assert_PASS(
@@ -3129,6 +3135,8 @@ def test_check_varfont_instance_names(check, vf_ttFont):
     morf_axis = Axis()
     morf_axis.axisTag = "MORF"
     vf_ttFont3["fvar"].axes.append(morf_axis)
+    for instance in vf_ttFont3["fvar"].instances:
+        instance.coordinates["MORF"] = 0
     assert_SKIP(check(vf_ttFont3))
 
 
@@ -3380,7 +3388,6 @@ def test_check_use_typo_metrics(check):
     assert_results_contain(check(ttFont), FAIL, "missing-os2-fsselection-bit7")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/use_typo_metrics")
 def test_check_use_typo_metrics_with_cjk(check):
     """All CJK fonts checked with the googlefonts profile should skip this check"""
@@ -3395,13 +3402,7 @@ def test_check_use_typo_metrics_with_cjk(check):
     # test skip with font that contains set bit
     tt_pass_set["OS/2"].fsSelection = fs_selection | (1 << 7)
 
-    assert_SKIP(
-        check(
-            MockFont(
-                file=TEST_FILE("cjk/SourceHanSans-Regular.otf"), ttFont=tt_pass_clear
-            )
-        )
-    )
+    assert_SKIP(check(tt_pass_clear))
     assert_SKIP(check(tt_pass_set))
 
 
@@ -3835,21 +3836,20 @@ def test_check_shape_languages(check):
     assert_results_contain(check(test_font), FAIL, "failed-language-shaping")
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/minisite_url")
-def test_check_metadata_minisite_url(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_minisite_url(check, tmp_path):
     """Validate minisite_url field"""
 
-    font = "data/test/merriweather/Merriweather-Regular.ttf"
-    assert_results_contain(check(font), INFO, "lacks-minisite-url")
+    MD_FILE = TEST_FILE("cabinvf/METADATA.pb")
+    md = read_mdpb(MD_FILE)
+    assert_results_contain(check(MD_FILE), INFO, "lacks-minisite-url")
 
-    md = Font(font).family_metadata
     md.minisite_url = "a_good_one.com"
-    assert_PASS(check(MockFont(file=font, family_metadata=md)), "with a good one")
+    assert_PASS(check(fake_mdpb(tmp_path, md)), "with a good one")
 
     md.minisite_url = "some_url/"
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         FAIL,
         "trailing-clutter",
         "with a minisite_url with unnecessary trailing forward-slash",
@@ -3857,7 +3857,7 @@ def test_check_metadata_minisite_url(check):
 
     md.minisite_url = "some_url/index.htm"
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         FAIL,
         "trailing-clutter",
         "with a minisite_url with unnecessary trailing /index.htm",
@@ -3865,7 +3865,7 @@ def test_check_metadata_minisite_url(check):
 
     md.minisite_url = "some_url/index.html"
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         FAIL,
         "trailing-clutter",
         "with a minisite_url with unnecessary trailing /index.html",

@@ -42,6 +42,20 @@ fn category_hints(family_name: &str) -> Option<&'static str> {
     None
 }
 
+fn clean_url(url: &str) -> String {
+    let mut cleaned = url.trim().to_string();
+    if cleaned.ends_with('/') {
+        cleaned.pop();
+    }
+    if cleaned.ends_with("index.htm") {
+        cleaned = cleaned.replace("index.htm", "");
+    }
+    if cleaned.ends_with("index.html") {
+        cleaned = cleaned.replace("index.html", "");
+    }
+    cleaned
+}
+
 #[check(
     id = "googlefonts/metadata/validate",
     title = "Check METADATA.pb parses correctly",
@@ -74,13 +88,17 @@ fn validate(c: &Testable, _context: &Context) -> CheckFnResult {
     }
 
     // Check date added is YYYY-MM-DD
+    if msg.date_added().is_empty() {
+        problems.push(Status::error(Some("date-empty"), "Date added is empty"))
+    }
+
     if msg
         .date_added
         .as_ref()
         .is_some_and(|da| NaiveDate::parse_from_str(da, "%Y-%m-%d").is_err())
     {
-        problems.push(Status::fail(
-            "date-malformed",
+        problems.push(Status::error(
+            Some("date-malformed"),
             "Date added is not in the format YYYY-MM-DD",
         ))
     }
@@ -96,6 +114,26 @@ fn validate(c: &Testable, _context: &Context) -> CheckFnResult {
                     msg.category.join(", "),
                 ),
             ));
+        }
+    }
+
+    // Check minisite URL (googlefonts/metadata/minisite_url)
+    if msg.minisite_url().is_empty() {
+        problems.push(Status::info(
+            "lacks-minisite-url",
+            "Please consider adding a family.minisite_url entry.",
+        ))
+    } else {
+        let expected_url = clean_url(msg.minisite_url());
+        if msg.minisite_url() != expected_url {
+            problems.push(Status::fail(
+                "trailing-clutter",
+                &format!(
+                    "Please change minisite_url from {} to {}",
+                    msg.minisite_url(),
+                    expected_url
+                ),
+            ))
         }
     }
 
