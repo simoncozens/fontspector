@@ -42,7 +42,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::canonical_weight_value // Merged into metadata/validate
             .add_and_register_check(checks::googlefonts::metadata::can_render_samples)
             .add_and_register_check(checks::googlefonts::metadata::category)
-            //            .add_and_register_check(checks::googlefonts::metadata::category_hints)
+            //            checks::googlefonts::metadata::category_hints // merged into metadata/validate
             //            .add_and_register_check(checks::googlefonts::metadata::consistent_repo_urls)
             .add_and_register_check(checks::googlefonts::metadata::consistent_with_fonts)
             //            checks::googlefonts::metadata::filenames // merged into metadata/consistent_with_fonts

@@ -19,6 +19,29 @@ fn weight_acceptable_suffixes(w: i32) -> Vec<&'static str> {
     }
 }
 
+const CATEGORY_HINTS: [(&str, &str); 11] = [
+    ("Sans", "SANS"),
+    ("Grotesk", "SANS"),
+    ("Grotesque", "SANS"),
+    ("Serif", "SERIF"),
+    ("Transitional", "SERIF"),
+    ("Slab", "SERIF"),
+    ("Old Style", "SERIF"),
+    ("Garamond", "SERIF"),
+    ("Display", "DISPLAY"),
+    ("Hand", "HANDWRITING"),
+    ("Script", "HANDWRITING"),
+];
+
+fn category_hints(family_name: &str) -> Option<&'static str> {
+    for (component, inferred_category) in CATEGORY_HINTS.iter() {
+        if family_name.contains(component) {
+            return Some(inferred_category);
+        }
+    }
+    None
+}
+
 #[check(
     id = "googlefonts/metadata/validate",
     title = "Check METADATA.pb parses correctly",
@@ -60,6 +83,20 @@ fn validate(c: &Testable, _context: &Context) -> CheckFnResult {
             "date-malformed",
             "Date added is not in the format YYYY-MM-DD",
         ))
+    }
+
+    // Check category hints (googlefonts/metadata/category_hints)
+    if let Some(inferred_category) = category_hints(msg.name()) {
+        if !msg.category.contains(&inferred_category.to_string()) {
+            problems.push(Status::warn(
+                "inferred-category",
+                &format!(
+                    "Familyname seems to hint at \"{}\" category, but METADATA.pb declares it as \"{}\".",
+                    inferred_category,
+                    msg.category.join(", "),
+                ),
+            ));
+        }
     }
 
     for font in msg.fonts.iter() {

@@ -3535,20 +3535,22 @@ def test_check_metadata_unsupported_subsets(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/category_hints")
-def test_check_metadata_category_hints(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_category_hints(check, tmp_path):
     """Check if category on METADATA.pb matches
     what can be inferred from the family name."""
 
-    font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    assert_PASS(check(font), "with a familyname without any of the keyword hints...")
+    font = TEST_FILE("cabinvf/Cabin[wdth,wght].ttf")
+    assert_PASS(
+        check(TEST_FILE("cabinvf/METADATA.pb")),
+        "with a familyname without any of the keyword hints...",
+    )
 
     md = Font(font).family_metadata
     md.name = "Seaweed Script"
     md.category[:] = ["DISPLAY"]
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         WARN,
         "inferred-category",
         f'with a bad category "{md.category}" for familyname "{md.name}"...',
@@ -3557,7 +3559,7 @@ def test_check_metadata_category_hints(check):
     md.name = "Red Hat Display"
     md.category[:] = ["SANS_SERIF"]
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md)),
         WARN,
         "inferred-category",
         f'with a bad category "{md.category}" for familyname "{md.name}"...',
@@ -3565,17 +3567,16 @@ def test_check_metadata_category_hints(check):
 
     md.name = "Seaweed Script"
     md.category[:] = ["HANDWRITING"]
-    assert_PASS(
-        check(MockFont(file=font, family_metadata=md)),
-        f'with a good category "{md.category}" for familyname "{md.name}"...',
-    )
+    results = check(fake_mdpb(tmp_path, md))
+    assert not any(
+        [result.message.code == "inferred-category" for result in results]
+    ), f'with a good category "{md.category}" for familyname "{md.name}"...'
 
     md.name = "Red Hat Display"
     md.category[:] = ["DISPLAY"]
-    assert_PASS(
-        check(MockFont(file=font, family_metadata=md)),
-        f'with a good category "{md.category}" for familyname "{md.name}"...',
-    )
+    assert not any(
+        [result.message.code == "inferred-category" for result in results]
+    ), f'with a good category "{md.category}" for familyname "{md.name}"...'
 
 
 @pytest.mark.parametrize(
