@@ -38,7 +38,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::axisregistry_bounds // Merged into metadata/axes
             //            checks::googlefonts::metadata::axisregistry_valid_tags // Merged into metadata/axes
             //            checks::googlefonts::metadata::consistent_axis_enumeration // Merged into metadata/axes
-            //            .add_and_register_check(checks::googlefonts::metadata::broken_links)
+            .add_and_register_check(checks::googlefonts::metadata::broken_links)
             //            checks::googlefonts::metadata::canonical_weight_value // Merged into metadata/validate
             .add_and_register_check(checks::googlefonts::metadata::can_render_samples)
             .add_and_register_check(checks::googlefonts::metadata::category)
@@ -48,6 +48,8 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::filenames // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::canonical_style_names // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::valid_filename_values // redundant, see fontbakery#4997
+            //            checks::googlefonts::metadata::undeclared_fonts // redundant, see fontbakery#4997
+            //            checks::googlefonts::metadata::nameid/font_name // redundant, see fontbakery#4581
             //            checks::googlefonts::metadata::valid_full_name_values // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::nameid/post_script_name // merged into metadata/consistent_with_fonts
             //            .add_and_register_check(checks::googlefonts::metadata::designer_profiles)
@@ -57,19 +59,16 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::metadata::family_directory_name)
             .add_and_register_check(checks::googlefonts::metadata::familyname)
             .add_and_register_check(checks::googlefonts::metadata::has_regular)
-            //            .add_and_register_check(checks::googlefonts::metadata::includes_production_subsets)
             //            checks::googlefonts::metadata::match_filename_postscript // Merged into metadata/validate
             //            checks::googlefonts::metadata::match_fullname_postscript // Merged into metadata/validate
             //            checks::googlefonts::metadata::match_name_familyname // Merged into metadata/validate
             //            checks::googlefonts::metadata::match_weight_postscript // Merged into metadata/validate
-            //            .add_and_register_check(checks::googlefonts::metadata::minisite_url)
+            //            checks::googlefonts::metadata::minisite_url // Merged into metadata/validate
             //            .add_and_register_check(checks::googlefonts::metadata::nameid/family_and_full_names)
-            //            .add_and_register_check(checks::googlefonts::metadata::nameid/font_name)
             //            .add_and_register_check(checks::googlefonts::metadata::primary_script)
             .add_and_register_check(checks::googlefonts::metadata::regular_is_400)
             //            .add_and_register_check(checks::googlefonts::metadata::single_cjk_subset) // To merge into metadata/subsets_correct
             .add_and_register_check(checks::googlefonts::metadata::subsets_correct) // Replacement for metadata/unsupported_subsets
-            //            .add_and_register_check(checks::googlefonts::metadata::undeclared_fonts)
             //            .add_and_register_check(checks::googlefonts::metadata::unique_full_name_values)
             //            .add_and_register_check(checks::googlefonts::metadata::unique_weight_style_pairs)
             //            .add_and_register_check(checks::googlefonts::metadata::unreachable_subsetting)
@@ -148,7 +147,6 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::axisregistry::fvar_axis_defaults)
             .add_and_register_check(checks::googlefonts::canonical_filename)
             //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics)
-            //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics_regressions)
             .add_and_register_check(checks::googlefonts::color_fonts)
             .add_and_register_check(checks::googlefonts::font_names)
             .add_and_register_check(checks::googlefonts::fstype)
@@ -176,6 +174,8 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::version_bump)
             //            .add_and_register_check(checks::googlefonts::vertical_metrics)
             //            .add_and_register_check(checks::googlefonts::vertical_metrics_regressions)
+            //            .add_and_register_check(checks::googlefonts::cjk_vertical_metrics_regressions)
+            //            .add_and_register_check(checks::googlefonts::metadata::includes_production_subsets)
             .add_and_register_check(checks::googlefonts::weightclass)
             .with_configuration_defaults(
                 "file_size",

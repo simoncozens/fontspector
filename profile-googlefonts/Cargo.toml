@@ -28,6 +28,7 @@ regex = "1.10.6"
 serde_json = { workspace = true }
 skrifa = { workspace = true }
 kurbo = { workspace = true }
+log = { workspace = true }
 num-traits = "0.2.19"
 
 unicode-normalization = "0"
@@ -37,7 +38,9 @@ yeslogic-unicode-blocks = "0.2.0"
 write-fonts = { workspace = true }
 hashbrown = "0.15.2"
 
-scraper = { version = "0.22.0", default-features = false, features=["errors"] }
+scraper = { version = "0.22.0", default-features = false, features = [
+    "errors",
+] }
 semver = "1.0.25"
 
 [build-dependencies]

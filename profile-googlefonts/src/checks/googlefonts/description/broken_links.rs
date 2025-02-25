@@ -1,8 +1,8 @@
-use std::time::Duration;
-
 use fontspector_checkapi::{prelude::*, skip};
 use hashbrown::HashSet;
 use scraper::{Html, Selector};
+
+use crate::network_conditions::get_url;
 
 #[check(
     id = "googlefonts/description/broken_links",
@@ -46,22 +46,13 @@ fn broken_links(desc: &Testable, context: &Context) -> CheckFnResult {
             }
             continue;
         }
-        let mut request = reqwest::blocking::Client::new().head(href);
-        if let Some(timeout) = context.network_timeout {
-            request = request.timeout(Duration::new(timeout, 0));
-        }
-        match request.send() {
-            Ok(response) => {
-                if !response.status().is_success() {
-                    broken.insert(format!("{} (status code: {})", href, response.status()));
-                }
-            }
-            Err(error) => {
-                if error.is_timeout() {
-                    problems.push(Status::warn("timeout", &format!("Timedout while attempting to access: '{}'. Please verify if that's a broken link.", href)));
-                } else {
-                    broken.insert(format!("{} (error: {})", href, error));
-                }
+        if let Err(error) = get_url(context, href) {
+            if error.is_timeout() {
+                problems.push(Status::warn("timeout", &format!("Timedout while attempting to access: '{}'. Please verify if that's a broken link.", href)));
+            } else if let Some(status) = error.status() {
+                broken.insert(format!("{} (status code: {})", href, status));
+            } else {
+                broken.insert(format!("{} (error: {})", href, error));
             }
         }
     }

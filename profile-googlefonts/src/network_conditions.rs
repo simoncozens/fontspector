@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use fontspector_checkapi::{Context, Testable};
 #[allow(unused_imports)]
 use serde_json::{json, Map, Value};
@@ -160,4 +162,16 @@ fn remote_styles_impl(family: &str, context: &Context) -> Result<Vec<Testable>, 
                 })
         },
     )
+}
+
+pub(crate) fn get_url(
+    context: &Context,
+    url: &str,
+) -> Result<reqwest::blocking::Response, reqwest::Error> {
+    let mut request = reqwest::blocking::Client::new().head(url);
+    log::debug!("Checking URL: {}", url);
+    if let Some(timeout) = context.network_timeout {
+        request = request.timeout(Duration::new(timeout, 0));
+    }
+    request.send().and_then(|r| r.error_for_status())
 }
