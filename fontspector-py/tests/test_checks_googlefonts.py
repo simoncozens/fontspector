@@ -1529,30 +1529,25 @@ def test_check_metadata_valid_filename_values(check):
         )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/valid_post_script_name_values")
-def test_check_metadata_valid_post_script_name_values(check):
+@check_id("googlefonts/metadata/consistent_with_fonts")
+def test_check_metadata_valid_post_script_name_values(check, tmp_path):
     """METADATA.pb font.post_script_name field contains font name in right format?"""
 
     # Our reference Montserrat family is a good 18-styles family:
-    for fontfile in MONTSERRAT_RIBBI + MONTSERRAT_NON_RIBBI:
-        # So it must PASS the check:
-        assert_PASS(check(fontfile), f"with a good font ({fontfile})...")
-
-        # And fail if it finds a bad filename:
-        md = Font(fontfile).font_metadata
-        md.post_script_name = "WrongPSName"
-        assert_results_contain(
-            check(MockFont(file=fontfile, font_metadata=md)),
-            FAIL,
-            "mismatch",
-            f"with a bad font ({fontfile})...",
-        )
-
-    # Good font with other language name entries
-    font = TEST_FILE("bizudpmincho-nameonly/BIZUDPMincho-Regular.ttf")
-
-    assert_PASS(check(font), "with a good font with other languages...")
+    # So it must PASS the check:
+    files = (
+        MONTSERRAT_RIBBI + MONTSERRAT_NON_RIBBI + [TEST_FILE("montserrat/METADATA.pb")]
+    )
+    assert_PASS(check(files), "with a good font...")
+    # And fail if it finds a bad filename:
+    md = Font(files[0]).family_metadata
+    md.fonts[0].post_script_name = "WrongPSName"
+    assert_results_contain(
+        check(MONTSERRAT_RIBBI + MONTSERRAT_NON_RIBBI + [fake_mdpb(tmp_path, md)]),
+        FAIL,
+        "mismatch",
+        "with a bad font...",
+    )
 
 
 @check_id("googlefonts/metadata/valid_nameid25")
@@ -1724,18 +1719,19 @@ def test_check_metadata_filenames(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/nameid/family_and_full_names")
+@check_id("googlefonts/metadata/consistent_with_fonts")
 def test_check_metadata_nameid_family_and_full_names(check):
     """METADATA.pb font.name and font.full_name fields
     match the values declared on the name table?"""
 
-    # Our reference Merriweather Regular is known to be good here.
-    ttFont = TTFont(TEST_FILE("merriweather/Merriweather-Regular.ttf"))
-    assert_PASS(check(ttFont), "with a good font...")
+    rosarivo_fonts_plus_mdpb = [TTFont(x) for x in rosarivo_fonts] + [
+        TEST_FILE("rosarivo/METADATA.pb")
+    ]
+    assert_PASS(check(rosarivo_fonts_plus_mdpb), "with a good font...")
 
     # There we go again!
-    # Breaking FULL_FONT_NAME entries one by one:
+    # Breaking FULL_FONT_NAME entries:
+    ttFont = rosarivo_fonts_plus_mdpb[0]
     for i, name in enumerate(ttFont["name"].names):
         if name.nameID == NameID.FULL_FONT_NAME:
             backup = name.string
@@ -1743,7 +1739,7 @@ def test_check_metadata_nameid_family_and_full_names(check):
                 name.getEncoding()
             )
             assert_results_contain(
-                check(ttFont),
+                check(rosarivo_fonts_plus_mdpb),
                 FAIL,
                 "fullname-mismatch",
                 "with a METADATA.pb / FULL_FONT_NAME mismatch...",
@@ -1759,7 +1755,7 @@ def test_check_metadata_nameid_family_and_full_names(check):
                 "I'm listening to" " The Players with Hiromasa Suzuki - Galaxy (1979)"
             ).encode(name.getEncoding())
             assert_results_contain(
-                check(ttFont),
+                check(rosarivo_fonts_plus_mdpb),
                 FAIL,
                 "familyname-mismatch",
                 "with a METADATA.pb / FONT_FAMILY_NAME mismatch...",

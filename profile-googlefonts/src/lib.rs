@@ -40,6 +40,8 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::consistent_axis_enumeration // Merged into metadata/axes
             .add_and_register_check(checks::googlefonts::metadata::broken_links)
             //            checks::googlefonts::metadata::canonical_weight_value // Merged into metadata/validate
+            //            checks::googlefonts::metadata::designer_values // Merged into metadata/validate
+            //            checks::googlefonts::metadata::empty_designer // Merged into metadata/validate
             .add_and_register_check(checks::googlefonts::metadata::can_render_samples)
             .add_and_register_check(checks::googlefonts::metadata::category)
             //            checks::googlefonts::metadata::category_hints // merged into metadata/validate
@@ -47,14 +49,13 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_and_register_check(checks::googlefonts::metadata::consistent_with_fonts)
             //            checks::googlefonts::metadata::filenames // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::canonical_style_names // merged into metadata/consistent_with_fonts
+            //            checks::googlefonts::metadata::valid_full_name_values // merged into metadata/consistent_with_fonts
+            //            checks::googlefonts::metadata::nameid/post_script_name // merged into metadata/consistent_with_fonts
+            //            checks::googlefonts::metadata::valid_post_script_name_values // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::valid_filename_values // redundant, see fontbakery#4997
             //            checks::googlefonts::metadata::undeclared_fonts // redundant, see fontbakery#4997
             //            checks::googlefonts::metadata::nameid/font_name // redundant, see fontbakery#4581
-            //            checks::googlefonts::metadata::valid_full_name_values // merged into metadata/consistent_with_fonts
-            //            checks::googlefonts::metadata::nameid/post_script_name // merged into metadata/consistent_with_fonts
             //            .add_and_register_check(checks::googlefonts::metadata::designer_profiles)
-            //            checks::googlefonts::metadata::designer_values // Merged into metadata/validate
-            //            checks::googlefonts::metadata::empty_designer // Merged into metadata/validate
             .add_and_register_check(checks::googlefonts::metadata::escaped_strings)
             //            .add_and_register_check(checks::googlefonts::metadata::family_directory_name)
             .add_and_register_check(checks::googlefonts::metadata::familyname)
@@ -74,7 +75,6 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::metadata::unreachable_subsetting)
             .add_and_register_check(checks::googlefonts::metadata::validate)
             .add_and_register_check(checks::googlefonts::metadata::valid_nameid25)
-            //            .add_and_register_check(checks::googlefonts::metadata::valid_post_script_name_values)
             //            .add_and_register_check(checks::googlefonts::metadata::weightclass)
             .add_section("Glyphset Checks")
             //            .add_and_register_check(checks::googlefonts::glyphsets::shape_languages)
@@ -116,7 +116,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            .add_and_register_check(checks::googlefonts::repo::dirname_matches_nameid_1)
             //            .add_and_register_check(checks::googlefonts::repo::fb_report)
             //            .add_and_register_check(checks::googlefonts::repo::sample_image)
-            //            .add_and_register_check(checks::googlefonts::repo::upstream_yaml_has_required_fields)
+            //            checks::googlefonts::repo::upstream_yaml_has_required_fields // Redundant, no upstream.yaml any more
             //            .add_and_register_check(checks::googlefonts::repo::vf_has_static_fonts)
             //            .add_and_register_check(checks::googlefonts::repo::zip_files",
             .add_section("Shaping Checks")
@@ -124,7 +124,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
         #[cfg(not(target_family = "wasm"))]
         let builder = builder
             //            Realistically Simon is the only person who uses this check, and it can wait until he needs it again.
-            //            .add_and_register_check(checks::shaping::collides)
+            //            checks::shaping::collides
             .add_and_register_check(checks::shaping::forbidden)
             .add_and_register_check(checks::shaping::regression)
             .add_and_register_check(checks::soft_dotted);

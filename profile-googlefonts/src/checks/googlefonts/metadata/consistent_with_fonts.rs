@@ -101,7 +101,7 @@ fn consistent_with_fonts(c: &TestableCollection, _context: &Context) -> CheckFnR
         let family_name = if font.style().is_some() {
             font.best_familyname()
         } else {
-            font.get_best_name(&[StringId::TYPOGRAPHIC_FAMILY_NAME])
+            font.get_best_name(&[StringId::TYPOGRAPHIC_FAMILY_NAME, StringId::FAMILY_NAME])
         }
         .ok_or_else(|| CheckError::Error(format!("No family name found for {}", proto.name())))?;
         if !proto.full_name().contains(&family_name) {
@@ -114,8 +114,33 @@ fn consistent_with_fonts(c: &TestableCollection, _context: &Context) -> CheckFnR
                 ),
             ));
         }
+        // googlefonts/metadata/nameid/family_and_full_names
+        for full_name in font.get_name_entry_strings(StringId::FULL_NAME) {
+            if proto.full_name() != full_name {
+                problems.push(Status::fail(
+                    "fullname-mismatch",
+                    &format!(
+                    "METADATA.pb full_name field \"{}\" does not match correct full name \"{}\".",
+                    proto.full_name(),
+                    full_name
+                ),
+                ));
+            }
+        }
+        for family_name in font.get_name_entry_strings(StringId::FAMILY_NAME) {
+            if proto.name() != family_name {
+                problems.push(Status::fail(
+                    "familyname-mismatch",
+                    &format!(
+                    "METADATA.pb family name field \"{}\" does not match correct family name \"{}\".",
+                    proto.name(),
+                    family_name
+                ),
+                ));
+            }
+        }
 
-        // googlefonts/metadata/nameid/post_script_name
+        // googlefonts/metadata/nameid/post_script_name (make sure postscript name is consistent)
         let post_script_name = font
             .get_best_name(&[StringId::POSTSCRIPT_NAME])
             .ok_or_else(|| {
@@ -128,6 +153,25 @@ fn consistent_with_fonts(c: &TestableCollection, _context: &Context) -> CheckFnR
                     "METADATA.pb post_script_name field \"{}\" does not match correct post script name \"{}\".",
                     proto.post_script_name(),
                     post_script_name
+                ),
+            ));
+        }
+        // googlefonts/metadata/valid_post_script_name_values (make sure postscript name is correct)
+        let familyname = font
+            .best_familyname()
+            .ok_or_else(|| CheckError::Error(format!("No family name found for {}", proto.name())))?
+            .replace(" ", "");
+        if !proto
+            .post_script_name()
+            .replace("-", "")
+            .contains(&familyname)
+        {
+            problems.push(Status::fail(
+                "mismatch",
+                &format!(
+                    "METADATA.pb post_script_name field \"{}\" does not match correct font name \"{}\".",
+                    proto.post_script_name(),
+                    familyname
                 ),
             ));
         }
