@@ -105,6 +105,13 @@ fn bad_composite(c: &CompositeGlyph) -> bool {
 }
 
 fn decompose_transformed_components(t: &Testable) -> FixFnResult {
+    decompose_components_impl(t, bad_composite)
+}
+
+pub(crate) fn decompose_components_impl(
+    t: &Testable,
+    bad_composite: impl Fn(&CompositeGlyph) -> bool,
+) -> FixFnResult {
     let f = fixfont!(t);
     let mut new_font = FontBuilder::new();
     let mut builder = GlyfLocaBuilder::new();

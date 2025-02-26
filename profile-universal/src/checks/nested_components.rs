@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 
-use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
+use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
 use read_fonts::{tables::glyf::Glyph, TableProvider};
 use skrifa::GlyphId;
+use write_fonts::tables::glyf::CompositeGlyph;
+
+use super::transformed_components::decompose_components_impl;
 
 #[check(
     id = "nested_components",
@@ -16,7 +19,8 @@ use skrifa::GlyphId;
         * https://github.com/arrowtype/recursive/issues/412
     ",
     proposal = "https://github.com/fonttools/fontbakery/issues/2961",
-    title = "Ensure glyphs do not have components which are themselves components."
+    title = "Ensure glyphs do not have components which are themselves components.",
+    hotfix = decompose_nested_components
 )]
 fn nested_components(f: &Testable, context: &Context) -> CheckFnResult {
     let font = testfont!(f);
@@ -58,4 +62,34 @@ fn nested_components(f: &Testable, context: &Context) -> CheckFnResult {
             ),
         ))
     }
+}
+
+fn decompose_nested_components(t: &Testable) -> FixFnResult {
+    let font = fixfont!(t);
+    let loca = font
+        .font()
+        .loca(None)
+        .map_err(|_| "loca table not found".to_string())?;
+    let glyf = font
+        .font()
+        .glyf()
+        .map_err(|_| "glyf table not found".to_string())?;
+    let composite_glyphs: HashMap<GlyphId, _> = font
+        .all_glyphs()
+        .filter_map(|glyphid| {
+            if let Some(Glyph::Composite(composite)) = loca.get_glyf(glyphid, &glyf).ok()? {
+                Some((glyphid, composite))
+            } else {
+                None
+            }
+        })
+        .collect();
+
+    let has_nested_components = |composite: &CompositeGlyph| {
+        composite
+            .components()
+            .iter()
+            .any(|component| composite_glyphs.contains_key(&component.glyph.into()))
+    };
+    decompose_components_impl(t, has_nested_components)
 }
