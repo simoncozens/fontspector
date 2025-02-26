@@ -1871,9 +1871,8 @@ def test_check_metadata_weightclass(check):
             assert_PASS(check(ttFont), f"with weightClass 275 on ({fontfile})...")
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/consistent_repo_urls")
-def test_check_metadata_consistent_repo_urls(check):
+def test_check_metadata_consistent_repo_urls(check, tmp_path):
     """METADATA.pb: Check URL on copyright string
     is the same as in repository_url field."""
 
@@ -1881,10 +1880,10 @@ def test_check_metadata_consistent_repo_urls(check):
     # copyright: "Copyright 2022 The Delicious Handrawn Project Authors
     #             (https://github.com/duartp/gloock)"
     # repository_url: "https://github.com/alphArtype/Delicious-Handrawn"
-    font = TEST_FILE("delicioushandrawn/DeliciousHandrawn-Regular.ttf")
-    assert_results_contain(check(font), FAIL, "mismatch", "with different URLs...")
+    md_file = TEST_FILE("delicioushandrawn/METADATA.pb")
+    assert_results_contain(check([md_file]), FAIL, "mismatch", "with different URLs...")
 
-    family_md = Font(font).family_metadata
+    family_md = read_mdpb(md_file)
     # so we fix it:
     assert (
         family_md.source.repository_url
@@ -1894,23 +1893,30 @@ def test_check_metadata_consistent_repo_urls(check):
         "Copyright 2022 The Delicious Handrawn Project Authors"
         " (https://github.com/alphArtype/Delicious-Handrawn)"
     )
-    assert_PASS(check(MockFont(file=font, family_metadata=family_md)))
+    assert_PASS(check(fake_mdpb(tmp_path, family_md)))
 
     family_md.source.repository_url = ""
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=family_md)),
+        check(fake_mdpb(tmp_path, family_md)),
         FAIL,
         "lacks-repo-url",
         "when the field is either empty or completley missing...",
     )
 
     # League Gothic got a bad repo in DESCRIPTION.en.html
-    ttFont = TTFont(TEST_FILE("leaguegothic-vf/LeagueGothic[wdth].ttf"))
-    assert_results_contain(check(ttFont), FAIL, "mismatch", "with different URLs...")
+    league_files = [
+        TEST_FILE("leaguegothic-vf/METADATA.pb"),
+        TEST_FILE("leaguegothic-vf/DESCRIPTION.en_us.html"),
+    ]
+    assert_results_contain(
+        check(league_files), FAIL, "mismatch", "with different URLs..."
+    )
 
     # CabinVF got a bad repo in OFL.txt
-    ttFont = TTFont(TEST_FILE("cabinvf/Cabin[wdth,wght].ttf"))
-    assert_results_contain(check(ttFont), FAIL, "mismatch", "with different URLs...")
+    cabin_files = [TEST_FILE("cabinvf/METADATA.pb"), TEST_FILE("cabinvf/OFL.txt")]
+    assert_results_contain(
+        check(cabin_files), FAIL, "mismatch", "with different URLs..."
+    )
 
 
 @pytest.mark.skip("Check not ported yet.")

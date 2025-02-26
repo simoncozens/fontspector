@@ -43,3 +43,5 @@ mod valid_nameid25;
 pub use valid_nameid25::valid_nameid25;
 mod broken_links;
 pub use broken_links::broken_links;
+mod consistent_repo_urls;
+pub use consistent_repo_urls::consistent_repo_urls;
