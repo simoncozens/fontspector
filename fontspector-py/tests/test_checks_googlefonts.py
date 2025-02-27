@@ -840,32 +840,40 @@ def test_check_license_ofl_copyright(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/license/OFL_body_text")
-def test_check_license_ofl_body_text(check):
+def test_check_license_ofl_body_text(check, tmp_path):
     """Check OFL.txt contains correct body text."""
 
     # Our reference Montserrat family is know to have
     # a proper OFL.txt license file.
     # NOTE: This is currently considered good
     #       even though it uses an "http://" URL
-    font = MockFont(file=TEST_FILE("montserrat/Montserrat-Regular.ttf"))
+    license_file = TEST_FILE("montserrat/OFL.txt")
+    license_contents = open(license_file).read()
 
-    assert_PASS(check(font), 'with a good OFL.txt license with "http://" url.')
+    assert_PASS(
+        check(license_file),
+        'with a good OFL.txt license with "http://" url.',
+    )
 
     # using "https://" is also considered good:
-    font.license_contents = font.license_contents.replace("http://", "https://")
+    fake_ofl = tmp_path / "OFL.txt"
+    license_contents = license_contents.replace("http://", "https://")
+    fake_ofl.write_text(license_contents, encoding="utf-8")
+
     assert_PASS(
-        check(font),
+        check(str(fake_ofl)),
         'with a good OFL.txt license with "https://" url.',
     )
 
     # modify a tiny bit of the license text, to trigger the FAIL:
-    font.license_contents = font.license_contents.replace(
+    license_contents = license_contents.replace(
         "SIL OPEN FONT LICENSE Version 1.1", "SOMETHING ELSE :-P Version Foo"
     )
+    license_contents = license_contents.replace("http://", "https://")
+    fake_ofl.write_text(license_contents, encoding="utf-8")
     assert_results_contain(
-        check(font),
+        check(str(fake_ofl)),
         WARN,
         "incorrect-ofl-body-text",
         "with incorrect ofl body text",

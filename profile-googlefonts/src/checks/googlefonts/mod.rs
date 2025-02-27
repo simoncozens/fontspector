@@ -49,3 +49,4 @@ mod glyph_coverage;
 pub use glyph_coverage::glyph_coverage;
 mod font_copyright;
 pub use font_copyright::font_copyright;
+pub mod license;
