@@ -818,24 +818,25 @@ def test_check_family_has_license(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/license/OFL_copyright")
-def test_check_license_ofl_copyright(check):
+def test_check_license_ofl_copyright(check, tmp_path):
     """Check license file has good copyright string."""
 
     # And Mada has a bad copyright string format:
-    font = TEST_FILE("mada/Mada-Regular.ttf")
+    license_file = TEST_FILE("mada/OFL.txt")
     assert_results_contain(
-        check(font), FAIL, "bad-format", "with bad string formatting."
+        check(license_file), FAIL, "bad-format", "with bad string formatting."
     )
 
     # so we fix it:
     SOME_GOOD_TEXT = (
         "Copyright 2019 The Montserrat Project Authors"
-        " (https://github.com/julietaula/montserrat)"
+        " (https://github.com/julietaula/montserrat)\n"
     )
+    fake_ofl = tmp_path / "OFL.txt"
+    fake_ofl.write_text(SOME_GOOD_TEXT, encoding="utf-8")
     assert_PASS(
-        check(MockFont(file=font, license_contents=SOME_GOOD_TEXT)),
+        check(str(fake_ofl)),
         "with good license contents.",
     )
 

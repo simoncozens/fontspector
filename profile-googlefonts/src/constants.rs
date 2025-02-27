@@ -102,3 +102,10 @@ pub const LATEST_TTFAUTOHINT_VERSION: &str = "1.8.4";
 #[allow(clippy::unwrap_used)]
 pub(crate) static TTFAUTOHINT_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"ttfautohint \(v(.*)\) ([^;]*)").unwrap());
+
+pub(crate) static EXPECTED_COPYRIGHT_PATTERN: LazyLock<Regex> = LazyLock::new(|| {
+    #[allow(clippy::unwrap_used)]
+        Regex::new(
+            r#"copyright \d{4}(-\d{4})?(,\s*\d{4}(-\d{4})?)*,? (the .* project authors \([^\@]*\)|google llc. all rights reserved)"#,
+        ).unwrap()
+});

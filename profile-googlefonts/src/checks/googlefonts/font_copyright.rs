@@ -1,17 +1,9 @@
-use std::sync::LazyLock;
-
 use fontspector_checkapi::{prelude::*, FileTypeConvert};
 use hashbrown::HashMap;
-use regex::Regex;
 use skrifa::string::StringId;
 
 use crate::checks::googlefonts::metadata::family_proto;
-static EXPECTED_COPYRIGHT_PATTERN: LazyLock<Regex> = LazyLock::new(|| {
-    #[allow(clippy::unwrap_used)]
-    Regex::new(
-        r#"copyright \d{4}(-\d{4})?(,\s*\d{4}(-\d{4})?)*,? (the .* project authors \([^\@]*\)|google llc. all rights reserved)"#,
-    ).unwrap()
-});
+use crate::constants::EXPECTED_COPYRIGHT_PATTERN;
 
 #[check(
     id = "googlefonts/font_copyright",
