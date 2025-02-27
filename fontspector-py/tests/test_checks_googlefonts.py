@@ -1031,20 +1031,19 @@ def test_check_name_familyname_first_char(check):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/unique_full_name_values")
-def test_check_metadata_unique_full_name_values(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_unique_full_name_values(check, tmp_path):
     """METADATA.pb: check if fonts field only has unique "full_name" values."""
 
     # Our reference FamilySans family is good:
-    font = TEST_FILE("familysans/FamilySans-Regular.ttf")
-    assert_PASS(check(font), "with a good family...")
+    md_file = TEST_FILE("familysans/METADATA.pb")
+    md_contents = read_mdpb(md_file)
+    assert_PASS(check(md_file), "with a good family...")
 
     # then duplicate a full_name entry to make it FAIL:
-    md = Font(font).family_metadata
-    md.fonts[0].full_name = md.fonts[1].full_name
+    md_contents.fonts[0].full_name = md_contents.fonts[1].full_name
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check(fake_mdpb(tmp_path, md_contents)),
         FAIL,
         "duplicated",
         "with a duplicated full_name entry.",

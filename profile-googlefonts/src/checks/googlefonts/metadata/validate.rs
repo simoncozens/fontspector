@@ -3,6 +3,7 @@ use std::path::Path;
 use crate::checks::googlefonts::metadata::family_proto;
 use chrono::prelude::*;
 use fontspector_checkapi::prelude::*;
+use hashbrown::HashSet;
 
 fn weight_acceptable_suffixes(w: i32) -> Vec<&'static str> {
     match w {
@@ -20,9 +21,9 @@ fn weight_acceptable_suffixes(w: i32) -> Vec<&'static str> {
 }
 
 const CATEGORY_HINTS: [(&str, &str); 11] = [
-    ("Sans", "SANS"),
-    ("Grotesk", "SANS"),
-    ("Grotesque", "SANS"),
+    ("Sans", "SANS_SERIF"),
+    ("Grotesk", "SANS_SERIF"),
+    ("Grotesque", "SANS_SERIF"),
     ("Serif", "SERIF"),
     ("Transitional", "SERIF"),
     ("Slab", "SERIF"),
@@ -208,6 +209,19 @@ fn validate(c: &Testable, _context: &Context) -> CheckFnResult {
                 ),
             ));
         }
+    }
+
+    // unique_full_name_values
+    let full_names = msg
+        .fonts
+        .iter()
+        .map(|f| f.full_name())
+        .collect::<HashSet<_>>();
+    if full_names.len() != msg.fonts.len() {
+        problems.push(Status::fail(
+            "duplicated",
+            "Found duplicated \"full_name\" values in METADATA.pb fonts field.",
+        ));
     }
 
     return_result(problems)
