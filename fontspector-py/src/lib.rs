@@ -107,16 +107,21 @@ impl CheckTester {
         };
 
         let mut fontspector_config = serde_json::Map::new();
+        let mut skip_network = false;
 
         if let Some(kwargs) = kwargs {
             if let Some(config) = kwargs.get_item("config")? {
                 fontspector_config = depythonize(&config)?;
+            }
+            if let Some(skip_network_arg) = kwargs.get_item("skip_network")? {
+                skip_network = skip_network_arg.as_any().extract()?;
             }
         }
 
         let mut context = Context {
             configuration: fontspector_config,
             full_lists: true,
+            skip_network,
             ..Default::default()
         };
         if let Some(profile_name) = &self.profile {

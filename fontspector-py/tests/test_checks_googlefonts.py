@@ -2665,27 +2665,15 @@ def test_check_repo_zip_files(check, tmp_path):
         os.remove(filepath)
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/vertical_metrics")
-def test_check_vertical_metrics(check, requests_mock):
-    requests_mock.get(
-        "http://fonts.google.com/metadata/fonts",
-        json={
-            "familyMetadataList": [
-                {"family": "Akshar"},
-            ],
-        },
-    )
-
+def test_check_vertical_metrics(check):
     font = TEST_FILE("akshar/Akshar[wght].ttf")
-
-    msg = assert_results_contain(check(font), SKIP, "unfulfilled-conditions")
-    assert "Unfulfilled Conditions: not listed_on_gfonts_api" in msg
+    assert_results_contain(check(font), SKIP, "already-onboarded")
 
     # Defeat the 'not listed_on_gfonts_api' condition.
     # linegap is not 0
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False)),
+        check(font, skip_network=True),
         FAIL,
         "bad-hhea.lineGap",
         'hhea.lineGap is "150" it should be 0',
@@ -2698,7 +2686,7 @@ def test_check_vertical_metrics(check, requests_mock):
     ttFont["hhea"].descent = -2000
     ttFont["OS/2"].sTypoDescender = -2000
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+        check(ttFont, skip_network=True),
         FAIL,
         "bad-hhea-range",
         "hhea sum is above 2000",
@@ -2708,7 +2696,7 @@ def test_check_vertical_metrics(check, requests_mock):
     ttFont["hhea"].descent = 0
     ttFont["OS/2"].sTypoDescender = 0
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+        check(ttFont, skip_network=True),
         FAIL,
         "bad-hhea-range",
         "hhea sum is below 1200",
@@ -2718,7 +2706,7 @@ def test_check_vertical_metrics(check, requests_mock):
     ttFont["hhea"].descent = -700
     ttFont["OS/2"].sTypoDescender = -700
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+        check(ttFont, skip_network=True),
         WARN,
         "bad-hhea-range",
         "hhea sum is above 1500",
@@ -2727,7 +2715,7 @@ def test_check_vertical_metrics(check, requests_mock):
     # hhea sum is in range
     ttFont["hhea"].descent = -300
     ttFont["OS/2"].sTypoDescender = -300
-    assert_PASS(check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)))
+    assert_PASS(check(ttFont, skip_network=True))
 
     # reset
     def reset_metrics():
@@ -2744,7 +2732,7 @@ def test_check_vertical_metrics(check, requests_mock):
     reset_metrics()
     ttFont["OS/2"].sTypoAscender = -900
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+        check(ttFont, skip_network=True),
         FAIL,
         "typo-ascender",
         "typo ascender is negative",
@@ -2752,7 +2740,7 @@ def test_check_vertical_metrics(check, requests_mock):
     reset_metrics()
     ttFont["hhea"].ascent = -900
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+        check(ttFont, skip_network=True),
         FAIL,
         "hhea-ascent",
         "hhea ascent is negative",
@@ -2762,7 +2750,7 @@ def test_check_vertical_metrics(check, requests_mock):
     reset_metrics()
     ttFont["OS/2"].sTypoDescender = 300
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+        check(ttFont, skip_network=True),
         FAIL,
         "typo-descender",
         "typo descender is positive",
@@ -2770,31 +2758,33 @@ def test_check_vertical_metrics(check, requests_mock):
     reset_metrics()
     ttFont["hhea"].descent = 300
     assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+        check(ttFont, skip_network=True),
         FAIL,
         "hhea-descent",
         "hhea descent is positive",
     )
 
-    # winascent is negative -> FAIL
-    reset_metrics()
-    ttFont["OS/2"].usWinAscent = -900
-    assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
-        FAIL,
-        "win-ascent",
-        "OS/2.usWinAscent is negative",
-    )
+    # This can't happen in a font binary, since they're unsigned values.
 
-    # windescent is negative -> FAIL
-    reset_metrics()
-    ttFont["OS/2"].usWinDescent = -300
-    assert_results_contain(
-        check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
-        FAIL,
-        "win-descent",
-        "OS/2.usWinDescent is negative",
-    )
+    # # winascent is negative -> FAIL
+    # reset_metrics()
+    # ttFont["OS/2"].usWinAscent = -900
+    # assert_results_contain(
+    #     check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+    #     FAIL,
+    #     "win-ascent",
+    #     "OS/2.usWinAscent is negative",
+    # )
+
+    # # windescent is negative -> FAIL
+    # reset_metrics()
+    # ttFont["OS/2"].usWinDescent = -300
+    # assert_results_contain(
+    #     check(MockFont(file=font, listed_on_gfonts_api=False, ttFont=ttFont)),
+    #     FAIL,
+    #     "win-descent",
+    #     "OS/2.usWinDescent is negative",
+    # )
 
 
 @pytest.mark.skip("Check not ported yet.")

@@ -50,3 +50,5 @@ pub use glyph_coverage::glyph_coverage;
 mod font_copyright;
 pub use font_copyright::font_copyright;
 pub mod license;
+mod vertical_metrics;
+pub use vertical_metrics::vertical_metrics;
