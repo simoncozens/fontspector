@@ -34,11 +34,13 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             .add_section("Article Checks")
             //            .add_and_register_check(checks::googlefonts::article::images)
             .add_section("Metadata Checks")
-            .add_and_register_check(checks::googlefonts::metadata::axes)
-            //            checks::googlefonts::metadata::axisregistry_bounds // Merged into metadata/axes
-            //            checks::googlefonts::metadata::axisregistry_valid_tags // Merged into metadata/axes
-            //            checks::googlefonts::metadata::consistent_axis_enumeration // Merged into metadata/axes
-            .add_and_register_check(checks::googlefonts::metadata::broken_links)
+            .add_and_register_check(checks::googlefonts::metadata::axes);
+        //            checks::googlefonts::metadata::axisregistry_bounds // Merged into metadata/axes
+        //            checks::googlefonts::metadata::axisregistry_valid_tags // Merged into metadata/axes
+        //            checks::googlefonts::metadata::consistent_axis_enumeration // Merged into metadata/axes
+        #[cfg(not(target_family = "wasm"))]
+        let builder = builder.add_and_register_check(checks::googlefonts::metadata::broken_links);
+        let builder = builder
             //            checks::googlefonts::metadata::canonical_weight_value // Merged into metadata/validate
             //            checks::googlefonts::metadata::designer_values // Merged into metadata/validate
             //            checks::googlefonts::metadata::empty_designer // Merged into metadata/validate

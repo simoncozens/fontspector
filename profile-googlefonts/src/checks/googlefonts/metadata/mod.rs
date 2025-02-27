@@ -41,7 +41,9 @@ pub(crate) fn family_proto(t: &Testable) -> Result<FamilyProto, CheckError> {
 }
 mod valid_nameid25;
 pub use valid_nameid25::valid_nameid25;
+#[cfg(not(target_family = "wasm"))]
 mod broken_links;
+#[cfg(not(target_family = "wasm"))]
 pub use broken_links::broken_links;
 mod consistent_repo_urls;
 pub use consistent_repo_urls::consistent_repo_urls;

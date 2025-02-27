@@ -8,7 +8,6 @@ reqwest = { version = "0.12", features = ["blocking"] }
 glob = "0.3.2"
 serde = { workspace = true }                            # For reading shaping check JSON files
 rustybuzz = "0.20.1"
-similar = "2.7.0"                                       # For shaping check reports
 
 [dependencies]
 chrono = "0.4.38" # For metadata date checks
@@ -30,6 +29,7 @@ skrifa = { workspace = true }
 kurbo = { workspace = true }
 log = { workspace = true }
 num-traits = "0.2.19"
+similar = "2.7.0" # For shaping check reports, OFL body diff
 
 unicode-normalization = "0"
 unicode-properties = { workspace = true }
