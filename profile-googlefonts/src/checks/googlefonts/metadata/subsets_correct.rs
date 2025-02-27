@@ -8,6 +8,14 @@ const COMMON_CODEPOINTS: [u32; 10] = [
     0x0000, 0x000D, 0x0020, 0x002D, 0x00A0, 0x25CC, 0x200C, 0x200D, 0x0964, 0x0965,
 ];
 
+const CJK_SUBSETS: [&str; 5] = [
+    "chinese-hongkong",
+    "chinese-simplified",
+    "chinese-traditional",
+    "korean",
+    "japanese",
+];
+
 fn coverage_required(subset: &str) -> f32 {
     if subset.ends_with("-ext") {
         return 0.2;
@@ -109,6 +117,16 @@ fn subsets_correct(c: &TestableCollection, context: &Context) -> CheckFnResult {
     sorted_subsets.sort();
     if subsets != sorted_subsets {
         problems.push(Status::fail("not-sorted", "Subsets are not in order"))
+    }
+
+    // Old single_cjk_subset check
+    let cjk_subsets = subsets.iter().filter(|s| CJK_SUBSETS.contains(&s.as_str()));
+    if cjk_subsets.count() > 1 {
+        problems.push(Status::error(
+            Some("multiple-cjk-subsets"),
+            &format!("METADATA.pb file contains more than one CJK subset. Please choose only one from {}.",
+            CJK_SUBSETS.join(", "))
+        ));
     }
 
     // Calculate actual subset for representative font

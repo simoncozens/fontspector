@@ -1211,26 +1211,23 @@ def test_check_metadata_includes_production_subsets(check, requests_mock):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/single_cjk_subset")
-def test_check_metadata_single_cjk_subset(check):
+@check_id("googlefonts/metadata/subsets_correct")
+def test_check_metadata_single_cjk_subset(check, tmp_path):
     """Check METADATA.pb file only contains a single CJK subset"""
 
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
     md = Font(font).family_metadata
 
-    # Test should pass since there isn't a CJK subset
-    assert_PASS(check(MockFont(file=font, family_metadata=md)))
-
-    # Let's append a single cjk subset
+    # I've taken a hatchet to the other test cases here, because other parts of
+    # subsets_correct will find other problems (no latin in METADATA.pb, but if
+    # you add Latin, subsets_correct will complain about missing coverage in the font)
     md.subsets.append("korean")
-    assert_PASS(check(MockFont(file=font, family_metadata=md)))
-
-    # Let's add another to raise a FATAL
+    results = check([fake_mdpb(tmp_path, md), font])
+    assert_PASS(filter(lambda r: r.message.code == "multiple-cjk-subsets", results))
     md.subsets.append("japanese")
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
-        FATAL,
+        check([fake_mdpb(tmp_path, md), font]),
+        ERROR,
         "multiple-cjk-subsets",
         "METADATA.pb has multiple cjk subsets...",
     )

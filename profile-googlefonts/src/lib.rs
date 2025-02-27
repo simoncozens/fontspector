@@ -54,6 +54,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::valid_full_name_values // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::nameid/post_script_name // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::valid_post_script_name_values // merged into metadata/consistent_with_fonts
+            //            checks::googlefonts::metadata::nameid/family_and_full_names // merged into metadata/consistent_with_fonts
             //            checks::googlefonts::metadata::valid_filename_values // redundant, see fontbakery#4997
             //            checks::googlefonts::metadata::undeclared_fonts // redundant, see fontbakery#4997
             //            checks::googlefonts::metadata::nameid/font_name // redundant, see fontbakery#4581
@@ -67,11 +68,10 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::match_name_familyname // Merged into metadata/validate
             //            checks::googlefonts::metadata::match_weight_postscript // Merged into metadata/validate
             //            checks::googlefonts::metadata::minisite_url // Merged into metadata/validate
-            //            .add_and_register_check(checks::googlefonts::metadata::nameid/family_and_full_names)
             //            .add_and_register_check(checks::googlefonts::metadata::primary_script)
             .add_and_register_check(checks::googlefonts::metadata::regular_is_400)
-            //            .add_and_register_check(checks::googlefonts::metadata::single_cjk_subset) // To merge into metadata/subsets_correct
             .add_and_register_check(checks::googlefonts::metadata::subsets_correct) // Replacement for metadata/unsupported_subsets
+            //            checks::googlefonts::metadata::single_cjk_subset // Merged into metadata/subsets_correct
             //            .add_and_register_check(checks::googlefonts::metadata::unique_full_name_values)
             //            .add_and_register_check(checks::googlefonts::metadata::unique_weight_style_pairs)
             //            .add_and_register_check(checks::googlefonts::metadata::unreachable_subsetting)
