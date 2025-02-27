@@ -127,9 +127,10 @@ fn consistent_with_fonts(c: &TestableCollection, _context: &Context) -> CheckFnR
                 ));
             }
         }
-        for family_name in font.get_name_entry_strings(StringId::FAMILY_NAME) {
-            if proto.name() != family_name {
-                problems.push(Status::fail(
+        if font.is_ribbi() {
+            for family_name in font.get_name_entry_strings(StringId::FAMILY_NAME) {
+                if proto.name() != family_name {
+                    problems.push(Status::fail(
                     "familyname-mismatch",
                     &format!(
                     "METADATA.pb family name field \"{}\" does not match correct family name \"{}\".",
@@ -137,6 +138,7 @@ fn consistent_with_fonts(c: &TestableCollection, _context: &Context) -> CheckFnR
                     family_name
                 ),
                 ));
+                }
             }
         }
 
