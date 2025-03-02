@@ -12,7 +12,8 @@ use scraper::{Html, Selector};
         text content of anchors not to include the http:// or https:// prefixes.
     
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/3497 and https://github.com/fonttools/fontbakery/issues/4283",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3497",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4283",
     title = "URLs on DESCRIPTION file must not display http(s) prefix.",
     applies_to = "DESC"
 )]

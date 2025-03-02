@@ -44,7 +44,8 @@ use crate::constants::EXPECTED_COPYRIGHT_PATTERN;
          (https://github.com/Omnibus-Type/ArchivoBlack)\"
 
     ",
-    proposal = "https://github.com/fonttools/fontbakery/pull/2383 and https://github.com/fonttools/fontbakery/issues/4829",
+    proposal = "https://github.com/fonttools/fontbakery/pull/2383",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Copyright notices match canonical pattern in fonts",
     implementation = "all"
 )]

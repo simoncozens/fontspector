@@ -15,7 +15,8 @@ use read_fonts::TableProvider;
         For better linespacing consistency across platforms,
         (typo/hhea)LineGap values must be 0.
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/4133 and https://googlefonts.github.io/gf-guide/metrics.html",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4133",
+    proposal = "https://googlefonts.github.io/gf-guide/metrics.html",
     title = "Checking Vertical Metric linegaps."
 )]
 fn linegaps(t: &Testable, _context: &Context) -> CheckFnResult {

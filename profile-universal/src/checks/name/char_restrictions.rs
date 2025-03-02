@@ -11,7 +11,8 @@ use read_fonts::types::NameId;
         an even smaller subset ("a-zA-Z0-9") for
         VARIATIONS_POSTSCRIPT_NAME_PREFIX (nameID 25).
     "#,
-    proposal = "https://github.com/fonttools/fontbakery/issues/1718 and https://github.com/fonttools/fontbakery/issues/1663",
+    proposal = "https://github.com/fonttools/fontbakery/issues/1718",
+    proposal = "https://github.com/fonttools/fontbakery/issues/1663",
     title = "Are there disallowed characters in the NAME table?"
 )]
 fn char_restrictions(t: &Testable, _context: &Context) -> CheckFnResult {

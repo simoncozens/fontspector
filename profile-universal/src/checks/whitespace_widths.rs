@@ -17,7 +17,8 @@ use skrifa::MetadataProvider;
         If the space and the nbspace are not the same width, it breaks the text
         composition of documents.
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/3843 https://github.com/fonttools/fontbakery/issues/4829",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3843",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Space and non-breaking space have the same width?"
 )]
 fn whitespace_widths(t: &Testable, _context: &Context) -> CheckFnResult {

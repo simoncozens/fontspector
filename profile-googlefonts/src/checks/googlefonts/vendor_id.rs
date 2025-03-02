@@ -38,7 +38,8 @@ const SUGGEST_MICROSOFT_VENDORLIST_WEBSITE: &str = "If you registered it recentl
         check, since your ID will soon be included in one of our upcoming releases.
     
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/3943 and https://github.com/fonttools/fontbakery/issues/4829",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3943",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Checking OS/2 achVendID."
 )]
 fn vendor_id(t: &Testable, _context: &Context) -> CheckFnResult {

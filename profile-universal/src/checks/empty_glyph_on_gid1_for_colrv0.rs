@@ -14,7 +14,8 @@ use skrifa::GlyphId;
 
         See https://github.com/googlefonts/gftools/issues/609
     ",
-    proposal = "https://github.com/googlefonts/gftools/issues/609 and https://github.com/fonttools/fontbakery/pull/3905",
+    proposal = "https://github.com/googlefonts/gftools/issues/609",
+    proposal = "https://github.com/fonttools/fontbakery/pull/3905",
     title = "Put an empty glyph on GID 1 right after the .notdef glyph for COLRv0 fonts."
 )]
 fn empty_glyph_on_gid1_for_colrv0(t: &Testable, _context: &Context) -> CheckFnResult {

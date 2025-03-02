@@ -15,7 +15,8 @@ use scraper::{Html, Selector};
         description file or edited by hand.
     
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/2664 and https://github.com/fonttools/fontbakery/issues/4829",
+    proposal = "https://github.com/fonttools/fontbakery/issues/2664",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Is this a proper HTML snippet?",
     applies_to = "DESC"
 )]

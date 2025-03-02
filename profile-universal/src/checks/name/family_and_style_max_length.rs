@@ -33,7 +33,8 @@ fn low_level_names(name: &Name<'_>, name_id: NameId) -> HashMap<(u16, u16, u16),
         This check ensures that the length of name table entries is not
         too long, as this causes problems in some environments.
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/1488 and https://github.com/fonttools/fontbakery/issues/2179",
+    proposal = "https://github.com/fonttools/fontbakery/issues/1488",
+    proposal = "https://github.com/fonttools/fontbakery/issues/2179",
     title = "Combined length of family and style must not exceed 32 characters."
 )]
 fn family_and_style_max_length(t: &Testable, _context: &Context) -> CheckFnResult {
