@@ -19,7 +19,8 @@ use fontspector_checkapi::{prelude::*, testfont, FileTypeConvert};
         More discussion at:
         https://typedrawers.com/discussion/2046/special-dash-things-softhyphen-horizontalbar
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/4046 and https://github.com/fonttools/fontbakery/issues/3486",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4046",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3486",
     title = "Does the font contain a soft hyphen?"
 )]
 fn soft_hyphen(t: &Testable, context: &Context) -> CheckFnResult {

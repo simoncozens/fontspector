@@ -73,7 +73,8 @@ struct CheckParams {
     id: String,
     title: String,
     rationale: String,
-    proposal: String,
+    #[darling(multiple)]
+    proposal: Vec<String>,
     #[darling(default)]
     implementation: Implementation,
     applies_to: Option<String>,
@@ -117,7 +118,12 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut new_sig = sig.clone();
     new_sig.ident = impl_ident.clone();
 
-    let proposal = syn::LitStr::new(&params.proposal, Span::call_site());
+    let proposal_items: Vec<syn::LitStr> = params.proposal
+        .iter()
+        .map(|ident| syn::LitStr::new(&ident.to_string(), Span::call_site()))
+        .collect();
+    let proposal = quote!(&[#(#proposal_items),*]);
+
     let title = syn::LitStr::new(&params.title, Span::call_site());
     // println!("Old rationale: |{}|", params.rationale);
     let new_rationale = dedent_and_unwrap_rationale(&params.rationale);
@@ -151,7 +157,7 @@ pub(crate) fn check_impl(args: TokenStream, input: TokenStream) -> TokenStream {
         id.value(),
         title.value(),
         new_rationale,
-        proposal.value()
+        params.proposal.iter().map(|i| i.to_string()).collect::<Vec<_>>().join(" and ")
     );
     quote!(
         #(#attrs)*

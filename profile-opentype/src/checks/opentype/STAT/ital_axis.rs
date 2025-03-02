@@ -205,7 +205,9 @@ fn check_ital_is_binary_and_last(t: &TestFont, is_italic: bool) -> Result<Vec<St
 
         Also, the axis value name for uprights must be set as elidable.
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/2934 and https://github.com/fonttools/fontbakery/issues/3668 and https://github.com/fonttools/fontbakery/issues/3669",
+    proposal = "https://github.com/fonttools/fontbakery/issues/2934",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3668",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3669",
     implementation = "all",
     title = "Ensure VFs have 'ital' STAT axis."
 )]

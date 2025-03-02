@@ -16,7 +16,11 @@ const NANOEMOJI_ADVICE : &str = "You can do it by using the maximum_color tool p
         run the maximum_color tool in nanoemoji:
         https://github.com/googlefonts/nanoemoji
     ",
-    proposal = "https://googlefonts.github.io/gf-guide/color.html and https://github.com/fonttools/fontbakery/issues/3886 and https://github.com/fonttools/fontbakery/issues/3888 and https://github.com/fonttools/fontbakery/pull/3889 and https://github.com/fonttools/fontbakery/issues/4131",
+    proposal = "https://googlefonts.github.io/gf-guide/color.html",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3886",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3888",
+    proposal = "https://github.com/fonttools/fontbakery/pull/3889",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4131",
     title = "Ensure font has the expected color font tables."
 )]
 fn color_fonts(t: &Testable, _context: &Context) -> CheckFnResult {

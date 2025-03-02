@@ -9,7 +9,9 @@ use fontspector_checkapi::prelude::*;
         not both - except for Noto fonts which should have both!
     
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/3841 and https://github.com/fonttools/fontbakery/issues/4318 and https://github.com/fonttools/fontbakery/issues/4702",
+    proposal = "https://github.com/fonttools/fontbakery/issues/3841",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4318",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4702",
     title = "Check for presence of an ARTICLE.en_us.html file",
     implementation = "all"
 )]

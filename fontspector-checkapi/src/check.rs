@@ -56,7 +56,7 @@ pub struct Check<'a> {
     /// A short description of the check
     pub rationale: &'a str,
     /// URL where the check was proposed
-    pub proposal: &'a str,
+    pub proposal: &'a [&'a str],
     /// Function pointer implementing the actual check
     pub implementation: CheckImplementation<'a>,
     /// Function pointer implementing a hotfix to the binary file

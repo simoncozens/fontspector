@@ -59,7 +59,8 @@ fn identify_license(name_string: &str) -> Option<&'static License> {
         When in doubt, please choose OFL for new font projects.
     
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/4358 and https://github.com/fonttools/fontbakery/issues/4829",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4358",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "License URL matches License text on name table?"
 )]
 fn license_url(t: &Testable, _context: &Context) -> CheckFnResult {

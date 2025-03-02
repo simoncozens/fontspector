@@ -13,7 +13,8 @@ use crate::network_conditions::get_url;
         all hyperlinks in it must be properly working.
     
     ",
-    proposal = "https://github.com/fonttools/fontbakery/issues/4110 and https://github.com/fonttools/fontbakery/issues/4829",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4110",
+    proposal = "https://github.com/fonttools/fontbakery/issues/4829",
     title = "Does DESCRIPTION file contain broken links?",
     applies_to = "DESC"
 )]
