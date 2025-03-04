@@ -47,3 +47,5 @@ mod broken_links;
 pub use broken_links::broken_links;
 mod consistent_repo_urls;
 pub use consistent_repo_urls::consistent_repo_urls;
+mod primary_script;
+pub use primary_script::primary_script;

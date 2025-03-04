@@ -69,7 +69,7 @@ impl fontspector_checkapi::Plugin for GoogleFonts {
             //            checks::googlefonts::metadata::match_weight_postscript // Merged into metadata/validate
             //            checks::googlefonts::metadata::minisite_url // Merged into metadata/validate
             //            checks::googlefonts::metadata::unique_full_name_values // Merged into metadata/validate
-            //            .add_and_register_check(checks::googlefonts::metadata::primary_script)
+            .add_and_register_check(checks::googlefonts::metadata::primary_script)
             .add_and_register_check(checks::googlefonts::metadata::regular_is_400)
             .add_and_register_check(checks::googlefonts::metadata::subsets_correct) // Replacement for metadata/unsupported_subsets
             //            checks::googlefonts::metadata::single_cjk_subset // Merged into metadata/subsets_correct

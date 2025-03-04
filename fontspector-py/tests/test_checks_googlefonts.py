@@ -1924,30 +1924,35 @@ def test_check_metadata_consistent_repo_urls(check, tmp_path):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
 @check_id("googlefonts/metadata/primary_script")
-def test_check_metadata_primary_script(check):
+def test_check_metadata_primary_script(check, tmp_path):
     """METADATA.pb: Check for primary_script"""
 
-    class Metadata:
-        primary_script = ""
+    font = TEST_FILE("notosanskhudawadi/NotoSansKhudawadi-Regular.ttf")
+    mdpb_file = TEST_FILE("notosanskhudawadi/METADATA.pb")
+    assert_PASS(check([font, mdpb_file]))
 
-    family_md = Metadata()
-    font = TEST_FILE("fira/FiraCode[wght].ttf")
+    family_md = read_mdpb(mdpb_file)
     family_md.primary_script = ""
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=family_md)),
+        check([font, fake_mdpb(tmp_path, family_md)]),
         WARN,
         "missing-primary-script",
     )
     family_md.primary_script = "Arab"
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=family_md)),
+        check([font, fake_mdpb(tmp_path, family_md)]),
         WARN,
         "wrong-primary-script",
     )
-    ttFont = TTFont(TEST_FILE("merriweather/Merriweather-Regular.ttf"))
-    assert_PASS(check(ttFont))
+    assert_PASS(
+        check(
+            [
+                TEST_FILE("merriweather/Merriweather-Regular.ttf"),
+                TEST_FILE("merriweather/METADATA.pb"),
+            ]
+        )
+    )
 
 
 @check_id("googlefonts/unitsperem")

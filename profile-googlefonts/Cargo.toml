@@ -34,6 +34,7 @@ similar = "2.7.0" # For shaping check reports, OFL body diff
 unicode-normalization = "0"
 unicode-properties = { workspace = true }
 unicode-canonical-combining-class = "1.0.0"
+unicode-script = "0.5.7"
 yeslogic-unicode-blocks = "0.2.0"
 write-fonts = { workspace = true }
 hashbrown = "0.15.2"
