@@ -138,6 +138,8 @@ fn validate(c: &Testable, _context: &Context) -> CheckFnResult {
         }
     }
 
+    let mut weight_style = HashSet::new();
+
     for font in msg.fonts.iter() {
         // Check weight values are canonical (googlefonts/metadata/canonical_weight_value)
         if ![100, 200, 300, 400, 500, 600, 700, 800, 900].contains(&font.weight()) {
@@ -202,12 +204,25 @@ fn validate(c: &Testable, _context: &Context) -> CheckFnResult {
             problems.push(Status::fail(
                 "mismatch",
                 &format!(
-                    "METADATA.pb: {}:\n Family name \"{}\" does not match font name: \"{}\"",
+                    "METADATA.pb: {}: Family name \"{}\" does not match font name: \"{}\"",
                     font.filename(),
                     msg.name(),
                     font.name(),
                 ),
             ));
+        }
+
+        // googlefonts/metadata/unique_weight_style_pairs
+        if weight_style.contains(&(font.weight(), font.style())) {
+            problems.push(Status::fail(
+                "duplicated",
+                &format!(
+                    "METADATA.pb: {}: Found duplicated style:weight pair in METADATA.pb fonts field.",
+                    font.filename(),
+                ),
+            ));
+        } else {
+            weight_style.insert((font.weight(), font.style()));
         }
     }
 

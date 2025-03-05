@@ -1050,21 +1050,20 @@ def test_check_metadata_unique_full_name_values(check, tmp_path):
     )
 
 
-@pytest.mark.skip("Check not ported yet.")
-@check_id("googlefonts/metadata/unique_weight_style_pairs")
-def test_check_metadata_unique_weight_style_pairs(check):
+@check_id("googlefonts/metadata/validate")
+def test_check_metadata_unique_weight_style_pairs(check, tmp_path):
     """METADATA.pb: check if fonts field only contains unique style:weight pairs."""
 
     # Our reference FamilySans family is good:
     font = TEST_FILE("familysans/FamilySans-Regular.ttf")
-    assert_PASS(check(font), "with a good family...")
 
     # then duplicate a pair of style & weight entries to make it FAIL:
     md = Font(font).family_metadata
+    assert_PASS(check(fake_mdpb(tmp_path, md)), "with a good family...")
     md.fonts[0].style = md.fonts[1].style
     md.fonts[0].weight = md.fonts[1].weight
     assert_results_contain(
-        check(MockFont(file=font, family_metadata=md)),
+        check([fake_mdpb(tmp_path, md)]),
         FAIL,
         "duplicated",
         "with a duplicated pair of style & weight entries",
