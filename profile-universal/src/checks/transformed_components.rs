@@ -1,11 +1,13 @@
 use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
+use hashbrown::HashMap;
+use itertools::Itertools;
 use kurbo::Affine;
 use read_fonts::{
     tables::glyf::{Anchor, CurvePoint, Glyph, Transform},
     types::F2Dot14,
     FontData, TableProvider,
 };
-use skrifa::GlyphId16;
+use skrifa::GlyphId;
 use write_fonts::{
     from_obj::ToOwnedObj,
     tables::glyf::{
@@ -98,20 +100,40 @@ fn transformed_components(f: &Testable, context: &Context) -> CheckFnResult {
     }
 }
 
-fn bad_composite(c: &CompositeGlyph) -> bool {
-    c.components().iter().any(|component| {
-        !transform_is_linear(component.transform) || transform_is_semi_flipped(component.transform)
-    })
-}
-
 fn decompose_transformed_components(t: &Testable) -> FixFnResult {
-    decompose_components_impl(t, bad_composite)
+    let f = fixfont!(t);
+    let loca = f
+        .font()
+        .loca(None)
+        .map_err(|_| "loca table not found".to_string())?;
+    let glyf = f
+        .font()
+        .glyf()
+        .map_err(|_| "glyf table not found".to_string())?;
+    let bad_composites = f
+        .all_glyphs()
+        .filter_map(|gid| {
+            loca.get_glyf(gid, &glyf)
+                .ok()
+                .flatten()
+                .and_then(|glyph| match glyph {
+                    Glyph::Composite(composite)
+                        if composite.components().any(|component| {
+                            !transform_is_linear(component.transform)
+                                || transform_is_semi_flipped(component.transform)
+                        }) =>
+                    {
+                        Some(gid)
+                    }
+                    _ => None,
+                })
+        })
+        .collect::<Vec<_>>();
+
+    decompose_components_impl(t, &bad_composites)
 }
 
-pub(crate) fn decompose_components_impl(
-    t: &Testable,
-    bad_composite: impl Fn(&CompositeGlyph) -> bool,
-) -> FixFnResult {
+pub(crate) fn decompose_components_impl(t: &Testable, decompose_order: &[GlyphId]) -> FixFnResult {
     let f = fixfont!(t);
     let mut new_font = FontBuilder::new();
     let mut builder = GlyfLocaBuilder::new();
@@ -123,30 +145,35 @@ pub(crate) fn decompose_components_impl(
         .font()
         .glyf()
         .map_err(|_| "glyf table not found".to_string())?;
-    let all_glyphs: Vec<WriteGlyph> = f
+    let mut all_glyphs: HashMap<GlyphId, WriteGlyph> = f
         .all_glyphs()
         .map(|gid| {
-            loca.get_glyf(gid, &glyf).map(|option_glyph| {
-                option_glyph
-                    .map(|glyph| {
-                        let g: WriteGlyph = glyph.to_owned_obj(FontData::new(&[]));
-                        g
-                    })
-                    .unwrap_or(WriteGlyph::Empty)
-            })
+            loca.get_glyf(gid, &glyf)
+                .map(|option_glyph| {
+                    option_glyph
+                        .map(|glyph| {
+                            let g: WriteGlyph = glyph.to_owned_obj(FontData::new(&[]));
+                            g
+                        })
+                        .unwrap_or(WriteGlyph::Empty)
+                })
+                .map(|x| (gid, x))
         })
-        .collect::<Result<Vec<WriteGlyph>, _>>()
+        .collect::<Result<HashMap<GlyphId, WriteGlyph>, _>>()
         .map_err(|x| x.to_string())?;
-    for glyph in all_glyphs.iter() {
-        match glyph {
-            WriteGlyph::Composite(composite) if bad_composite(composite) => {
+    for glyph_id in decompose_order {
+        let current_glyph = all_glyphs.get(glyph_id).ok_or("glyph not found")?;
+        match current_glyph {
+            WriteGlyph::Composite(composite) => {
                 let new_glyph = decompose_glyph(composite, &all_glyphs)?;
-                builder.add_glyph(&new_glyph).map_err(|x| x.to_string())?;
+                all_glyphs.insert(*glyph_id, new_glyph);
             }
-            WriteGlyph::Composite(_) | WriteGlyph::Empty | WriteGlyph::Simple(_) => {
-                builder.add_glyph(glyph).map_err(|x| x.to_string())?;
-            }
+            WriteGlyph::Empty | WriteGlyph::Simple(_) => {}
         }
+    }
+    for glyph_id in all_glyphs.keys().sorted_by(|a, b| a.cmp(b)) {
+        let glyph = all_glyphs.get(glyph_id).ok_or("glyph not found")?;
+        builder.add_glyph(glyph).map_err(|x| x.to_string())?;
     }
     let (new_glyph, new_loca, _head_format) = builder.build();
     new_font.add_table(&new_glyph).map_err(|x| x.to_string())?;
@@ -160,12 +187,12 @@ pub(crate) fn decompose_components_impl(
 
 fn decompose_glyph(
     composite: &CompositeGlyph,
-    glyphs: &[WriteGlyph],
+    glyphs: &HashMap<GlyphId, WriteGlyph>,
 ) -> Result<WriteGlyph, String> {
     let mut new_glyph = SimpleGlyph::default();
     for component in composite.components() {
         for (gid, affine) in flatten_component(glyphs, component)? {
-            let component_glyph = glyphs.get(gid.to_u16() as usize).ok_or("glyph not found")?;
+            let component_glyph = glyphs.get(&gid).ok_or("glyph not found")?;
             match component_glyph {
                 WriteGlyph::Simple(simple) => {
                     new_glyph
@@ -193,16 +220,16 @@ fn transform_contour(c: &Contour, affine: Affine) -> Contour {
 }
 
 fn flatten_component(
-    glyphs: &[WriteGlyph],
+    glyphs: &HashMap<GlyphId, WriteGlyph>,
     component: &Component,
-) -> Result<Vec<(GlyphId16, kurbo::Affine)>, String> {
+) -> Result<Vec<(GlyphId, kurbo::Affine)>, String> {
     let glyph = glyphs
-        .get(component.glyph.to_u16() as usize)
+        .get(&GlyphId::from(component.glyph))
         .ok_or("glyph not found")?;
     Ok(match glyph {
         WriteGlyph::Empty => vec![],
         WriteGlyph::Simple(_) => vec![(
-            component.glyph,
+            component.glyph.into(),
             to_kurbo_transform(&component.transform, &component.anchor),
         )],
         WriteGlyph::Composite(composite_glyph) => {

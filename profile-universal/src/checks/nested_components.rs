@@ -1,9 +1,14 @@
 use std::collections::HashMap;
 
 use fontspector_checkapi::{fixfont, prelude::*, testfont, FileTypeConvert};
-use read_fonts::{tables::glyf::Glyph, TableProvider};
+use read_fonts::{
+    tables::{
+        glyf::{Glyf, Glyph},
+        loca::Loca,
+    },
+    TableProvider,
+};
 use skrifa::GlyphId;
-use write_fonts::tables::glyf::CompositeGlyph;
 
 use super::transformed_components::decompose_components_impl;
 
@@ -64,6 +69,19 @@ fn nested_components(f: &Testable, context: &Context) -> CheckFnResult {
     }
 }
 
+fn get_depth(glyph_id: GlyphId, loca: &Loca, glyf: &Glyf) -> u32 {
+    let mut depth = 0;
+    let glyph_entry = loca.get_glyf(glyph_id, glyf).ok().flatten();
+    if let Some(Glyph::Composite(composite)) = glyph_entry {
+        depth = 1 + composite
+            .components()
+            .map(|component| get_depth(component.glyph.into(), loca, glyf))
+            .max()
+            .unwrap_or(0)
+    }
+    depth
+}
+
 fn decompose_nested_components(t: &Testable) -> FixFnResult {
     let font = fixfont!(t);
     let loca = font
@@ -74,22 +92,16 @@ fn decompose_nested_components(t: &Testable) -> FixFnResult {
         .font()
         .glyf()
         .map_err(|_| "glyf table not found".to_string())?;
-    let composite_glyphs: HashMap<GlyphId, _> = font
-        .all_glyphs()
-        .filter_map(|glyphid| {
-            if let Some(Glyph::Composite(composite)) = loca.get_glyf(glyphid, &glyf).ok()? {
-                Some((glyphid, composite))
-            } else {
-                None
-            }
-        })
-        .collect();
+    let mut depths = HashMap::new();
+    for glyph in font.all_glyphs() {
+        depths.insert(glyph, get_depth(glyph, &loca, &glyf));
+    }
+    // Drop all with depth <2
+    depths.retain(|_, depth| *depth > 1);
+    // Sort by depth, descending
+    let mut sorted_glyphs: Vec<GlyphId> = depths.keys().copied().collect();
+    sorted_glyphs.sort_by_key(|&glyph| depths[&glyph]);
+    sorted_glyphs.reverse();
 
-    let has_nested_components = |composite: &CompositeGlyph| {
-        composite
-            .components()
-            .iter()
-            .any(|component| composite_glyphs.contains_key(&component.glyph.into()))
-    };
-    decompose_components_impl(t, has_nested_components)
+    decompose_components_impl(t, &sorted_glyphs)
 }
