@@ -226,20 +226,19 @@ fn flatten_component(
     let glyph = glyphs
         .get(&GlyphId::from(component.glyph))
         .ok_or("glyph not found")?;
+    let my_transform = to_kurbo_transform(&component.transform, &component.anchor);
+
     Ok(match glyph {
         WriteGlyph::Empty => vec![],
-        WriteGlyph::Simple(_) => vec![(
-            component.glyph.into(),
-            to_kurbo_transform(&component.transform, &component.anchor),
-        )],
+        WriteGlyph::Simple(_) => {
+            vec![(component.glyph.into(), my_transform)]
+        }
         WriteGlyph::Composite(composite_glyph) => {
             let mut all_flattened_components = vec![];
             for component in composite_glyph.components() {
                 all_flattened_components.extend(flatten_component(glyphs, component)?.iter().map(
                     |(gid, transform)| {
-                        let new_transform =
-                            to_kurbo_transform(&component.transform, &component.anchor)
-                                * *transform;
+                        let new_transform = my_transform * *transform;
                         (*gid, new_transform)
                     },
                 ));
