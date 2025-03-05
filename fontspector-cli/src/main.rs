@@ -14,8 +14,8 @@ use args::Args;
 use clap::Parser;
 use fontbakery_bridge::FontbakeryBridge;
 use fontspector_checkapi::{
-    Check, CheckResult, Context, FixResult, HotfixFunction, Plugin, Registry, Status, StatusCode,
-    Testable, TestableCollection, TestableType,
+    Check, CheckResult, Context, FixResult, HotfixFunction, Plugin, Registry, StatusCode, Testable,
+    TestableCollection, TestableType,
 };
 use itertools::Either;
 use profile_googlefonts::GoogleFonts;
