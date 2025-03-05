@@ -14,7 +14,8 @@ use args::Args;
 use clap::Parser;
 use fontbakery_bridge::FontbakeryBridge;
 use fontspector_checkapi::{
-    Check, CheckResult, Context, FixResult, Plugin, Registry, TestableCollection, TestableType,
+    Check, CheckResult, Context, FixResult, HotfixFunction, Plugin, Registry, Status, StatusCode,
+    Testable, TestableCollection, TestableType,
 };
 use itertools::Either;
 use profile_googlefonts::GoogleFonts;
@@ -187,7 +188,7 @@ fn main() {
     );
     // }
 
-    // Run all the things! Check all the fonts! Fix all the binaries! Fix all the sources!
+    // Run all the things! Check all the fonts!
 
     // Do this in parallel for release, serial for debug
     #[cfg(debug_assertions)]
@@ -203,8 +204,7 @@ fn main() {
         Either::Right(checkorder.par_iter())
     };
 
-    #[allow(clippy::unwrap_used)] // We check for is_some before unwrapping
-    let results: RunResults = checkorder_iterator
+    let mut results: RunResults = checkorder_iterator
         .map(|(sectionname, testable, check, context)| {
             (
                 testable,
@@ -212,11 +212,13 @@ fn main() {
                 check.run(testable, context, Some(sectionname)),
             )
         })
-        .filter_map(|(testable, check, result)| {
-            result.map(|result| apply_fixes(testable, check, result, &args))
-        })
+        .filter_map(|(_, _, result)| result)
         .collect::<Vec<CheckResult>>()
         .into();
+
+    if args.hotfix || args.fix_sources {
+        try_fixing_stuff(&mut results, &args, &registry);
+    }
 
     let worst_status = results.worst_status();
 
@@ -330,37 +332,88 @@ fn load_configuration(args: &Args) -> Map<String, serde_json::Value> {
         .unwrap_or_default()
 }
 
-fn apply_fixes(
-    testable: &&TestableType,
-    check: &&Check,
-    mut result: CheckResult,
-    args: &Args,
-) -> CheckResult {
-    if let TestableType::Single(testable) = testable {
-        if args.hotfix {
-            if let Some(fix) = check.hotfix {
-                result.hotfix_result = match fix(testable) {
-                    Ok(_) => Some(FixResult::Fixed),
-                    Err(e) => Some(FixResult::FixError(e)),
-                }
-            } else {
-                result.hotfix_result = Some(FixResult::Unfixable);
-            }
-        } else if check.hotfix.is_some() {
-            result.hotfix_result = Some(FixResult::Available);
-        }
-        if args.fix_sources {
-            if let Some(fix) = check.fix_source {
-                result.sourcefix_result = match fix(testable) {
-                    Ok(_) => Some(FixResult::Fixed),
-                    Err(e) => Some(FixResult::FixError(e)),
-                }
-            } else {
-                result.sourcefix_result = Some(FixResult::Unfixable);
-            }
-        } else if check.fix_source.is_some() {
-            result.sourcefix_result = Some(FixResult::Available);
+// fn apply_fixes(
+//     testable: &mut TestableType,
+//     check: &&Check,
+//     mut result: CheckResult,
+//     args: &Args,
+// ) -> CheckResult {
+//     if let TestableType::Single(testable) = testable {
+//         if args.hotfix {
+//             if let Some(fix) = check.hotfix {
+//                 result.hotfix_result = match fix(testable) {
+//                     Ok(_) => Some(FixResult::Fixed),
+//                     Err(e) => Some(FixResult::FixError(e)),
+//                 }
+//             } else {
+//                 result.hotfix_result = Some(FixResult::Unfixable);
+//             }
+//         } else if check.hotfix.is_some() {
+//             result.hotfix_result = Some(FixResult::Available);
+//         }
+//         if args.fix_sources {
+//             if let Some(fix) = check.fix_source {
+//                 result.sourcefix_result = match fix(testable) {
+//                     Ok(_) => Some(FixResult::Fixed),
+//                     Err(e) => Some(FixResult::FixError(e)),
+//                 }
+//             } else {
+//                 result.sourcefix_result = Some(FixResult::Unfixable);
+//             }
+//         } else if check.fix_source.is_some() {
+//             result.sourcefix_result = Some(FixResult::Available);
+//         }
+//     }
+//     result
+// }
+
+fn try_fixing_stuff(results: &mut RunResults, args: &Args, registry: &Registry) {
+    let failed_checks = results
+        .iter_mut()
+        .filter(|x| x.worst_status() >= StatusCode::Fail)
+        .collect::<Vec<_>>();
+    // Group the fixes by filename because we want to provide testables
+    // // let mut fix_sources = HashMap::new();
+    let mut fix_binaries: HashMap<String, Vec<(&HotfixFunction, &mut CheckResult)>> =
+        HashMap::new();
+    for result in failed_checks.into_iter() {
+        let Some(check) = registry.checks.get(&result.check_id) else {
+            log::warn!(
+                "A check called {} just mysteriously vanished",
+                result.check_id
+            );
+            continue;
+        };
+        if args.hotfix && result.filename.is_some() && check.hotfix.is_some() {
+            #[allow(clippy::unwrap_used)] // We know this is Some
+            fix_binaries
+                .entry(result.filename.clone().unwrap())
+                .or_default()
+                .push((check.hotfix.unwrap(), result));
         }
     }
-    result
+
+    for (file, fixes) in fix_binaries.into_iter() {
+        let mut testable = Testable::new(&file).unwrap_or_else(|e| {
+            log::error!("Could not load files from {:?}: {:}", file, e);
+            std::process::exit(1)
+        });
+        let mut modified = false;
+        for (fix, result) in fixes.into_iter() {
+            result.hotfix_result = match fix(&mut testable) {
+                Ok(hotfix_behaviour) => {
+                    modified |= hotfix_behaviour;
+                    Some(FixResult::Fixed)
+                }
+                Err(e) => Some(FixResult::FixError(e)),
+            }
+        }
+        if modified {
+            // save it
+            testable.save().unwrap_or_else(|e| {
+                log::error!("Could not save file {:?}: {:}", file, e);
+                std::process::exit(1)
+            });
+        }
+    }
 }

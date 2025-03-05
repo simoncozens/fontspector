@@ -49,7 +49,7 @@ fn unwanted_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     })
 }
 
-fn delete_unwanted_tables(t: &Testable) -> FixFnResult {
+fn delete_unwanted_tables(t: &mut Testable) -> FixFnResult {
     let f = fixfont!(t);
     let unwanted_tags = UNWANTED_TABLES
         .iter()
@@ -65,6 +65,6 @@ fn delete_unwanted_tables(t: &Testable) -> FixFnResult {
         }
     }
     let new_bytes = new_font.build();
-    std::fs::write(&t.filename, new_bytes).map_err(|_| "Couldn't write file".to_string())?;
+    t.set(new_bytes);
     Ok(true)
 }

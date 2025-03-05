@@ -82,7 +82,7 @@ fn get_depth(glyph_id: GlyphId, loca: &Loca, glyf: &Glyf) -> u32 {
     depth
 }
 
-fn decompose_nested_components(t: &Testable) -> FixFnResult {
+fn decompose_nested_components(t: &mut Testable) -> FixFnResult {
     let font = fixfont!(t);
     let loca = font
         .font()

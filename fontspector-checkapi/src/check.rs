@@ -46,6 +46,9 @@ pub enum CheckImplementation<'a> {
     CheckAll(&'a CheckAllSignature),
 }
 
+/// The function signature for a hotfix function
+pub type HotfixFunction = dyn Fn(&mut Testable) -> FixFnResult;
+
 #[derive(Clone)]
 /// A check definition
 pub struct Check<'a> {
@@ -60,7 +63,7 @@ pub struct Check<'a> {
     /// Function pointer implementing the actual check
     pub implementation: CheckImplementation<'a>,
     /// Function pointer implementing a hotfix to the binary file
-    pub hotfix: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
+    pub hotfix: Option<&'a HotfixFunction>,
     /// Function pointer implementing a hotfix to the font source file
     pub fix_source: Option<&'a dyn Fn(&Testable) -> FixFnResult>,
     /// A registered file type that this check applies to
@@ -114,6 +117,7 @@ impl<'a> Check<'a> {
         &'a self,
         fn_result: CheckFnResult,
         filename: Option<&str>,
+        source_filename: Option<&str>,
         section: Option<&str>,
         duration: Duration,
     ) -> CheckResult {
@@ -127,7 +131,7 @@ impl<'a> Check<'a> {
         } else {
             subresults
         };
-        CheckResult::new(self, filename, section, res, duration)
+        CheckResult::new(self, filename, source_filename, section, res, duration)
     }
 
     /// Run the check, either on a collection or a single file.
@@ -155,7 +159,8 @@ impl<'a> Check<'a> {
 
                 Some(self.clarify_result(
                     result,
-                    Some(f).and_then(|f| f.filename.to_str()),
+                    f.filename.to_str(),
+                    f.source.as_ref().and_then(|x| x.to_str()),
                     section,
                     duration,
                 ))
@@ -169,7 +174,7 @@ impl<'a> Check<'a> {
                 #[cfg(target_family = "wasm")]
                 let duration = Duration::from_secs(0);
 
-                Some(self.clarify_result(result, Some(&f.directory), section, duration))
+                Some(self.clarify_result(result, Some(&f.directory), None, section, duration))
             }
         }
     }

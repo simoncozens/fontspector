@@ -16,6 +16,10 @@ impl RunResults {
     pub fn iter(&self) -> impl Iterator<Item = &CheckResult> {
         self.results.iter()
     }
+    /// Iterate over each check mutably
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut CheckResult> {
+        self.results.iter_mut()
+    }
 
     /// Get the worst status of all checks
     pub fn worst_status(&self) -> StatusCode {

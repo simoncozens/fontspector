@@ -100,7 +100,7 @@ fn transformed_components(f: &Testable, context: &Context) -> CheckFnResult {
     }
 }
 
-fn decompose_transformed_components(t: &Testable) -> FixFnResult {
+fn decompose_transformed_components(t: &mut Testable) -> FixFnResult {
     let f = fixfont!(t);
     let loca = f
         .font()
@@ -133,7 +133,10 @@ fn decompose_transformed_components(t: &Testable) -> FixFnResult {
     decompose_components_impl(t, &bad_composites)
 }
 
-pub(crate) fn decompose_components_impl(t: &Testable, decompose_order: &[GlyphId]) -> FixFnResult {
+pub(crate) fn decompose_components_impl(
+    t: &mut Testable,
+    decompose_order: &[GlyphId],
+) -> FixFnResult {
     let f = fixfont!(t);
     let mut new_font = FontBuilder::new();
     let mut builder = GlyfLocaBuilder::new();
@@ -180,8 +183,7 @@ pub(crate) fn decompose_components_impl(t: &Testable, decompose_order: &[GlyphId
     new_font.add_table(&new_loca).map_err(|x| x.to_string())?;
     new_font.copy_missing_tables(f.font());
     let new_bytes = new_font.build();
-    std::fs::write(&t.filename, new_bytes).map_err(|_| "Couldn't write file".to_string())?;
-
+    t.set(new_bytes);
     Ok(true)
 }
 

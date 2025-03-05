@@ -41,7 +41,7 @@ mod status;
 mod testable;
 /// Common utility functions for check implementors
 mod utils;
-pub use check::{return_result, Check, CheckFlags, CheckId, CheckImplementation};
+pub use check::{return_result, Check, CheckFlags, CheckId, CheckImplementation, HotfixFunction};
 pub use checkresult::{CheckResult, FixResult};
 pub use context::Context;
 pub use filetype::{FileType, FileTypeConvert};

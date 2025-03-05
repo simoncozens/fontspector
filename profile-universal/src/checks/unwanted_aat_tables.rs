@@ -49,7 +49,7 @@ fn unwanted_aat_tables(t: &Testable, _context: &Context) -> CheckFnResult {
     })
 }
 
-fn delete_unwanted_aat_tables(t: &Testable) -> FixFnResult {
+fn delete_unwanted_aat_tables(t: &mut Testable) -> FixFnResult {
     let f = fixfont!(t);
     let mut new_font = FontBuilder::new();
     for table in f.font().table_directory.table_records() {
@@ -61,6 +61,6 @@ fn delete_unwanted_aat_tables(t: &Testable) -> FixFnResult {
         }
     }
     let new_bytes = new_font.build();
-    std::fs::write(&t.filename, new_bytes).map_err(|_| "Couldn't write file".to_string())?;
+    t.set(new_bytes);
     Ok(true)
 }

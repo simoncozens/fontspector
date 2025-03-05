@@ -76,6 +76,16 @@ impl Testable {
             .and_then(|x| x.to_str())
             .map(|x| x.to_string())
     }
+
+    /// Set the new contents of a file
+    pub fn set(&mut self, new_bytes: Vec<u8>) {
+        self.contents = new_bytes;
+    }
+
+    /// Save the contents of a file to disk
+    pub fn save(&self) -> Result<(), std::io::Error> {
+        std::fs::write(&self.filename, &self.contents)
+    }
 }
 
 /// A related set of files which will be checked together.

@@ -34,6 +34,8 @@ pub struct CheckResult {
     pub check_rationale: String,
     /// The file which was checked; if None, the check was run on all files
     pub filename: Option<String>,
+    /// The source where this file came from, if any
+    pub source_filename: Option<String>,
     /// The section of the profile this check belongs to
     pub section: Option<String>,
     /// The individual results of the check
@@ -73,6 +75,7 @@ impl CheckResult {
     pub fn new(
         check: &Check,
         filename: Option<&str>,
+        source_filename: Option<&str>,
         section: Option<&str>,
         subresults: Vec<Status>,
         duration: Duration,
@@ -82,6 +85,7 @@ impl CheckResult {
             check_name: check.title.to_string(),
             check_rationale: check.rationale.to_string(),
             filename: filename.map(|x| x.to_string()),
+            source_filename: source_filename.map(|x| x.to_string()),
             section: section.map(|x| x.to_string()),
             subresults,
             hotfix_result: None,
