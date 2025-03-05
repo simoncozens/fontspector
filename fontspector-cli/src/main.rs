@@ -332,41 +332,6 @@ fn load_configuration(args: &Args) -> Map<String, serde_json::Value> {
         .unwrap_or_default()
 }
 
-// fn apply_fixes(
-//     testable: &mut TestableType,
-//     check: &&Check,
-//     mut result: CheckResult,
-//     args: &Args,
-// ) -> CheckResult {
-//     if let TestableType::Single(testable) = testable {
-//         if args.hotfix {
-//             if let Some(fix) = check.hotfix {
-//                 result.hotfix_result = match fix(testable) {
-//                     Ok(_) => Some(FixResult::Fixed),
-//                     Err(e) => Some(FixResult::FixError(e)),
-//                 }
-//             } else {
-//                 result.hotfix_result = Some(FixResult::Unfixable);
-//             }
-//         } else if check.hotfix.is_some() {
-//             result.hotfix_result = Some(FixResult::Available);
-//         }
-//         if args.fix_sources {
-//             if let Some(fix) = check.fix_source {
-//                 result.sourcefix_result = match fix(testable) {
-//                     Ok(_) => Some(FixResult::Fixed),
-//                     Err(e) => Some(FixResult::FixError(e)),
-//                 }
-//             } else {
-//                 result.sourcefix_result = Some(FixResult::Unfixable);
-//             }
-//         } else if check.fix_source.is_some() {
-//             result.sourcefix_result = Some(FixResult::Available);
-//         }
-//     }
-//     result
-// }
-
 fn try_fixing_stuff(results: &mut RunResults, args: &Args, registry: &Registry) {
     let failed_checks = results
         .iter_mut()
