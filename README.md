@@ -39,7 +39,7 @@ pytest
 ## Building the web version
 
 Fontspector also has a WASM-based web version at
-https://simoncozens.github.io/fontspector
+https://fonttools.github.io/fontspector/
 
 It is built and deployed from Github Actions, but should you need to
 rebuild this manually for development, run:
